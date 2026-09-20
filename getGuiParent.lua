@@ -1,8675 +1,2568 @@
---[[
-███████╗██╗   ██╗██╗██╗         █████╗ ██╗  ██╗███████╗
-██╔════╝██║   ██║██║██║        ██╔══██╗╚██╗██╔╝██╔════╝
-█████╗  ██║   ██║██║██║        ███████║ ╚███╔╝ █████╗
-██╔══╝  ╚██╗ ██╔╝██║██║        ██╔══██║ ██╔██╗ ██╔══╝
-███████╗ ╚████╔╝ ██║███████╗   ██║  ██║██╔╝ ██╗███████╗
-╚══════╝  ╚═══╝  ╚═╝╚══════╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
+-- WorkClient | Blox Strike | v30.3 | by WorkSaturn17940
+local Players=game:GetService("Players")
+local RunService=game:GetService("RunService")
+local UserInputService=game:GetService("UserInputService")
+local HttpService=game:GetService("HttpService")
+local TweenService=game:GetService("TweenService")
+local Stats=game:GetService("Stats")
+local Lighting=game:GetService("Lighting")
+local SoundService=game:GetService("SoundService")
+local LocalPlayer=Players.LocalPlayer
+local API_URL="https://bs-api.mihailkoshkin70.workers.dev"
+local API_SECRET="bloxstrike_secret_2026_kotost_verylong777"
+local FOLDER_ROOT="WorkClient"
+local FOLDER_INFO=FOLDER_ROOT.."/info"
+local FOLDER_CONFIGS=FOLDER_ROOT.."/configs"
+local DATA_FILE=FOLDER_INFO.."/data.json"
+local AUTOLOAD_FILE=FOLDER_CONFIGS.."/_autoload.txt"
+local RAIN_SOUND_ID="rbxassetid://131961136"
+local POLL_INTERVAL=5
 
-        STUDIOS V2 OBFUSCATOR By MAX
-        https://eaxe.net
+local UI={bg=Color3.fromRGB(13,13,17),topbar=Color3.fromRGB(20,20,26),panel=Color3.fromRGB(17,17,22),panel2=Color3.fromRGB(24,24,30),panel3=Color3.fromRGB(30,30,38),border=Color3.fromRGB(42,42,52),borderHi=Color3.fromRGB(72,72,88),accent=Color3.fromRGB(80,190,255),text=Color3.fromRGB(230,232,240),textDim=Color3.fromRGB(140,144,158),textMute=Color3.fromRGB(100,104,118),good=Color3.fromRGB(70,210,130),bad=Color3.fromRGB(235,85,85),warn=Color3.fromRGB(235,190,80),yellow=Color3.fromRGB(255,220,60),freeze=Color3.fromRGB(140,200,255),input=Color3.fromRGB(22,22,28)}
+local RANKS={player={level=0,color=Color3.fromRGB(180,180,190),access={}},beta={level=1,color=Color3.fromRGB(200,140,255),access={"beta"}},helper={level=2,color=Color3.fromRGB(255,215,0),access={"admin"}},moderator={level=3,color=Color3.fromRGB(80,160,255),access={"admin"}},admin={level=4,color=Color3.fromRGB(255,80,80),access={"beta","admin","adminpanel"}},owner={level=5,color=Color3.fromRGB(255,40,40),access={"beta","admin","adminpanel"}}}
+local HEAD_SIZE=15
+local HP_HIGH=Color3.fromRGB(0,220,100)
+local HP_MID=Color3.fromRGB(240,200,60)
+local HP_LOW=Color3.fromRGB(240,70,70)
+local TEAM_COLORS={Color3.fromRGB(80,160,255),Color3.fromRGB(255,80,80),Color3.fromRGB(80,220,80),Color3.fromRGB(255,200,50),Color3.fromRGB(200,80,255),Color3.fromRGB(255,140,0),Color3.fromRGB(255,100,200),Color3.fromRGB(100,255,220)}
 
-        Sponsored by
-        https://BloxDen.com
---]]
+local function ensureFolders()
+    if not makefolder or not isfolder then return end
+    pcall(function()
+        if not isfolder(FOLDER_ROOT) then makefolder(FOLDER_ROOT) end
+        if not isfolder(FOLDER_INFO) then makefolder(FOLDER_INFO) end
+        if not isfolder(FOLDER_CONFIGS) then makefolder(FOLDER_CONFIGS) end
+    end)
+end
+ensureFolders()
 
-return (function(...)
-	local R = {
-			"fN\"\\/e",
-			"fNUAmOUTVP3",
-			"fe+X[sUc0",
-			"f:Z!7hS7spB",
-			"fS7rcr7j[+%jB4k%ZiTK",
-			"fVYFE<VYFaENjf;s=/!I%#R*b^\"B",
-			"fI\"$LMkN;VsS!u&(",
-			"fU;$W\"p2V2.i!a6Db)",
-			"f#1GG^eDNT",
-			"feM?^NjS.jRI[J@tU9",
-			"fS&9h/\"hr(Ip?H^/",
-			"f0\\;is#Gj\\[0.\':C",
-			"fVYF5g:r=b,N\'ZQ4:VJj.N>uVKN=[m3:rM",
-			"f#teE%-tA(4Sh9H",
-			"fpc96s:rU3Tj\\O",
-			"fZA):N:6%h_j\\PE*",
-			"f#lNX1UMa:",
-			"fNN>aQbh2(QVp.To]3.",
-			"f[^UF.U+k",
-			"f#9V4YV3C,",
-			"fekE8R[A-WsQt$&YQ_LI<",
-			"fS7spB",
-			"fQt$&\"Q_6",
-			"f#S@9abcXMfi`<Rt",
-			"fk?h85#ellk0qR0M",
-			"f#.ub=0B&",
-			"fjSO*\\bm",
-			"fIJ",
-			"fpo-p9:i\'K5^f+ZY%Ej<",
-			"fS(\\,MI:YNq:Z6V1=)",
-			"fV8kQ9N>+uXNZ",
-			"fQt$&YQ_LI<",
-			"fV3C<:jYrMENZ",
-			"f:X(!X",
-			"fV3Mu@:dD.W=DM[=S8",
-			"f@RWX;",
-			"fVYF5rSh$U&N`RFT:1$lP",
-			"fVX98dVY(3iNg7Z3iS",
-			"fI\'hG)7j[+%j\\$",
-			"fS==^S",
-			"fS7spBpoa>$=u*M(jpHTWjSh*3j3D",
-			"fVZatU7J",
-			"fS-U;AZrmcLN[4d`:-",
-			"f#OePrZV(n@i9X",
-			"f#l.bNUo?t;Qt$&YQ_LI<",
-			"f#OePrZV(n@i9$?nQmR<HQ_6",
-			"fS=G^B\"(h-C",
-			"fV\\-Qj:rU3Tj\\O",
-			"fjBOn`N$4Y(bbqi.Vf",
-			"f#IN:O[#>*]UM(H?jpHTWjSh*3j3D",
-			"fV\\-QeUo*hnJF7\"uNU]9k",
-			"f]B\';A#\\/f>b/b2]S\'_",
-			"fjF:VVUh\"AT#RCk\\Ir",
-			"f7OnL",
-			"fJF7L&S&](;Uo^",
-			"fpo-p9:i\'/",
-			"f]$`S!I=NnPN;7-CJ2",
-			"f@RWXa",
-			"fekE8R[A-Ws",
-			"fJCD\\PpCgMW[,sc&",
-			"fJaeY]ImHXQ:nmK1",
-			"fpDg5#p!-^7ph+Rh",
-			"ff,.&Ee<c81O46mjZh",
-			"f#$AHc[n]V(:-",
-			"fNUliuIHtJ7#.TBH",
-			"fSh9?$U9",
-			"f#1GG1p(tu.Qt$&YQ_LI<",
-			"feLPF(:rU/",
-			"fS7rcr",
-			"fZZkH,=/5<\\NZ",
-			"f#tub0Uo19a[AZl",
-			"fpoA1Li8",
-			"fS7rcr7j[+%j\\$",
-			"fVr4&1I>O]*=TfKgJ2",
-			"fS7spBp?P#^:%6",
-			"fZ]u\"\\jS`",
-			"f[#>%!J/Z\\6Z*]m;",
-			"fI\'ho&V8iSV[^UJX",
-			"f#.m^@0)gV-jJ-9nJ2",
-			"fU(G%.S!eB-SQ@rn=)",
-			"fJ^$sOe0Rr$U-[DfjZ@",
-			"fN:.^eU0\"rT#R+*I",
-			"fNUAt`N`h)JUoHl",
-			"fOlBfR-_NTmbdp&+",
-			"f:^_BnN>g<Weh9r9",
-			"fV#$hKfaVOYJL([3\"\'+",
-			"fZ*I\"Z\"!dk$-p9;OZ-",
-			"f#1GG1p(tu.",
-			"fJF7\"u=o0N2Uc[(W\"&fh$0.Lio[6UPK\"8",
-			"f#Os%&7[W[m[6\\JmLQQVJQt$&)QP;#!Q\'>DrQPRl=)_1\'e<a8s",
-			"f#qE6lU?3#\':VR",
-			"f[a,dU0RpTD041rU0)<",
-			"f].dQpecT",
-			"fV4;bP:16J$S;0ODe)",
-			"fL+(Z",
-			"fJA0C\\:de<)NUA>d#R*M-=[",
-			"fUMXl",
-			"fU(ZB#IE4ZF[C&_>-pN",
-			"f0.2JMfc\';Wfo\"GQ",
-			"fN=[#7",
-			"fjeNJ",
-			"f#9#Q9\"8",
-			"fXI^AI7J",
-			"f#9#u-",
-			"fVr30mNWuo4=MY[e",
-			"fZJD(qUD3#lpc_D\\e+X[Q",
-			"f=k@=S:F;D)[6/@O\"8",
-			"fOl\'\\50[(?3f,E)Dp+:",
-			"fNUAt`N`0F`UooGINZ",
-			"fpMdLgjS#,",
-			"fJot%(\"QJc=J6t?3[2",
-			"fZr9Xt\"NYI)p`\'3DNU\\",
-			"fi0;fkkD(]abdp\\Q#BK",
-			"feMCm^S\"k6\'e/S!;I)6",
-			"ff<i#;SU-dAS`QKjiW_",
-			"feb5K1:r,\\",
-			"fIG",
-			"f#lOl<0>=",
-			"f@RW5",
-			"fNUAt`Nt0B",
-			"fpMdLgjS#<5[A>am\"2jIP:-",
-			"feLPF(:r=e2[2",
-			"fLQQ#",
-			"fV\\-Qf[^UJX\"&f7",
-			"fUt",
-			"fV1Qm0",
-			"fZkh7Wk0jb-eb@?TSB",
-			"f@R7S",
-			"fNU]#t",
-			"feCI]<Z^o",
-			"feCqUIeLs8lU-bT7",
-			"f-Z[&WbhW@lN>[+\\",
-			"f\"mufYZ6897:r+*F",
-			"fi!aF4\"E4@Ab<hWbU9",
-			"fZnV,9k+C&P0$Zc3k@",
-			"fp?H^/",
-			"fZAfe)pf(Z/p0HK)",
-			"ffFof;S0nA;:F/1G",
-			"fS0A,a",
-			"fS(*J0f+)?5-thLH",
-			"f@q6*>U+k",
-			"fS&9Y/jYor",
-			"fN\"\\/eU?Z",
-			"f#.uN)\"(#n",
-			"f0BfDq#$&k>Vr\\9-I`V",
-			"f0pY#oZkW/k0@TN<",
-			"fJD+o8[/4OENj=N,Zh",
-			"f#O*=5",
-			"fpc_D\\e+X[Q",
-			"fN2`Chj\\$",
-			"f@q?\'2=u\\&",
-			"fVSLSRN;t>",
-			"fIr",
-			"fkCt8eJ,X)lU`^<80HP",
-			"f=Ll4T0Smcef<f.6Nr",
-			"f:GUHhjSp",
-			"fjBh%KU$",
-			"fS7fo5:rr3sZV(n@",
-			"fNUA][\"&r\"\'",
-			"f#O*ar:r=H2-I)G?0g\'5",
-			"fjBOHA:<[",
-			"fJA0C\\:de<)NUA>^",
-			"fI`87\\:]aDD[6pu!Uor\\BU?qWk",
-			"fI\'7\'C-_SbK\"UuEu",
-			"f[AMc*\"(Y",
-			"fbc:rGU?BcB-p-.4",
-			"fUC\\uJj8.HE\"0T3F",
-			"fih+oUNUO#\'J]M2$",
-			"fIjAYnedt$![L1p`:Jj",
-			"fV\\-QjN=[Jm",
-			"f[F534",
-			"fZJD(qUD3#lpoA0L:Fi\\G:-",
-			"fJkDO,:dcF.I21IJ[\"",
-			"fVYFE<VYFaENjf;s=/!sg[6\'+DN_r",
-			"f[n9f$N;u",
-			"f=L8-Fp-M3lI;U?$[+Y",
-			"fUMM[XS7spB",
-			"fS!4h4=[",
-			"fZr%C",
-			"fe<DIh#89GIN>sbVU\">",
-			"f\"E;Hti[`h>[^=Xte[",
-			"fUhK%\\S0AXMS(uX6=[",
-			"f#.*H^Uof-\'jB\\",
-			"f=LI<C\"8",
-			"fS7spB#O\\`",
-			"fNtM$FehFf8pU;@@",
-			"f#.c/D[AE",
-			"fI\'^o9Uoh",
-			"fUTTR",
-			"fV\\-Qb:r,@aUMQfXN\"V",
-			"f-ta7DbkH(-].]4?:r5",
-			"fZZifrU+k",
-			"f#Ru>^NZ",
-			"fpc_R(NU]9k",
-			"fe?qr_-ZCF@ebg8oS`S",
-			"ffD$iYSH*>-\"&ZPM",
-			"f@q?\'20[TYO[`",
-			"f-e`eP0[%\'rkuPW$pt",
-			"fN`RFiU@",
-			"fN\"bol:rj",
-			"fkuTon=ur.u-Zr\\]",
-			"fVYFE<VYFaENjf;s=/W",
-			"feiu\\SNRXZ>S!e(MO>Q",
-			"f#RcXcjed=K\"HI]-:%6",
-			"fVY(MC0@jT#bC/e<",
-			"fUh7/\":^&2BS`tOBi=i",
-			"fNW\'LkN:$36:-",
-			"fN=:8*:-",
-			"febZ4<",
-			"f:G`=\'\"8",
-			"fQ>DELQP\\[VQP;Zdi8",
-			"fe,nA@S\'C99IgSf$JaF",
-			"fj1[dO\"U[lEihi^Ypt",
-			"fb,fJ-OmZ>,J,%FVf\"",
-			"f[AZ4P\"(;",
-			"feLPF(:r=55UCqriUDm",
-			"f#l.bNUo?t;",
-			"f#.c?p",
-			"f7F:8JLoXB",
-			"f#RcXN\"B",
-			"fOl<s[:s_dF[dFP$Uo^",
-			"f@qMYgU@",
-			"fV8ifQ",
-			"fVYF5r#9#Q9\"8",
-			"fp(tXd#ahtQ#Yj",
-			"fV8,*1:-",
-			"fVB<c;jp^",
-			"fVp-j_UQ_brU-Zc#",
-			"f:G;+hpNE>",
-			"f=brZDOPiYjZ%RMsbm",
-			"fV\\-QI=+/st\"(Y",
-			"f[F!*H0)8",
-			"fj8!D",
-			"f:#u23kh(XES2Ys$",
-			"fS==^Sbm",
-			"fZrmcLNjP^djp9",
-			"fOmT/BeKt-YS;&URp7\'",
-			"f[d.s;",
-			"feLPF(:r=\'M:V)J",
-			"fUTTdl",
-			"fNg0?Jk&hRg#S0*]",
-			"fVBiWFjp0",
-			"f#.*HEjp)%Q",
-			"fUcroW:rj",
-			"fVp(d==/Vh",
-			"fJ,?,HjJ^5Je?dUu",
-			"fJKBWE=/V5C",
-			"fbK4^Vk-nKnihE7H",
-			"fj]=&-j*\\L,[]Pp7",
-			"fS7spBpoa>$=uG6d=LIO,",
-			"fZ1p*9\"&TE2[/Sk2:r%",
-			"fS7rcr7j[+%jB4k%ZiTa@^f+ZY%Ej<",
-			"f\"&g[9Zn0SoNm&;0\"H*",
-			"fZrmr6jp)%Q",
-			"fQ>:g4QPYk^QPU_7QI[r<Q\'>DrQO1",
-			"fNW`0eUDm",
-			"fjqiPh",
-			"fVpQ#&",
-			"fpQ`bsZsOmg[uaO,=k3",
-			"feL=U/NU]9k",
-			"fLoX$F^HK6",
-			"f0jOi!",
-			"f:V)[",
-			"fe?6E)ZLboHJ<n.NI`V",
-			"fJi]TB-I+LfIP>pm:V]",
-			"fZ]/<70OW_8IRE4l",
-			"fJ^>+q",
-			"fe?l,YI\"Q]gp\'3Q;pUg",
-			"fS&](;Uo%r",
-			"fZk8\')]\\Am,ZnX7GN=R",
-			"f",
-			"f=hrKUZAMck:LWh4p@",
-			"fS&](;Uo%8",
-			"f#R*I[\"2@s*N:-QUU?4*k",
-			"f#.uNu:1$_?UcD(oUCqriUDm",
-			"f0:/,pN`R^.:-",
-			"f\"7SSa=)",
-			"fJF7GDI;,1FpDDEZ[2",
-			"feLPF,:1@4$:V)Qg:sme",
-			"f#Os%&7[W[m[6\\JmN$;ff",
-			"f#9a\"L:1$r8jpr%BjC",
-			"f@q?\'2\"(]AS",
-			"fZ]dY,I9[f>ZV9d9\"8",
-			"f@q6*V[ATN>",
-			"fS7spB#9#Q9\"gQ",
-			"f#sAW`UT<",
-			"f[CE+kSH*Hq0:f99\"B",
-			"fZJD(qUD3#l",
-			"fSh$U&N`RFT:1$lP",
-			"fSh$U8:rj",
-			"fN:Mblb<!;RItYAL",
-			"fpM3GgN:-QF\"7W3T",
-			"f:A+o/k7Y5RjeKu9",
-			"f#IN\\-e+X[Q",
-			"f#9#K5:%oo",
-			"fS!u9-k&jMZN9`GK",
-			"fe<H&\\[AVcuU?3@n",
-			"fV\\-QTN\"U^pj8(Q\'",
-			"fZrT[.[+^TW=c22lUoR",
-			"fV8iW%:rj",
-			"fZZkH,=/5<\\NjJg9NU7[?:VR",
-			"fS7spBIj_&p[]YF.Uc0",
-			"f!lDY1fD5C",
-			"fjr>,rf,qrSk`D@_S\")",
-			"f[F!Nr=/3",
-			"fbQ^/Rih*9:N;979b[",
-			"fJF7\"u=ol\\Y-lU4",
-			"f[F!e<",
-			"fS7spB#@%[AUoh",
-			"f\"7WM_\"B",
-			"f0.=QKbT]6\\#en%Zpo,",
-			"fpMdLgjS#<?jShQX\"B",
-			"fZV(n@",
-			"f[^UF.U+no-",
-			"fS-U;AZrmcLN:AE60>60.",
-			"fJA0kQ#.*5FjB$NPU@",
-			"fJD;4jO_l)9O>UX1bM\\",
-			"feLsZ7JCc++N51#P0$q",
-			"fe<H&\\[AVc)\"E2Kh\"7W($UM5\\",
-			"feDlku[FadlboMjY",
-			"fpoA1L\"7<^",
-			"fS-`X+\"2@3.N`,",
-			"f0pS(M:J\\9O#$QfA\"B",
-			"fVB<c;jp1Ou=/W",
-			"fS7fo5:rr3s",
-			"fJFhhQ\"2@3.N`,",
-			"f@qM0s",
-			"f\"U=bUbh8c2UTFq_",
-			"fjJV11jaB.Vko<Y\'",
-			"fJK\\5^[AXcT:-",
-			"fZrmcLNj=\'q:%6",
-			"f#eK9LZnO+n",
-			"f#.c6e=)",
-			"f#.*H)=+/r&\"&mE>",
-			"fN\'>En\"2$aa#pkY3k&q",
-			"fI``ZnJ<K]=bL>O8jqZ",
-			"fN=?A.i8",
-			"fek`;h=/6H3#Ypc_",
-			"f@R7W",
-			"fbf!5\\e?N:^NO%o\"bm",
-			"fjYce(-@L\\ejC",
-			"fN`(][",
-			"fJKBJp:%r=3[\"",
-			"feiZ$3[kHum0:u.LVf",
-			"fZLe2MVSi[-VqmBdNjF",
-			"fQ>Cd6QPU_7QI[r8QOF:H7dMH-)@$RQu[",
-			"f@RWE",
-			"f#pa",
-			"f#@]\\[Nm7(f\"`eEM#@i",
-			"f@RWX5",
-			"f\"2T4Xe(Y@/0tbYW",
-			"fS7spBJdY=:=)",
-			"fekn:$0Y\"P]I`rK`ZGN",
-			"f#.uI9[,\"Us:-",
-			"f#.c?p7j[3YjpHnh",
-			"f=/OR<:aPlI:XRV5[\"",
-			"feo[h\\NW)r<p0\'QXJ`",
-			"fkfBX9[+q6_Ig;?h=[",
-			"f#IN:O[#>*]UM(7F=LIO,",
-			"f#RcXcjed=K\";H>5:-",
-			"fS7G$s=,aH`\"B",
-			"f#RcXcjed=K\"8",
-			"fpM32Y:r=H6:rksl:h",
-			"fOl<s[:sl",
-			"fVYF5g:r=E\\\"7c",
-			"f=i`Qf:Ge\'h0lK.+",
-			"fZV(n0NU\'",
-			"fNU]rP\"8",
-			"f\")jg?eCnp3J693)f\"",
-			"fVZatU7d-e$qiQSH%o",
-			"f0>^F\'iWC>ONt-[[=)",
-			"fN\'m3ijprN+jp[J",
-			"fe?<o^pWXC;U&81&iS",
-			"f:#4gLZ1*3YNt>ZGf<1",
-			"f#9#Q9\"gQ",
-			"f@qM,&:V)$",
-			"f#9V4;:r=58:Z!b!",
-			"f[^UWa=/5<\\NZ",
-			"fjS@sii8",
-			"fU7mg!IE\",rS2L+t#<",
-			"fS=*hk\"(]2`",
-			"fp?PL9:1.lg[2",
-			"fQ_LIXQOAYfC/1E",
-			"fjqf\'.UorYAjS@qnUUI\'bb&g",
-			"f[n]q+",
-			"fIPCV#Zda,ojr@Bjbm",
-			"f[/PKsZahQB#B5Z+e[",
-			"f].lHdZ*WMJ:ilbb",
-			"fp0k7CeTGq3#Sj`[p7+",
-			"f0g\\jAbuKLaVS\\Q]J\"",
-			"fp2VS!k&-`>[b]b#",
-			"fj8!c?N2;0#UML",
-			"fVZal",
-			"f-O>0e",
-		};
-	for T, X in ipairs({ { 1, 394 }, { 1, 15 }, { 16, 394 } }) do
-		while X[1] < X[2] do
-			R[X[1]], R[X[2]], X[1], X[2] = R[X[2]], R[X[1]], X[1] + 1, X[2] - 1;
-		end;
-	end;
-	local function T(T)
-		return R[T + 20656];
-	end;
-	do
-		local T = math.floor;
-		local X = string.char;
-		local c = string.len;
-		local C = type;
-		local V = table.concat;
-		local i = {
-				S = 11,
-				k = 32,
-				P = 46,
-				o = 57,
-				T = 15,
-				v = 20,
-				A = 51,
-				O = 58,
-				["8"] = 44,
-				l = 47,
-				U = 63,
-				J = 2,
-				["0"] = 26,
-				d = 7,
-				M = 61,
-				["2"] = 45,
-				r = 23,
-				g = 52,
-				["6"] = 35,
-				["5"] = 56,
-				X = 18,
-				K = 31,
-				e = 28,
-				F = 6,
-				Y = 62,
-				h = 34,
-				N = 0,
-				w = 36,
-				C = 25,
-				["3"] = 1,
-				I = 39,
-				R = 43,
-				n = 14,
-				D = 19,
-				["7"] = 10,
-				Q = 49,
-				["9"] = 42,
-				s = 40,
-				x = 27,
-				i = 5,
-				H = 13,
-				q = 21,
-				t = 54,
-				L = 50,
-				["/"] = 9,
-				G = 29,
-				z = 8,
-				u = 53,
-				["4"] = 17,
-				p = 48,
-				["+"] = 41,
-				E = 33,
-				y = 4,
-				Z = 3,
-				B = 59,
-				a = 24,
-				f = 30,
-				W = 55,
-				m = 16,
-				j = 12,
-				b = 38,
-				["1"] = 37,
-				V = 22,
-				c = 60,
-			};
-		local k = {
-				["\""] = 36,
-				q = 55,
-				t = 2,
-				G = 78,
-				["."] = 83,
-				S = 27,
-				b = 16,
-				["\\"] = 80,
-				n = 19,
-				["7"] = 10,
-				["["] = 33,
-				["-"] = 39,
-				["5"] = 58,
-				["%"] = 49,
-				["*"] = 79,
-				[">"] = 4,
-				D = 41,
-				F = 48,
-				["3"] = 82,
-				["]"] = 20,
-				h = 11,
-				j = 31,
-				X = 77,
-				L = 72,
-				K = 73,
-				i = 18,
-				e = 25,
-				["1"] = 50,
-				V = 22,
-				P = 6,
-				a = 76,
-				["2"] = 63,
-				J = 24,
-				C = 14,
-				["#"] = 21,
-				M = 40,
-				Q = 67,
-				O = 29,
-				u = 43,
-				_ = 3,
-				["4"] = 0,
-				["!"] = 12,
-				["0"] = 38,
-				f = 15,
-				p = 26,
-				[","] = 44,
-				[")"] = 60,
-				["\'"] = 7,
-				d = 46,
-				["$"] = 84,
-				W = 9,
-				["`"] = 8,
-				r = 51,
-				["="] = 34,
-				Z = 23,
-				["@"] = 30,
-				["&"] = 65,
-				["("] = 66,
-				E = 64,
-				R = 56,
-				I = 28,
-				N = 37,
-				["+"] = 70,
-				B = 81,
-				k = 17,
-				["6"] = 74,
-				c = 42,
-				o = 69,
-				Y = 53,
-				m = 5,
-				T = 13,
-				["^"] = 47,
-				s = 52,
-				["?"] = 68,
-				["8"] = 54,
-				[":"] = 32,
-				l = 1,
-				g = 59,
-				A = 75,
-				H = 61,
-				["/"] = 71,
-				["<"] = 45,
-				[";"] = 62,
-				U = 35,
-				["9"] = 57,
-			};
-		local D = table.insert;
-		local O = R;
-		local l = string.sub;
-		for R = 1, #O, 1 do
-			local y = O[R];
-			if C(y) == "string" then
-				local C = l(y, 1, 1);
-				if C == "n" then
-					y = l(y, 2);
-					local C = c(y);
-					local k = {};
-					local E = 1;
-					local N = 0;
-					local M = 0;
-					while E <= C do
-						local R = l(y, E, E);
-						local c = i[R];
-						if c then
-							N = N + c * (64 ^ ((3 - M)));
-							M = M + 1;
-							if M == 4 then
-								M = 0;
-								local R = T(N / 65536);
-								local c = T((N % 65536) / 256);
-								local C = N % 256;
-								D(k, X(R, c, C));
-								N = 0;
-							end;
-						elseif R == "=" then
-							D(k, X(T(N / 65536)));
-							if E >= C or l(y, E + 1, E + 1) ~= "=" then
-								D(k, X(T((N % 65536) / 256)));
-							end;
-							break;
-						end;
-						E = E + 1;
-					end;
-					O[R] = V(k);
-				elseif C == "f" then
-					y = l(y, 2);
-					local C = c(y);
-					local i = {};
-					local E = 1;
-					while E <= C do
-						local R = (C - E) + 1;
-						local c = R >= 5 and 5 or R;
-						local V = 0;
-						local O = c > 1;
-						for R = 0, 4, 1 do
-							local T;
-							if R < c then
-								local X = l(y, E + R, E + R);
-								T = k[X];
-								if not T then
-									O = false;
-									break;
-								end;
-							else
-								T = 84;
-							end;
-							V = V * 85 + T;
-						end;
-						if O then
-							local R = T(V / 16777216) % 256;
-							local C = T(V / 65536) % 256;
-							local k = T(V / 256) % 256;
-							local O = V % 256;
-							if c == 5 then
-								D(i, X(R, C, k, O));
-							elseif c == 4 then
-								D(i, X(R, C, k));
-							elseif c == 3 then
-								D(i, X(R, C));
-							elseif c == 2 then
-								D(i, X(R));
-							end;
-						end;
-						E = E + c;
-					end;
-					O[R] = V(i);
-				end;
-			end;
-		end;
-	end;
-	return (function(D, V, k, C, c, R, i, y, A, a, U, j, E, o, B, s, L, x, u, X, M, Z, g, N, q, l, O)
-		j, N, Z, g, s, X, U, o, x, y, B, M, L, a, O, u, A, q, E, l = function(R, T)
-				local c = N(T);
-				local C = function(C, V)
-						return X(R, { C, V }, T, c);
-					end;
-				return C;
-			end, function(R)
-				for T = 1, #R, 1 do
-					l[R[T]] = 1 + l[R[T]];
-				end;
-				if C then
-					local X = C(true);
-					local c = i(X);
-					c[T(-20265)], c[T(-20314)], c[T(-20419)] = R, M, function()
-							return 1838146;
-						end;
-					return X;
-				else
-					return V({}, { [T(-20314)] = M, [T(-20265)] = R, [T(-20419)] = function()
-							return 1838146;
-						end });
-				end;
-			end, function(R, T)
-				local c = N(T);
-				local C = function(C, V, i, k)
-						return X(R, {
-							C,
-							V,
-							i,
-							k,
-						}, T, c);
-					end;
-				return C;
-			end, function(R, T)
-				local c = N(T);
-				local C = function(C, V, i)
-						return X(R, { C, V, i }, T, c);
-					end;
-				return C;
-			end, function(R, T)
-				local c = N(T);
-				local C = function(C, V, i, k, D, O, l, y, E)
-						return X(R, {
-							C,
-							V,
-							i,
-							k,
-							D,
-							O,
-							l,
-							y,
-							E,
-						}, T, c);
-					end;
-				return C;
-			end, function(X, C, V, i)
-				local wh, yh, ph, Oh, ch, lh, RT, Xh, DT, Fh, XT, xh, W, fh, mh, rh, kh, l, qh, N, Bh, ah, Eh, yT, f, ih, Ah, hh, jh, eh, M, Ph, t, Ch, Qh, CT, vh, bh, Rh, Lh, m, Y, K, uh, z, b, G, iT, VT, r, p, Vh, d, sh, ET, MT, Jh, Yh, I, th, nh, dh, Q, e, NT, kT, cT, u, Ih, h, zh, Uh, n, P, E, S, J, Gh, Zh, oh, lT, Th, Nh, F, gh, TT, Mh, Hh, Wh, H, Dh, v, D, Kh, Sh, w, OT;
-				while X do
-					if X < 8648877 then
-						if 4295382 > X then
-							if X > 1923548 then
-								if X < 3109980 then
-									if X > 2509718 then
-										if X > 2807809 then
-											if X > 3017556 then
-												if 3089019 > X then
-													if 3065977 > X then
-														t, D, m = T(-20347), T(-20462), z;
-														D = S[D];
-														D = D(S, t);
-														X = D and 15876733 or 3633968;
-													elseif 3088526 > X then
-														X = R[T(-20428)];
-														l = o(l);
-														D = {};
-													else
-														H = T(-20263);
-														X = b[H];
-														H, w = T(-20417), t;
-														X[H] = w;
-														w, H = t, T(-20263);
-														X = b[H];
-														H = T(-20344);
-														X[H] = w;
-														H = T(-20263);
-														X = b[H];
-														w, H = 5465132 < 11624142, T(-20396);
-														X[H] = w;
-														X = 4299433;
-													end;
-												else
-													if X < 3095637 then
-														D, X = l, E;
-														X = 7581454;
-													elseif X < 3102432 then
-														D, X = T(-20525), 9154474;
-														O[V[1]] = D;
-													else
-														X = l;
-														O[V[1]] = X;
-														X = 14486394;
-													end;
-												end;
-											else
-												if X > 2951965 then
-													if X < 2973864 then
-														X, D = R[T(-20429)], {};
-													elseif 2984102 > X then
-														M, Q = E(N, M);
-														X = M and 7989562 or 8345537;
-													else
-														r, Y = T(-20488), T(-20401);
-														W = R[Y];
-														Y = T(-20540);
-														G = W[Y];
-														Y = H[r];
-														X = 10524395;
-														W = G(Y);
-														r = T(-20488);
-														Y = E[r];
-														r = 2;
-														G = Y * r;
-														F = W < G;
-														P = F;
-													end;
-												else
-													if 2836477 > X then
-														Q = T(-20273);
-														D = u[Q];
-														Q = T(-20497);
-														Q, X = D[Q], 1848424;
-														Q = Q(D);
-													elseif X < 2884663 then
-														X, D = R[T(-20292)], { J };
-													elseif X < 2932178 then
-														X = 13179921;
-														l = O[V[2]];
-														D = l;
-													else
-														X, J = T(-20550), 12058235 >= 11643748;
-														Q[X] = J;
-														X = 16139990;
-													end;
-												end;
-											end;
-										else
-											if X > 2701774 then
-												if X < 2743369 then
-													if X < 2712331 then
-														t = T(-20387);
-														S = R[t];
-														t = T(-20544);
-														X = S[t];
-														h, t = T(-20387), T(-20415);
-														S = X(t);
-														X = T(-20432);
-														t, b = T(-20500), T(-20266);
-														S[X] = t;
-														X, t = T(-20591), 1;
-														S[X] = t;
-														X, t = T(-20499), 16233295 <= 5850112;
-														S[X] = t;
-														t = O[V[7]];
-														X = T(-20638);
-														S[X] = t;
-														t, X = 55, T(-20277);
-														S[X] = t;
-														t = R[h];
-														h = T(-20544);
-														X = t[h];
-														h = T(-20654);
-														t = X(h);
-														d = T(-20387);
-														h = O[V[5]];
-														X = T(-20539);
-														t[X] = h;
-														h, X = 2, T(-20280);
-														t[X] = h;
-														H, h, X = 200, S, T(-20638);
-														t[X] = h;
-														h = R[d];
-														d = T(-20544);
-														X = h[d];
-														d = T(-20289);
-														h = X(d);
-														d, X = T(-20357), T(-20432);
-														h[X] = d;
-														X, w, d = T(-20591), 0, 1;
-														h[X] = d;
-														f = R[b];
-														b, p = T(-20412), T(-20434);
-														d = f[b];
-														X, b = T(-20356), 255;
-														f = d(b, H, w);
-														d = 11666785 < 14586501;
-														h[X] = f;
-														X = T(-20566);
-														h[X] = d;
-														H, X = T(-20383), T(-20418);
-														b = R[H];
-														e, H = nil, T(-20418);
-														f = b[H];
-														b = T(-20537);
-														d = f[b];
-														h[X] = d;
-														b, d, X = T(-20266), 0, T(-20600);
-														h[X] = d;
-														X = T(-20391);
-														f = R[b];
-														w, b = 0, T(-20412);
-														d = f[b];
-														b, H = 0, 0;
-														f = d(b, H, w);
-														b, H, d = T(-20408), T(-20643), 13922786 <= 3398266;
-														h[X] = f;
-														X, w = T(-20499), T(-20273);
-														h[X] = d;
-														X = T(-20638);
-														d = O[V[7]];
-														h[X] = d;
-														f, d, X = T(-20327), 65, T(-20277);
-														h[X] = d;
-														d = T(-20263);
-														X = {
-																[d] = J,
-																[f] = z,
-																[b] = S,
-																[H] = t,
-																[w] = h,
-																[p] = Q,
-															};
-														J, z = nil, nil;
-														d = O[V[4]];
-														t, Q, u = nil, nil, X;
-														f, h, S, X = u, nil, nil, 6173745;
-														d[M] = f;
-													elseif X < 2720465 then
-														X = e and 521938 or 5260812;
-													else
-														l = y();
-														O[l] = C[1];
-														D = O[l];
-														E = O[V[1]];
-														X = D ~= E;
-														X = X and 10475555 or 3088057;
-													end;
-												else
-													if 2768523 > X then
-														X = 4582009;
-														D = O[V[8]];
-														e = T(-20279);
-														J = u[e];
-														Q = D(J, u);
-													elseif X < 2779378 then
-														d, N = 20, C[3];
-														u = y();
-														t, l, J, M, E = 0, C[1], T(-20387), C[4], C[2];
-														O[u] = C[5];
-														Q = y();
-														O[Q] = C[6];
-														D = R[J];
-														J = T(-20544);
-														X = D[J];
-														z, J = T(-20406), T(-20289);
-														D = X(J);
-														e = R[z];
-														m, X, J, z = 0, T(-20505), D, T(-20544);
-														D = e[z];
-														z, S = 0, 20;
-														e = D(M, z, m, S);
-														J[X] = e;
-														X, z = T(-20381), T(-20406);
-														e = R[z];
-														z = T(-20544);
-														D = e[z];
-														z, m = 0, 0;
-														e = D(E, z, m, N);
-														D = 1;
-														J[X] = e;
-														X = T(-20591);
-														J[X] = D;
-														m, D, z, h, X, S = 200, l, T(-20266), 0, T(-20619), 200;
-														J[X] = D;
-														e = R[z];
-														z, X = T(-20412), T(-20356);
-														D = e[z];
-														z = 200;
-														e = D(z, m, S);
-														J[X] = e;
-														X, m, D = T(-20566), T(-20383), 9418149 > 1214681;
-														J[X] = D;
-														X = T(-20418);
-														z = R[m];
-														m = T(-20418);
-														e = z[m];
-														z, m = T(-20414), T(-20383);
-														D = e[z];
-														J[X] = D;
-														X = T(-20339);
-														z = R[m];
-														m = T(-20339);
-														e = z[m];
-														z = T(-20374);
-														D = e[z];
-														J[X] = D;
-														D = O[V[1]];
-														X = T(-20638);
-														J[X] = D;
-														D, S, X = 1001, T(-20406), T(-20277);
-														J[X] = D;
-														e = T(-20387);
-														D = R[e];
-														e = T(-20544);
-														X = D[e];
-														e = T(-20456);
-														D = X(e);
-														e = y();
-														O[e] = D;
-														X = O[e];
-														m = R[S];
-														D, S = T(-20505), T(-20544);
-														z = m[S];
-														S = .22;
-														m = z(S, t, h, d);
-														X[D] = m;
-														t, S, D = 0, T(-20406), T(-20381);
-														X = O[e];
-														m = R[S];
-														h, S = 0, T(-20544);
-														z = m[S];
-														S = E + M;
-														m = z(S, t, h, N);
-														t = 45;
-														X[D] = m;
-														S, D = T(-20266), T(-20282);
-														X = O[e];
-														m = R[S];
-														S, h = T(-20412), 55;
-														z = m[S];
-														S = 45;
-														m = z(S, t, h);
-														X[D] = m;
-														z, m, D = 0, T(-20482), T(-20481);
-														X = O[e];
-														X[D] = z;
-														X = O[e];
-														D = T(-20619);
-														z = R[m];
-														S = O[u];
-														m = z(S);
-														X[D] = m;
-														D = T(-20356);
-														X = O[e];
-														h, S, t = 255, T(-20266), 255;
-														m = R[S];
-														S = T(-20412);
-														z = m[S];
-														S = 255;
-														m = z(S, t, h);
-														X[D] = m;
-														X = O[e];
-														z, D = 7409381 < 8924953, T(-20566);
-														X[D] = z;
-														X = O[e];
-														D, t = T(-20418), T(-20383);
-														S = R[t];
-														t = T(-20418);
-														m = S[t];
-														S = T(-20414);
-														z = m[S];
-														X[D] = z;
-														X = O[e];
-														z, D = 7448675 < 2307053, T(-20367);
-														X[D] = z;
-														D = T(-20638);
-														X = O[e];
-														z = O[V[1]];
-														X[D] = z;
-														X = O[e];
-														z, D, m = 1001, T(-20277), 4;
-														X[D] = z;
-														X = O[V[2]];
-														z = O[e];
-														D = X(z, m);
-														D = O[e];
-														z = T(-20610);
-														X = D[z];
-														D = T(-20346);
-														z = B(15401668, { e, Q, u });
-														D = X[D];
-														D = D(X, z);
-														X = O[e];
-														D = { X };
-														X = R[T(-20494)];
-													else
-														d, e, b = X, S, T(-20408);
-														f = t[b];
-														X, h = f and 9356180 or 4273378, f;
-													end;
-												end;
-											else
-												if X > 2591404 then
-													if 2628562 > X then
-														l, X = N, M;
-														X = N and 8009227 or 10519463;
-													elseif 2669051 > X then
-														D, X = { N, N }, R[T(-20305)];
-													else
-														m, S = T(-20327), 11841823 > 13521937;
-														X = z[m];
-														m = T(-20396);
-														X[m] = S;
-														X = 6041685;
-													end;
-												else
-													if 2516974 > X then
-														J, X = T(-20401), nil;
-														Q = R[J];
-														J = T(-20470);
-														u = Q[J];
-														M = -u;
-														Q = T(-20476);
-														m, u = T(-20451), X;
-														X = R[Q];
-														m = l[m];
-														z = { m(l) };
-														m = { X(c(z)) };
-														X, J, Q, e = 14951712, m[2], m[1], m[3];
-													elseif 2518795 > X then
-														X = 11637112;
-													elseif 2545642 > X then
-														X = O[V[1]];
-														l, E = T(-20572), T(-20343);
-														E = X[E];
-														D = { E(X, l) };
-														D, X = { c(D) }, R[T(-20388)];
-													else
-														D, X, J = T(-20274), T(-20343), T(-20640);
-														X = E[X];
-														X = X(E, D);
-														M = X;
-														Q = R[J];
-														J = Q(M);
-														Q = T(-20397);
-														u = J == Q;
-														D, X = u, u and 1550348 or 14519066;
-													end;
-												end;
-											end;
-										end;
-									else
-										if X > 2187551 then
-											if X < 2333366 then
-												if X > 2235427 then
-													if 2257248 > X then
-														D, X = T(-20279), T(-20439);
-														X = l[X];
-														X = X(l, D);
-														E = X;
-														X = not E;
-														X = X and 12341869 or 9144439;
-													elseif 2284215 > X then
-														D = O[V[1]];
-														X = D[l];
-														E, M = X, T(-20408);
-														N = E[M];
-														D, X = N, N and 9273803 or 8706994;
-													else
-														p = T(-20263);
-														w = b[p];
-														H, X = w, w and 15710164 or 7609418;
-													end;
-												else
-													if X < 2199856 then
-														X = O[V[1]];
-														D = T(-20497);
-														D = X[D];
-														D = D(X);
-														X, D = R[T(-20407)], {};
-													elseif 2222486 > X then
-														D[l] = E;
-														X = N;
-														D = O[V[1]];
-														X = D and 13583668 or 15333964;
-													elseif X < 2234002 then
-														l = O[V[1]];
-														X, D = l and 4917797 or 10245886, l;
-													else
-														E, u = N(l, E);
-														X = E and 804148 or 2970739;
-													end;
-												end;
-											else
-												if X < 2469661 then
-													if X < 2390091 then
-														X, b = T(-20352), 1;
-														f[X] = b;
-														X = 15389950;
-													elseif 2434050 > X then
-														D = T(-20331);
-														X = R[D];
-														u = { X(E) };
-														M, D, N, X = u[3], u[1], u[2], 16286317;
-														u = D;
-													else
-														X = 3706126 < 7120041;
-														D = { X };
-														X = R[T(-20555)];
-													end;
-												else
-													if X < 2485991 then
-														X = 10862098;
-													elseif X < 2500050 then
-														X = O[V[2]];
-														D = X();
-														X = 7919465;
-													else
-														NT, MT = T(-20437), T(-20346);
-														lT = O[N];
-														ET = O[DT];
-														yT = ET[NT];
-														MT = yT[MT];
-														NT = Z(832897, { cT, DT });
-														ET = { MT(yT, NT) };
-														yT = T(-20279);
-														OT = lT(c(ET));
-														OT = O[DT];
-														lT = OT[yT];
-														X = lT and 7112043 or 2517900;
-													end;
-												end;
-											end;
-										else
-											if X < 2113086 then
-												if X > 2027625 then
-													if 2050749 > X then
-														X = 4299433;
-													elseif 2080314 > X then
-														l, D, X = nil, {}, R[T(-20633)];
-													else
-														f = O[V[6]];
-														b = T(-20575);
-														d = f == b;
-														X = d and 5474939 or 7216438;
-													end;
-												else
-													if 1934393 > X then
-														X = O[V[1]];
-														D = { X };
-														X = R[T(-20564)];
-													elseif 1966731 > X then
-														t = T(-20381);
-														S = m[t];
-														t = T(-20488);
-														X = S[t];
-														M = X;
-														X, S = 11048721, m;
-														u = S;
-													elseif 2004721 > X then
-														b, f = T(-20347), T(-20462);
-														f = t[f];
-														f = f(t, b);
-														X, h = 1333500, f;
-													else
-														X = O[V[5]];
-														e = T(-20279);
-														J = u[e];
-														Q = X(u, J);
-														X = Q and 4402182 or 16003749;
-													end;
-												end;
-											else
-												if 2161241 > X then
-													if X < 2137162 then
-														X = 5969868;
-													elseif X < 2147111 then
-														f = O[V[2]];
-														d = f[J];
-														f = T(-20263);
-														h = d[f];
-														d, X = T(-20638), 7190078;
-														t = h[d];
-														S = t;
-													elseif X < 2153523 then
-														X, E = u, M;
-														X = M and 6620940 or 8246710;
-													else
-														m = T(-20263);
-														X = z[m];
-														S, m = 16118492 <= 8127774, T(-20396);
-														X[m] = S;
-														X = 10820554;
-													end;
-												else
-													if 2169645 > X then
-														J, X, z = u, T(-20462), T(-20347);
-														X = e[X];
-														X = X(e, z);
-														X = X and 3839386 or 11377964;
-													elseif 2180233 > X then
-														M = T(-20433);
-														D = R[M];
-														M = T(-20426);
-														X = D[M];
-														D = X(E, N);
-														X = 14276767;
-													else
-														E = X;
-														M = O[V[2]];
-														N = not M;
-														X, l = N and 3089044 or 12161601, N;
-													end;
-												end;
-											end;
-										end;
-									end;
-								else
-									if 3654384 > X then
-										if X > 3399108 then
-											if 3556741 > X then
-												if X < 3502197 then
-													if X < 3414823 then
-														X, b = 8473969, T(-20263);
-														f = S[b];
-														b = T(-20638);
-														d = f[b];
-														t = d;
-													elseif 3434451 > X then
-														X, b = T(-20552), 1;
-														f[X] = b;
-														X, b = T(-20550), 5578727 > 12881650;
-														f[X] = b;
-														X = 1903843;
-													elseif X < 3468841 then
-														D = T(-20364);
-														l = j(3197294, { N });
-														X = R[D];
-														D = X(l);
-														l = D;
-														X = l and 4101218 or 11927835;
-													else
-														iT = T(-20541);
-														VT = R[iT];
-														iT, X = T(-20442), 6763389;
-														CT = VT[iT];
-														iT = A(14729929, { cT, V[6] });
-														VT = CT(iT);
-													end;
-												else
-													if 3511302 > X then
-														X = J and 14873098 or 13540772;
-													elseif 3515329 > X then
-														D = T(-20639);
-														X = R[D];
-														M = T(-20619);
-														N = O[V[1]];
-														E = N[M];
-														D = X(E);
-														E = D;
-														X = E and 14473054 or 9274517;
-													else
-														e = T(-20266);
-														J = R[e];
-														e, m, X, z = T(-20412), 90, 2149937, 150;
-														Q = J[e];
-														e = 0;
-														J = Q(e, z, m);
-														M = J;
-													end;
-												end;
-											else
-												if X > 3618468 then
-													if 3635748 > X then
-														t, D = T(-20308), T(-20462);
-														D = S[D];
-														D = D(S, t);
-														X = D and 13343687 or 15802209;
-													elseif X < 3638179 then
-														X = O[V[9]];
-														S = X(J);
-														X = O[V[10]];
-														t = X(S);
-														X = O[V[11]];
-														b = { X(e) };
-														h, f = b[1], b[3];
-														X, d = h and 914948 or 14302904, b[2];
-														b = h;
-													else
-														X, u = 14640451, not N;
-														D = u;
-													end;
-												else
-													if X < 3597542 then
-														N, X = not l, 7792057;
-														D = N;
-													elseif X < 3601640 then
-														l = T(-20572);
-														D = O[V[1]];
-														X = D[l];
-														D = { X };
-														X = R[T(-20335)];
-													else
-														D, X = {}, R[T(-20393)];
-													end;
-												end;
-											end;
-										else
-											if X > 3286176 then
-												if X < 3367704 then
-													if X < 3305657 then
-														X, v = 5556524, T(-20263);
-														P = b[v];
-														v = T(-20638);
-														p = P[v];
-														w = not p;
-														H = w;
-													elseif 3334940 > X then
-														e, M = not J, M + Q;
-														D = u >= M;
-														D = e and D;
-														e = u <= M;
-														e = J and e;
-														D = e or D;
-														e = 11990807;
-														X = D and e;
-														D = 11956861;
-														X = X or D;
-													else
-														E, l, N = C[2], C[1], T(-20387);
-														D = R[N];
-														u, N = T(-20601), T(-20544);
-														X = D[N];
-														N = T(-20594);
-														D = X(N);
-														M = R[u];
-														X, u, N, e = T(-20264), T(-20544), D, 6;
-														Q, J = E or e, X;
-														D = M[u];
-														E, u = nil, 0;
-														M = D(u, Q);
-														N[X] = M;
-														D, X, M = T(-20638), R[T(-20275)], l;
-														N[D] = M;
-														l, D, N = nil, {}, nil;
-													end;
-												else
-													if X < 3381149 then
-														e = T(-20279);
-														J = u[e];
-														X, D = 13726653, J;
-													elseif 3388247 > X then
-														d, X = T(-20327), 16660016;
-														h = u[d];
-														d = T(-20638);
-														t = h[d];
-														z = t;
-													else
-														J, e, Q = 45, 55, T(-20266);
-														u = R[Q];
-														X, Q = 12723386, T(-20412);
-														M = u[Q];
-														Q = 45;
-														u = M(Q, J, e);
-														E = u;
-													end;
-												end;
-											else
-												if X > 3194266 then
-													if X < 3233680 then
-														l = T(-20387);
-														D = R[l];
-														l = T(-20544);
-														X = D[l];
-														l = T(-20341);
-														D = X(l);
-														l = D;
-														D = O[V[1]];
-														X = T(-20638);
-														l[X] = D;
-														X = T(-20497);
-														X = l[X];
-														X = X(l);
-														D, l, X = {}, nil, R[T(-20285)];
-													elseif 3272456 > X then
-														e = T(-20482);
-														J = R[e];
-														e = J(u);
-														D = T(-20480);
-														X = D .. e;
-														D = { X };
-														X = R[T(-20529)];
-													else
-														S = O[V[2]];
-														X = S[J];
-														X = X and 11540906 or 12222202;
-													end;
-												else
-													if X < 3150190 then
-														D, X = {}, R[T(-20646)];
-													elseif 3186577 > X then
-														X = z and 11829598 or 16602761;
-													elseif X < 3190669 then
-														l, D, X = nil, {}, R[T(-20468)];
-													else
-														h, H = X, T(-20381);
-														b = m[H];
-														H = T(-20488);
-														f = b[H];
-														d = f > M;
-														t, X = d, d and 5501531 or 10683254;
-													end;
-												end;
-											end;
-										end;
-									else
-										if X > 3920900 then
-											if X > 4119524 then
-												if 4191444 > X then
-													if 4147380 > X then
-														J, m = e(Q, J);
-														X = J and 16650939 or 243170;
-													elseif 4164888 > X then
-														X = O[V[1]];
-														E = O[V[2]];
-														N = T(-20619);
-														l = E[N];
-														D = X(l);
-														X = D and 15762734 or 1155241;
-													else
-														b = T(-20274);
-														f = t[b];
-														b = 0;
-														d = f > b;
-														h, X = d, 10901833;
-													end;
-												else
-													if 4241709 > X then
-														t = T(-20273);
-														S = z[t];
-														X, m = S and 8156079 or 6295312, S;
-													elseif 4282355 > X then
-														X = d;
-														X = h and 5658961 or 13383021;
-													else
-														e, m = X, T(-20279);
-														z = u[m];
-														J, X = z, z and 1214597 or 1918303;
-													end;
-												end;
-											else
-												if X < 4021142 then
-													if 3954829 > X then
-														X = 8257476;
-													elseif 3973015 > X then
-														X, w = 15731938, not m;
-														H = w;
-													elseif X < 3980224 then
-														X = nil;
-														D = { X };
-														X = R[T(-20486)];
-													else
-														M, E = 1000, T(-20541);
-														D = R[E];
-														E = T(-20379);
-														X = D[E];
-														N = O[V[5]];
-														E = N / M;
-														D = X(E);
-														X = 8155147;
-													end;
-												else
-													if X < 4062653 then
-														E = T(-20619);
-														D = O[V[6]];
-														N = T(-20295);
-														D[E] = N;
-														E, N = T(-20619), T(-20370);
-														D = O[V[2]];
-														D[E] = N;
-														X = 12009543;
-													elseif 4082974 > X then
-														X = T(-20497);
-														X = J[X];
-														X = X(J);
-														X = 5877426;
-													else
-														X = O[N];
-														D = { X };
-														X = R[T(-20495)];
-													end;
-												end;
-											end;
-										else
-											if X < 3815255 then
-												if X < 3763109 then
-													if 3689472 > X then
-														m, X, M, e = z, 2130039, nil, nil;
-														N, z = m, nil;
-													elseif 3723479 > X then
-														u, e = Q(M, u);
-														X = u and 2165373 or 4845421;
-													elseif X < 3744601 then
-														m, S = e(z, m);
-														X = m and 1717959 or 9555930;
-													else
-														l, D = C[1], T(-20279);
-														X = l[D];
-														X = X and 5551875 or 15032461;
-													end;
-												else
-													if 3785103 > X then
-														X = D and 3443941 or 5096835;
-													elseif 3802256 > X then
-														X = 11005434 >= 7348325;
-														D = { X };
-														X = R[T(-20318)];
-													else
-														D, l, E, X = {}, nil, nil, R[T(-20377)];
-													end;
-												end;
-											else
-												if X < 3839716 then
-													if X < 3826224 then
-														X = O[V[1]];
-														D = { X };
-														X = R[T(-20580)];
-													elseif 3835299 > X then
-														X = O[V[1]];
-														l = O[V[2]];
-														D = X(l);
-														O[V[3]] = D;
-														N = X;
-														M = O[V[3]];
-														E, X = M, M and 6899847 or 13005777;
-													else
-														z = T(-20432);
-														X = e[z];
-														t, z = T(-20403), T(-20457);
-														z = X[z];
-														z = z(X);
-														S = z == t;
-														m, X = S, S and 11342829 or 13882719;
-													end;
-												else
-													if X < 3852350 then
-														z, X = T(-20408), 11020566;
-														e = u[z];
-														z = T(-20638);
-														J = e[z];
-														D = J;
-													elseif X < 3882042 then
-														D, u = T(-20262), T(-20482);
-														M = R[u];
-														u = M(E);
-														X = D .. u;
-														D = { X };
-														X = R[T(-20542)];
-													else
-														h, f = S(t, h);
-														X = h and 16488472 or 3274847;
-													end;
-												end;
-											end;
-										end;
-									end;
-								end;
-							else
-								if X < 1129579 then
-									if X < 663633 then
-										if 451804 > X then
-											if X > 237079 then
-												if 388065 > X then
-													if X < 290773 then
-														X, D = R[T(-20475)], { E };
-													elseif 346545 > X then
-														X, E = 15230964, nil;
-													elseif X < 370118 then
-														e, X, z = nil, 6393182, nil;
-													else
-														D = T(-20364);
-														X = R[D];
-														E = B(11923467, {});
-														N = { X(E) };
-														D, l = N[1], N[2];
-														N = y();
-														E = D;
-														O[N] = l;
-														D, X = E, E and 624570 or 3774968;
-													end;
-												else
-													if 400718 > X then
-														N = O[V[2]];
-														X, D = N and 865399 or 16353168, N;
-													elseif X < 414435 then
-														X = h and 16208575 or 7591400;
-													else
-														X = D and 592081 or 16222302;
-													end;
-												end;
-											else
-												if X < 191755 then
-													if 114205 > X then
-														X = D and 3864654 or 1864320;
-													elseif X < 135676 then
-														d = T(-20263);
-														h = t[d];
-														d = T(-20497);
-														d = h[d];
-														d = d(h);
-														X = 9759850;
-													elseif 168476 > X then
-														X = 12222202;
-													else
-														h, d = T(-20266), 150;
-														t = R[h];
-														X, h = 12790057, T(-20412);
-														S = t[h];
-														h, f = 0, 90;
-														t = S(h, d, f);
-														z = t;
-													end;
-												else
-													if 207361 > X then
-														X = nil;
-														D = { X };
-														X = R[T(-20446)];
-													elseif X < 224690 then
-														M, X, u = nil, 1492555, nil;
-													else
-														X = 11788490;
-													end;
-												end;
-											end;
-										else
-											if X > 589612 then
-												if X > 642141 then
-													if X < 646696 then
-														E = O[V[2]];
-														X, l = 11302830, not E;
-														D = l;
-													elseif X < 656314 then
-														X, w, H, p = 13828094, nil, nil, nil;
-													else
-														u, e, z = N, T(-20462), T(-20347);
-														e = Q[e];
-														e = e(Q, z);
-														J, X = e, e and 7949205 or 3510654;
-													end;
-												else
-													if 608325 > X then
-														D = T(-20325);
-														X = E[D];
-														u, M = T(-20311), X;
-														D = M[u];
-														u = .01;
-														X = D > u;
-														X = X and 9301633 or 9868567;
-													elseif 633267 > X then
-														l = O[N];
-														X, D = 3774968, l;
-													else
-														X, D = 7068949, {};
-														O[V[3]] = D;
-													end;
-												end;
-											else
-												if 579654 > X then
-													if X < 503752 then
-														m = T(-20273);
-														X = z[m];
-														m, S = T(-20499), 4353108 > 12957320;
-														X[m] = S;
-														X = 12353026;
-													elseif X < 539884 then
-														X, e = T(-20505), J;
-														Q[X] = e;
-														X = 5260812;
-													elseif X < 567272 then
-														m, X = T(-20505), 1903929;
-														D = z[m];
-														M[z] = D;
-													else
-														D, X = {}, R[T(-20460)];
-													end;
-												else
-													if 583510 > X then
-														S = T(-20387);
-														m = R[S];
-														S = T(-20544);
-														X = m[S];
-														S = T(-20571);
-														m = X(S);
-														z, X, S, d = m, T(-20624), e, T(-20383);
-														z[X] = S;
-														X = T(-20417);
-														S = O[V[6]];
-														z[X] = S;
-														S = O[V[6]];
-														X = T(-20344);
-														z[X] = S;
-														S, X = .6, T(-20604);
-														z[X] = S;
-														X, S = T(-20322), 0;
-														z[X] = S;
-														h = R[d];
-														d = T(-20340);
-														t = h[d];
-														h = T(-20627);
-														S = t[h];
-														X = T(-20287);
-														z[X] = S;
-														S, X = e, T(-20638);
-														z[X] = S;
-														X = 2711358;
-													elseif 585785 > X then
-														l = C[1];
-														X = not l;
-														X = X and 11229839 or 12785654;
-													else
-														z, t = X, T(-20327);
-														S = u[t];
-														e, X = S, S and 14062458 or 7326991;
-													end;
-												end;
-											end;
-										end;
-									else
-										if 923386 > X then
-											if X > 818522 then
-												if 888482 > X then
-													if 849148 > X then
-														l = C[1];
-														X = O[V[1]];
-														E = O[V[2]];
-														D = X(l, E);
-														X, l, D = R[T(-20350)], nil, {};
-													elseif X < 869935 then
-														M = O[V[3]];
-														u = M(E, l);
-														X, N = 16353168, not u;
-														D = N;
-													else
-														w = O[V[13]];
-														H, X = w, w and 3967289 or 15731938;
-													end;
-												else
-													if 907519 > X then
-														F = T(-20524);
-														v = b[F];
-														F, X = 0, 14385909;
-														P = v > F;
-														w = P;
-													elseif 913747 > X then
-														m = T(-20505);
-														D = z[m];
-														X = 6216020;
-														M[z] = D;
-													else
-														X, b = 14302904, d;
-													end;
-												end;
-											else
-												if X > 764401 then
-													if X < 765869 then
-														X = O[V[1]];
-														E, l = T(-20343), T(-20281);
-														E = X[E];
-														D = { E(X, l) };
-														D, X = { c(D) }, R[T(-20576)];
-													elseif 785628 > X then
-														l = C[1];
-														X = O[V[1]];
-														E = O[V[2]];
-														D = X(l, E);
-														l, X, D = nil, R[T(-20445)], {};
-													else
-														X = O[V[3]];
-														Q = X(u);
-														X, u, M = 2234192, nil, E;
-														M = nil;
-													end;
-												else
-													if 676962 > X then
-														X = D and 2496713 or 7123843;
-													elseif X < 690326 then
-														d = O[V[6]];
-														X, f = nil, T(-20328);
-														h = X;
-														X = d == f;
-														X = X and 9833469 or 2096133;
-													elseif X < 728307 then
-														X = b and 874472 or 13828094;
-													else
-														D = T(-20492);
-														X = E[D];
-														N = X;
-														X = 15635070;
-													end;
-												end;
-											end;
-										else
-											if X < 1049804 then
-												if X < 983474 then
-													if 942372 > X then
-														X = Q;
-														X = D and 9677187 or 14848657;
-													elseif 964197 > X then
-														D, X = {}, R[T(-20623)];
-													elseif 978512 > X then
-														t, X = nil, 1897766;
-													else
-														D = T(-20331);
-														X = R[D];
-														u = { X(E) };
-														D, N, M = u[1], u[2], u[3];
-														u, X = D, 15008667;
-													end;
-												else
-													if 991021 > X then
-														X = D and 8747774 or 13163785;
-													elseif X < 1015590 then
-														D = T(-20327);
-														X = E[D];
-														D = T(-20497);
-														D = X[D];
-														D = D(X);
-														X = 12305808;
-													else
-														X = d;
-														X = h and 12373468 or 12827417;
-													end;
-												end;
-											else
-												if X < 1085648 then
-													if X < 1069104 then
-														M, u, X = nil, nil, 9201807;
-													elseif X < 1075576 then
-														h = T(-20524);
-														t = Q[h];
-														h = 0;
-														S = t < h;
-														e, X = S, 8399383;
-													else
-														X = l;
-														O[V[1]] = X;
-														D = O[V[2]];
-														X = D and 15873151 or 10862098;
-													end;
-												else
-													if X < 1104137 then
-														h, Q, f, d, b = T(-20319), T(-20476), T(-20448), T(-20575), T(-20463);
-														u = R[Q];
-														t = T(-20328);
-														S, X = {
-																t,
-																h,
-																d,
-																f,
-																b,
-															}, 13619384;
-														t = { u(S) };
-														J, Q, e = t[2], t[1], t[3];
-													elseif 1117759 > X then
-														X = l;
-														O[V[1]] = X;
-														X = 2064496;
-													else
-														D, X, l = {}, R[T(-20473)], nil;
-													end;
-												end;
-											end;
-										end;
-									end;
-								else
-									if X > 1634414 then
-										if X < 1748300 then
-											if X < 1698656 then
-												if 1667372 > X then
-													if 1650658 > X then
-														D, X = { N, e }, R[T(-20592)];
-													elseif X < 1660719 then
-														S, X, J = nil, 3737952, nil;
-													elseif X < 1665254 then
-														t, S = 4411773 > 2031698, T(-20327);
-														z = u[S];
-														X, S = 15783536, T(-20396);
-														z[S] = t;
-													else
-														N, D = T(-20466), T(-20364);
-														X = R[D];
-														E = R[N];
-														N = { X(E) };
-														D = N[1];
-														E = D;
-														X, l, D = E and 6618361 or 14752440, N[2], E;
-													end;
-												else
-													if X < 1681680 then
-														D = O[V[2]];
-														X = D[l];
-														X = X and 16575384 or 13132962;
-													elseif X < 1695197 then
-														X, u, M = 16005222, nil, nil;
-													else
-														X = p and 12814992 or 7290648;
-													end;
-												end;
-											else
-												if X < 1708715 then
-													if X < 1701634 then
-														l = y();
-														O[l] = C[1];
-														D = O[l];
-														X = not D;
-														X = X and 16559331 or 9021875;
-													elseif X < 1702955 then
-														D = O[V[1]];
-														X = not D;
-														J, u, l, z, N = X, X, T(-20619), T(-20618), T(-20553);
-														O[V[1]] = X;
-														D = O[V[2]];
-														e = O[V[1]];
-														Q, J = e and z, T(-20609);
-														M = Q or J;
-														E = N .. M;
-														u = X;
-														D[l] = E;
-														N = X;
-														D = O[V[2]];
-														l = T(-20282);
-														Q = O[V[1]];
-														M, X = Q, Q and 3518709 or 2149937;
-													else
-														D = T(-20458);
-														X = O[V[1]];
-														D = X[D];
-														D = D(X);
-														X, D = R[T(-20647)], {};
-													end;
-												else
-													if 1715894 > X then
-														D, X = N, M;
-														X = N and 7213786 or 1903114;
-													elseif 1722646 > X then
-														h, f, J = X, T(-20263), m;
-														d = S[f];
-														t, X = d, d and 3404685 or 8473969;
-													else
-														D, X = { E }, R[T(-20324)];
-													end;
-												end;
-											end;
-										else
-											if 1900440 > X then
-												if X > 1856372 then
-													if 1880481 > X then
-														D = O[l];
-														M = T(-20279);
-														X = D[M];
-														M = y();
-														O[M] = X;
-														X = O[M];
-														X = X and 1208618 or 5218478;
-													elseif 1897204 > X then
-														e, Q = T(-20387), T(-20512);
-														X = R[Q];
-														Q = X();
-														J = R[e];
-														e = T(-20544);
-														X = J[e];
-														e = T(-20571);
-														J = X(e);
-														X = T(-20624);
-														e = N;
-														J[X] = e;
-														X, S = T(-20417), T(-20383);
-														e = O[V[5]];
-														J[X] = e;
-														e = O[V[5]];
-														X = T(-20344);
-														J[X] = e;
-														X, e = T(-20604), .5;
-														J[X] = e;
-														X, e = T(-20322), 0;
-														J[X] = e;
-														X = T(-20287);
-														m = R[S];
-														S = T(-20340);
-														z = m[S];
-														m = T(-20627);
-														e = z[m];
-														S = 15237830 > 11989848;
-														J[X] = e;
-														X, m, e = T(-20638), T(-20449), N;
-														J[X] = e;
-														z = T(-20439);
-														z = M[z];
-														z = z(M, m, S);
-														e, X = z, z and 4385849 or 16116921;
-													else
-														S, X = nil, 5687787;
-													end;
-												else
-													if X < 1787177 then
-														D, X = {}, R[T(-20528)];
-													elseif X < 1821076 then
-														e = X;
-														X, J = u and 9659783 or 13949438, u;
-													elseif X < 1842745 then
-														X = 12584071;
-													else
-														Q, e = X, T(-20263);
-														J = u[e];
-														X, D = J and 4500553 or 931825, J;
-													end;
-												end;
-											else
-												if X > 1911116 then
-													if 1918899 > X then
-														X, D = e, J;
-														X = 12615096;
-													elseif 1920037 > X then
-														X = 4300419 > 2414592;
-														O[V[3]] = X;
-														X = 15956775;
-													else
-														X, D, l = R[T(-20413)], {}, nil;
-													end;
-												else
-													if 1903478 > X then
-														N, M = T(-20439), T(-20535);
-														N = l[N];
-														N = N(l, M);
-														D, X = N, 7213786;
-													elseif X < 1903886 then
-														b, X = T(-20308), T(-20462);
-														X = f[X];
-														X = X(f, b);
-														X = X and 2376136 or 15389950;
-													else
-														m, D = N, T(-20505);
-														z[D] = m;
-														D, m = T(-20550), 15303885 < 4824561;
-														z[D] = m;
-														m, d, D, X = 5706236 >= 502613, T(-20517), T(-20394), 13374581;
-														z[D] = m;
-														m = T(-20476);
-														D = R[m];
-														d = z[d];
-														h = { d(z) };
-														d = { D(c(h)) };
-														m, t, S = d[1], d[3], d[2];
-													end;
-												end;
-											end;
-										end;
-									else
-										if X < 1429616 then
-											if 1211607 > X then
-												if X > 1162347 then
-													if X < 1173213 then
-														H = O[V[12]];
-														w = H(J);
-														X, b = 692441, w;
-													elseif X < 1195914 then
-														h, S = 75, T(-20266);
-														m = R[S];
-														S = T(-20412);
-														z = m[S];
-														t, S = 60, 60;
-														m = z(S, t, h);
-														X, J = 13886465, m;
-													else
-														D = T(-20364);
-														X = R[D];
-														Q = j(764629, { M });
-														J = { X(Q) };
-														u, D = J[2], J[1];
-														Q = D;
-														D, X = Q, Q and 1805086 or 7050970;
-													end;
-												else
-													if X < 1146938 then
-														E, l = T(-20433), C[1];
-														D = R[E];
-														E = T(-20426);
-														X = D[E];
-														E = O[V[1]];
-														D = X(E, l);
-														D, X = { l }, R[T(-20288)];
-													elseif 1156009 > X then
-														E, l = T(-20295), T(-20619);
-														D = O[V[6]];
-														D[l] = E;
-														D = O[V[2]];
-														X, E, l = 9442837, T(-20370), T(-20619);
-														D[l] = E;
-													elseif 1159127 > X then
-														X, Th = 13229275, f;
-													else
-														X = t;
-														X, m = 7199436, S;
-													end;
-												end;
-											else
-												if X > 1326946 then
-													if X < 1348400 then
-														X = d;
-														X = h and 8823115 or 16220934;
-													elseif X < 1392818 then
-														u, Q, X = nil, nil, 2976989;
-													else
-														X, xh, H = 13891946 < 2396965, T(-20271), 255;
-														E = y();
-														l = y();
-														O[l] = X;
-														N = y();
-														u, X = T(-20359), {};
-														O[E] = X;
-														t, Ch = 28, nil;
-														K = y();
-														X = B(1138635, { E });
-														M = T(-20387);
-														O[N] = X;
-														D = R[M];
-														M = T(-20544);
-														X = D[M];
-														z, M = 320, T(-20653);
-														D = X(M);
-														M = y();
-														Lh = .05;
-														O[M] = D;
-														D = T(-20432);
-														X = O[M];
-														X[D] = u;
-														D, u = T(-20349), 15566104 <= 10207363;
-														X = O[M];
-														X[D] = u;
-														v = y();
-														u = 2147483647;
-														X = O[M];
-														yh = y();
-														D, e = T(-20307), T(-20383);
-														X[D] = u;
-														D = T(-20390);
-														X = O[M];
-														u, S = 13353842 >= 7883945, 600;
-														X[D] = u;
-														D = T(-20420);
-														X = O[M];
-														J = R[e];
-														e = T(-20420);
-														Q = J[e];
-														J = T(-20399);
-														u = Q[J];
-														X[D] = u;
-														X = O[M];
-														u = O[V[2]];
-														D, m = T(-20638), 0;
-														X[D] = u;
-														e, u = T(-20406), T(-20387);
-														D = R[u];
-														bh, u, mh = 55, T(-20544), 45;
-														X = D[u];
-														u, gh = T(-20415), 152;
-														D = X(u);
-														u = y();
-														O[u] = D;
-														X = O[u];
-														J = R[e];
-														D, e = T(-20505), T(-20544);
-														Q = J[e];
-														e, P = 0, T(-20541);
-														J = Q(e, z, m, S);
-														X[D] = J;
-														e, D = T(-20406), T(-20381);
-														kh = y();
-														S = -300;
-														X = O[u];
-														J = R[e];
-														e = T(-20544);
-														Q = J[e];
-														z, e, m = -160, .5, .4;
-														J = Q(e, z, m, S);
-														m = 26;
-														X[D] = J;
-														X = O[u];
-														D = T(-20282);
-														lh = y();
-														e = T(-20266);
-														J = R[e];
-														e, z = T(-20412), 22;
-														Q = J[e];
-														e = 22;
-														J = Q(e, z, m);
-														X[D] = J;
-														S, m = 100, 80;
-														X = O[u];
-														D, Q = T(-20591), .1;
-														X[D] = Q;
-														D = T(-20481);
-														X = O[u];
-														Q = 0;
-														X[D] = Q;
-														D, J, ph = T(-20523), 6, .05;
-														X = O[u];
-														Q = 1991848 <= 13336870;
-														X[D] = Q;
-														Q = 15724225 >= 1100445;
-														X = O[u];
-														D = T(-20577);
-														X[D] = Q;
-														D = T(-20638);
-														Vh = y();
-														X = O[u];
-														iT = T(-20346);
-														Q = O[M];
-														X[D] = Q;
-														D, Q = T(-20277), 1000;
-														X = O[u];
-														X[D] = Q;
-														X = O[V[3]];
-														OT = T(-20410);
-														Q = O[u];
-														F = y();
-														D = X(Q, J);
-														X = O[V[4]];
-														Q = O[u];
-														z = T(-20266);
-														e = R[z];
-														z = T(-20412);
-														J = e[z];
-														DT, z = T(-20346), 80;
-														e = J(z, m, S);
-														z, Mh, J = -60, .9, 1;
-														D = X(Q, e, J);
-														b, Q = T(-20266), T(-20387);
-														D = R[Q];
-														Q = T(-20544);
-														X = D[Q];
-														e, m, Q = T(-20406), 0, T(-20289);
-														D = X(Q);
-														X = T(-20505);
-														J = R[e];
-														d = y();
-														Q, e = D, T(-20544);
-														D = J[e];
-														S, e = 28, 1;
-														J = D(e, z, m, S);
-														Q[X] = J;
-														Jh = T(-20266);
-														I = y();
-														e, X = T(-20266), T(-20282);
-														J = R[e];
-														m, e = 50, T(-20412);
-														D = J[e];
-														e, z = 40, 40;
-														J = D(e, z, m);
-														Q[X] = J;
-														X, D = T(-20591), .2;
-														Q[X] = D;
-														X, D, fh = T(-20481), 0, 45;
-														W = y();
-														Q[X] = D;
-														G = y();
-														m, D, e, X = 255, T(-20361), T(-20266), T(-20619);
-														Q[X] = D;
-														z, X = 255, T(-20356);
-														J = R[e];
-														e = T(-20412);
-														D = J[e];
-														kT, S, e, Ih = T(-20346), 0, 255, 75;
-														J = D(e, z, m);
-														Q[X] = J;
-														X, D = T(-20566), 7761330 <= 13563149;
-														ih = y();
-														z = T(-20383);
-														Q[X] = D;
-														X = T(-20418);
-														e = R[z];
-														z = T(-20418);
-														J = e[z];
-														e = T(-20317);
-														D = J[e];
-														J = 6;
-														Q[X] = D;
-														X = T(-20638);
-														D = O[u];
-														jh = 45;
-														Q[X] = D;
-														D, X = 1001, T(-20277);
-														Q[X] = D;
-														X = O[V[3]];
-														D = X(Q, J);
-														J = T(-20387);
-														D = R[J];
-														J = T(-20544);
-														X = D[J];
-														Ph, J, z, m = 418, T(-20332), T(-20406), 28;
-														D = X(J);
-														J, X = D, T(-20505);
-														e = R[z];
-														z = T(-20544);
-														D = e[z];
-														z = 0;
-														e = D(z, m, S, t);
-														z, Ah = T(-20406), 55;
-														J[X] = e;
-														X = T(-20381);
-														e = R[z];
-														z, S = T(-20544), 0;
-														D = e[z];
-														m, Hh, z, t = -60, 45, 1, 0;
-														e = D(z, m, S, t);
-														z, Rh = T(-20266), nil;
-														J[X] = e;
-														X = T(-20282);
-														e = R[z];
-														z, S = T(-20412), 75;
-														qh = y();
-														m = 60;
-														D = e[z];
-														z = 60;
-														e = D(z, m, S);
-														D, w = 0, 255;
-														J[X] = e;
-														Yh, S, X = 45, 255, T(-20481);
-														J[X] = D;
-														m, X, z, D = 255, T(-20619), T(-20266), T(-20518);
-														J[X] = D;
-														X = T(-20356);
-														e = R[z];
-														z = T(-20412);
-														D = e[z];
-														z = 255;
-														e = D(z, m, S);
-														D = 4857754 < 13498355;
-														J[X] = e;
-														X = T(-20566);
-														J[X] = D;
-														X, m, S = T(-20418), T(-20383), 28;
-														z = R[m];
-														m = T(-20418);
-														e = z[m];
-														z = T(-20317);
-														n = y();
-														D = e[z];
-														J[X] = D;
-														X = T(-20638);
-														D = O[u];
-														J[X] = D;
-														D, t, X = 1002, 0, T(-20277);
-														J[X] = D;
-														e = 4;
-														X = O[V[3]];
-														D = X(J, e);
-														e = T(-20387);
-														D = R[e];
-														e = T(-20544);
-														Dh = y();
-														X = D[e];
-														e, h, Oh = T(-20332), 28, 34;
-														D = X(e);
-														m, ah, e, X, wh = T(-20406), 75, D, T(-20505), 55;
-														z = R[m];
-														Nh, m = 52, T(-20544);
-														D = z[m];
-														m = 0;
-														z = D(m, S, t, h);
-														e[X] = z;
-														Eh, S, m, h, t, X = .05, -30, T(-20406), 0, 0, T(-20381);
-														z = R[m];
-														m = T(-20544);
-														D = z[m];
-														m = 1;
-														z = D(m, S, t, h);
-														oh = T(-20266);
-														e[X] = z;
-														m = T(-20266);
-														z = R[m];
-														t, X, m = 50, T(-20282), T(-20412);
-														D = z[m];
-														m, S = 180, 50;
-														z = D(m, S, t);
-														vh, D, m = .9, 0, T(-20266);
-														e[X] = z;
-														X, rh = T(-20481), 55;
-														e[X] = D;
-														D = T(-20546);
-														h = y();
-														X = T(-20619);
-														e[X] = D;
-														S = 255;
-														z = R[m];
-														X, m = T(-20356), T(-20412);
-														D = z[m];
-														t, m = 255, 255;
-														z = D(m, S, t);
-														e[X] = z;
-														S, X = T(-20383), T(-20566);
-														Th = y();
-														D = 10591090 > 3442410;
-														e[X] = D;
-														X = T(-20418);
-														m = R[S];
-														S = T(-20418);
-														z = m[S];
-														m = T(-20317);
-														D = z[m];
-														e[X] = D;
-														X = T(-20638);
-														D = O[u];
-														z = 4;
-														e[X] = D;
-														D, X = 1002, T(-20277);
-														e[X] = D;
-														X = O[V[3]];
-														D = X(e, z);
-														X = Z(8638644, { u });
-														z = X;
-														X = s(7257203, { u, V[3] });
-														m = X;
-														X = q(9336150, { u, V[3] });
-														S, Kh = X, 60;
-														Xh = y();
-														ch = y();
-														X = s(2777934, { u, V[3] });
-														t, r = X, nil;
-														X = x(1700958, {});
-														O[h] = X;
-														X = L(12487452, { V[5] });
-														O[d] = X;
-														X = nil;
-														f = R[b];
-														b = T(-20412);
-														D = f[b];
-														Y = y();
-														b = 255;
-														f = D(b, H, w);
-														H = y();
-														b = y();
-														O[b] = X;
-														O[H] = f;
-														f = y();
-														X = B(3831213, {
-																h,
-																V[6],
-																b,
-																d,
-																H,
-															});
-														O[f] = X;
-														X = O[f];
-														Sh = 55;
-														D = X();
-														X = O[N];
-														p = R[P];
-														P = T(-20442);
-														w = p[P];
-														P = j(11430038, { l, f });
-														p = { w(P) };
-														D = X(c(p));
-														X = x(16697042, { b, h });
-														w = y();
-														nh, P = T(-20266), nil;
-														p = y();
-														O[w] = X;
-														Zh = y();
-														X = a(10603507, {});
-														O[p] = X;
-														th, D, X = T(-20266), nil, nil;
-														O[v] = X;
-														X = nil;
-														O[F] = D;
-														D = nil;
-														O[G] = X;
-														X = nil;
-														O[W] = X;
-														X = nil;
-														O[Y] = X;
-														X = nil;
-														O[K] = X;
-														X = nil;
-														O[I] = D;
-														O[n] = X;
-														X, D = nil, nil;
-														O[Th] = X;
-														O[Xh] = D;
-														D, X = nil, nil;
-														O[ch] = Rh;
-														Rh = nil;
-														O[Vh] = X;
-														O[ih] = D;
-														O[kh] = Rh;
-														D, Qh, X = nil, .9, nil;
-														Rh = y();
-														O[Rh] = Ch;
-														Ch = y();
-														O[Ch] = X;
-														O[Dh] = D;
-														D = T(-20309);
-														X = z(D, Oh);
-														Oh = y();
-														X = 2466036 >= 16513509;
-														O[Oh] = X;
-														X = 16468006 <= 16021390;
-														O[lh] = X;
-														X, D = {}, T(-20595);
-														O[yh] = X;
-														uh = R[oh];
-														oh = T(-20412);
-														Bh = uh[oh];
-														oh = 45;
-														uh = Bh(oh, jh, Ah);
-														Bh = A(9390519, {
-																Oh,
-																v,
-																V[7],
-																V[6],
-																p,
-																Th,
-																Xh,
-															});
-														X = m(D, Eh, Nh, Mh, uh, Bh);
-														Nh, Eh, Ah, jh, Mh = .05, T(-20389), 60, T(-20266), 80;
-														O[v] = X;
-														oh = R[jh];
-														jh, Bh = T(-20412), .9;
-														uh = oh[jh];
-														jh = 60;
-														oh = uh(jh, Ah, ah);
-														Uh = T(-20346);
-														uh = B(6242779, {
-																lh,
-																F,
-																Oh,
-																V[7],
-																V[6],
-																p,
-																Xh,
-																Th,
-															});
-														D = m(Eh, Nh, Mh, Bh, oh, uh);
-														ah, Mh = T(-20425), .05;
-														jh = L(10084633, {
-																V[8],
-																Oh,
-																V[7],
-																V[6],
-																p,
-																Th,
-															});
-														uh = .5;
-														O[F] = D;
-														Bh = 108;
-														oh = O[V[8]];
-														Nh = T(-20430);
-														Eh = t(Nh, Mh, Bh, uh, oh, jh);
-														Mh = a(7911018, {
-																Oh,
-																lh,
-																w,
-																p,
-																V[8],
-																yh,
-																ch,
-															});
-														Bh = x(9741597, { yh });
-														Nh = g(16026682, {});
-														P = Eh;
-														O[ch] = Nh;
-														O[Th] = Mh;
-														O[Xh] = Bh;
-														uh = O[N];
-														Ah = O[V[7]];
-														jh = Ah[ah];
-														Uh = jh[Uh];
-														ah = L(3751251, { Xh });
-														Ah = { Uh(jh, ah) };
-														oh = uh(c(Ah));
-														uh = O[N];
-														ah = T(-20541);
-														Ah = R[ah];
-														sh = y();
-														ah = T(-20442);
-														jh = Ah[ah];
-														ah = B(7272039, {
-																l,
-																Oh,
-																V[7],
-																V[6],
-																p,
-																Xh,
-																Th,
-															});
-														Ah = { jh(ah) };
-														oh = uh(c(Ah));
-														jh, oh = 134, T(-20642);
-														uh = z(oh, jh);
-														uh = 7099685 >= 15417003;
-														oh = y();
-														jh = y();
-														O[oh] = uh;
-														uh = 1961780 ~= 491446;
-														Ah = y();
-														ah = y();
-														O[jh] = uh;
-														uh = 6941993 <= 16442526;
-														Uh = y();
-														O[Ah] = uh;
-														uh = 16663846 >= 13281479;
-														O[ah] = uh;
-														uh = 13294865 >= 1354948;
-														O[Uh] = uh;
-														uh = 4027237 >= 2690976;
-														O[Zh] = uh;
-														uh = 3115136 > 8373205;
-														O[sh] = uh;
-														uh = {};
-														O[qh] = uh;
-														eh = R[Jh];
-														Jh = T(-20412);
-														zh = eh[Jh];
-														Jh = 45;
-														eh = zh(Jh, mh, Sh);
-														zh = A(8851048, {
-																oh,
-																G,
-																qh,
-																Vh,
-															});
-														uh = m(xh, Lh, gh, Qh, eh, zh);
-														O[G] = uh;
-														Qh, Lh, gh = 180, T(-20351), .05;
-														zh = j(1623867, { jh });
-														eh = Z(14394424, { jh });
-														xh = S(Lh, gh, Qh, zh, eh);
-														eh = g(8558310, { Ah });
-														Qh, Lh = 180, T(-20565);
-														zh = x(3821236, { Ah });
-														gh = .52;
-														xh = S(Lh, gh, Qh, zh, eh);
-														Sh = .9;
-														eh = L(5344968, { ah });
-														gh, Jh = .05, .05;
-														zh = g(10321062, { ah });
-														Qh, Lh = 206, T(-20432);
-														xh = S(Lh, gh, Qh, zh, eh);
-														zh = j(14519108, { Uh });
-														eh = g(8588777, { Uh });
-														Lh, gh, Qh = T(-20398), .52, 206;
-														xh = S(Lh, gh, Qh, zh, eh);
-														gh = .05;
-														zh = A(6059808, { Zh });
-														Qh, Fh, Lh = 232, T(-20266), T(-20421);
-														eh = B(12187834, { Zh });
-														xh = S(Lh, gh, Qh, zh, eh);
-														gh = .52;
-														eh = L(8217341, { sh, V[7], V[6] });
-														Qh = 232;
-														zh = A(13720520, { sh });
-														Lh = T(-20286);
-														xh = S(Lh, gh, Qh, zh, eh);
-														gh, Lh = 258, T(-20416);
-														xh = z(Lh, gh);
-														xh = 896135 > 6048149;
-														zh = y();
-														Lh = y();
-														gh = y();
-														mh = 276;
-														O[Lh] = xh;
-														xh, eh = 1.5, T(-20612);
-														Qh = y();
-														O[gh] = xh;
-														xh = 1;
-														O[Qh] = xh;
-														xh = nil;
-														O[zh] = xh;
-														hh = R[th];
-														th = T(-20412);
-														dh = hh[th];
-														th = 45;
-														hh = dh(th, fh, bh);
-														th = j(14036644, { gh });
-														dh = A(9145419, {
-																Lh,
-																W,
-																zh,
-																Ch,
-															});
-														bh = T(-20266);
-														xh = m(eh, Jh, mh, Sh, hh, dh);
-														Sh, dh, Jh, mh = 304, .5, T(-20569), .05;
-														O[W] = xh;
-														hh = O[gh];
-														eh = t(Jh, mh, Sh, dh, hh, th);
-														Jh = T(-20615);
-														hh = O[Qh];
-														th = B(7230199, { Qh });
-														dh, mh, Sh = .5, .05, 328;
-														eh = t(Jh, mh, Sh, dh, hh, th);
-														Sh, Jh, mh = .05, T(-20511), 354;
-														eh = z(Jh, mh);
-														eh, dh, hh = 4515689 >= 15020510, 372, .9;
-														Jh = y();
-														mh = T(-20620);
-														O[Jh] = eh;
-														fh = R[bh];
-														bh = T(-20412);
-														th = fh[bh];
-														bh = 45;
-														fh = th(bh, Hh, wh);
-														th = x(6442219, { Jh, Y });
-														eh = m(mh, Sh, dh, hh, fh, th);
-														O[Y] = eh;
-														Sh = T(-20548);
-														th = y();
-														hh = y();
-														dh = 400;
-														mh = z(Sh, dh);
-														Sh = y();
-														mh = 9089494 > 14205615;
-														O[Sh] = mh;
-														dh = y();
-														wh, mh = T(-20383), 150;
-														O[dh] = mh;
-														mh = T(-20328);
-														O[hh] = mh;
-														fh = y();
-														mh = 10093801 >= 7432166;
-														O[th] = mh;
-														mh = 4815599 <= 7421624;
-														O[fh] = mh;
-														Hh = R[wh];
-														wh = T(-20598);
-														bh = Hh[wh];
-														Hh = T(-20479);
-														mh = bh[Hh];
-														Hh = y();
-														bh = y();
-														O[bh] = mh;
-														wh, mh = T(-20596), 1798011 >= 6492697;
-														O[Hh] = mh;
-														Gh = R[Fh];
-														Fh = T(-20412);
-														Wh = Gh[Fh];
-														Fh = 45;
-														Gh = Wh(Fh, Yh, rh);
-														Wh = j(14929907, { Sh, K });
-														mh = m(wh, ph, Ph, vh, Gh, Wh);
-														O[K] = mh;
-														Fh = j(8566519, { dh });
-														Gh = x(15641300, { th });
-														Ph = .05;
-														Wh = x(10956797, { th });
-														ph, vh, XT = T(-20602), 446, 45;
-														wh = S(ph, Ph, vh, Wh, Gh);
-														Ph = .52;
-														Wh = g(1926519, { fh });
-														ph, vh, rh = T(-20568), 446, T(-20266);
-														Gh = x(9744900, { fh });
-														wh = S(ph, Ph, vh, Wh, Gh);
-														vh, Wh, ph = 470, .5, T(-20515);
-														Gh = O[dh];
-														Ph = .05;
-														wh = t(ph, Ph, vh, Wh, Gh, Fh);
-														Ph = T(-20483);
-														Yh = R[rh];
-														rh, r = T(-20412), wh;
-														Fh = Yh[rh];
-														Gh, VT, vh, Wh, rh = .4, T(-20320), .05, 494, 60;
-														Yh = Fh(rh, Kh, Ih);
-														rh = 0;
-														Fh = x(6131287, { hh, I });
-														ph = m(Ph, vh, Wh, Gh, Yh, Fh);
-														Fh, vh, Wh, Gh, cT = 80, T(-20632), 522, T(-20266), 55;
-														O[I] = ph;
-														Ph = z(vh, Wh);
-														vh = y();
-														Ph = 11141452 <= 2519332;
-														O[vh] = Ph;
-														Wh = R[Gh];
-														Ih, Gh, Yh = .9, T(-20412), 0;
-														Ph = Wh[Gh];
-														Gh = 255;
-														Wh = Ph(Gh, Fh, Yh);
-														Ph = y();
-														Yh, Fh = 0, T(-20266);
-														O[Ph] = Wh;
-														Kh = 540;
-														Gh = R[Fh];
-														Fh = T(-20412);
-														Wh = Gh[Fh];
-														Fh = 255;
-														Gh = Wh(Fh, Yh, rh);
-														Wh = y();
-														rh = .05;
-														O[Wh] = Gh;
-														Gh = {};
-														Fh = y();
-														O[Fh] = Gh;
-														RT = R[nh];
-														Yh, nh = T(-20574), T(-20412);
-														TT = RT[nh];
-														nh = 45;
-														RT = TT(nh, XT, cT);
-														TT = A(1702310, { vh, n, Fh });
-														Gh = m(Yh, rh, Kh, Ih, RT, TT);
-														O[n] = Gh;
-														XT, RT, Kh = 18, 0, T(-20387);
-														rh = R[Kh];
-														Kh, TT, nh = T(-20544), T(-20406), 0;
-														Yh = rh[Kh];
-														Kh = T(-20289);
-														rh = Yh(Kh);
-														Ih = R[TT];
-														TT = T(-20544);
-														Kh = Ih[TT];
-														Yh, TT = T(-20505), 1;
-														Ih = Kh(TT, RT, nh, XT);
-														rh[Yh] = Ih;
-														RT, TT = 0, T(-20406);
-														Ih = R[TT];
-														XT, Yh, TT = -22, T(-20381), T(-20544);
-														Kh = Ih[TT];
-														TT, nh = 0, 1;
-														Ih = Kh(TT, RT, nh, XT);
-														rh[Yh] = Ih;
-														Yh, Kh, TT = T(-20591), 1, T(-20266);
-														rh[Yh] = Kh;
-														Kh, RT, nh, Yh = T(-20651), 120, 140, T(-20619);
-														rh[Yh] = Kh;
-														Ih = R[TT];
-														TT, Yh = T(-20412), T(-20356);
-														Kh = Ih[TT];
-														TT = 120;
-														Ih = Kh(TT, RT, nh);
-														RT, X, Kh = T(-20383), 4443632, 11853829 <= 13158399;
-														rh[Yh] = Ih;
-														Yh = T(-20566);
-														rh[Yh] = Kh;
-														TT = R[RT];
-														Yh, RT = T(-20418), T(-20418);
-														Ih = TT[RT];
-														TT = T(-20317);
-														Kh = Ih[TT];
-														rh[Yh] = Kh;
-														Ih = Z(15827325, { qh });
-														Yh = T(-20638);
-														Kh = O[u];
-														RT = B(3942370, {
-																l,
-																Lh,
-																V[6],
-																gh,
-																Qh,
-															});
-														rh[Yh] = Kh;
-														TT = L(12076773, {});
-														Kh, Yh = 1001, T(-20277);
-														rh[Yh] = Kh;
-														Kh = x(14440244, {
-																V[6],
-																qh,
-																M,
-																V[9],
-															});
-														Yh = B(584426, {});
-														O[Rh] = Yh;
-														O[ih] = Kh;
-														O[kh] = Ih;
-														O[Vh] = TT;
-														O[Ch] = RT;
-														nh = O[N];
-														CT = O[V[10]];
-														cT = CT[VT];
-														VT = A(1585889, { l, Jh, V[6] });
-														iT = cT[iT];
-														CT = { iT(cT, VT) };
-														VT = T(-20405);
-														XT = nh(c(CT));
-														iT = T(-20346);
-														nh = O[N];
-														CT = O[V[11]];
-														cT = CT[VT];
-														iT = cT[iT];
-														VT = L(7049908, { l, bh, Hh });
-														CT = { iT(cT, VT) };
-														iT, VT = T(-20346), T(-20310);
-														XT = nh(c(CT));
-														nh = O[N];
-														CT = O[V[11]];
-														cT = CT[VT];
-														VT = g(9444818, { l, bh, Hh });
-														iT = cT[iT];
-														CT = { iT(cT, VT) };
-														XT = nh(c(CT));
-														nh = B(7179432, {
-																V[11],
-																V[7],
-																V[6],
-																fh,
-																w,
-																hh,
-																dh,
-																th,
-															});
-														O[Dh] = nh;
-														XT = O[N];
-														VT = O[V[10]];
-														iT = T(-20278);
-														CT = VT[iT];
-														iT = x(12730242, {
-																l,
-																Sh,
-																Hh,
-																Dh,
-															});
-														kT = CT[kT];
-														VT = { kT(CT, iT) };
-														kT = T(-20278);
-														cT = XT(c(VT));
-														cT = B(11880343, {});
-														XT = y();
-														O[XT] = cT;
-														cT = O[N];
-														iT = O[V[10]];
-														VT = iT[kT];
-														DT = VT[DT];
-														kT = Z(2233813, {
-																l,
-																vh,
-																XT,
-																Fh,
-																Ph,
-																Wh,
-																M,
-															});
-														iT = { DT(VT, kT) };
-														kT = T(-20365);
-														CT = cT(c(iT));
-														cT = O[N];
-														iT = R[kT];
-														kT, DT = T(-20366), T(-20346);
-														VT = iT[kT];
-														kT = g(6747167, { Fh });
-														DT = VT[DT];
-														iT = { DT(VT, kT) };
-														CT = cT(c(iT));
-														cT = O[N];
-														kT = T(-20278);
-														iT = O[V[10]];
-														VT = iT[kT];
-														kT = Z(7674734, {
-																l,
-																oh,
-																qh,
-																Vh,
-																V[7],
-																V[6],
-																p,
-																sh,
-																Xh,
-																h,
-																d,
-																Rh,
-																ih,
-																Zh,
-																jh,
-																ah,
-																Ah,
-																V[9],
-																V[12],
-																V[13],
-																Uh,
-															});
-														DT = T(-20346);
-														DT = VT[DT];
-														iT = { DT(VT, kT) };
-														CT = cT(c(iT));
-														CT = j(9371517, {
-																l,
-																Oh,
-																p,
-																Th,
-															});
-														cT = y();
-														VT = T(-20476);
-														O[cT] = CT;
-														CT = R[VT];
-														DT = O[V[7]];
-														OT = DT[OT];
-														lT = { OT(DT) };
-														DT = { CT(c(lT)) };
-														VT, kT, iT = DT[1], DT[3], DT[2];
-													end;
-												else
-													if 1229697 > X then
-														h = T(-20279);
-														m = O[V[5]];
-														t = u[h];
-														X = 1918303;
-														S = m(u, t);
-														z = not S;
-														J = z;
-													elseif 1272743 > X then
-														J, Q = 45, T(-20266);
-														u = R[Q];
-														X, e, Q = 8160194, 55, T(-20412);
-														M = u[Q];
-														Q = 45;
-														u = M(Q, J, e);
-														E = u;
-													elseif X < 1310540 then
-														P = O[V[8]];
-														X = P and 6988477 or 12857704;
-													else
-														v = T(-20263);
-														X = b[v];
-														F, v = 16112568 < 13420007, T(-20396);
-														X[v] = F;
-														X = 16222759;
-													end;
-												end;
-											end;
-										else
-											if X < 1579249 then
-												if X > 1541798 then
-													if 1561997 > X then
-														Q = 0;
-														u = M <= Q;
-														X, D = 14519066, u;
-													elseif X < 1574073 then
-														M, D = T(-20423), T(-20343);
-														D = E[D];
-														D = D(E, M);
-														M = 1203615 ~= 14835925;
-														X = D == M;
-														X = X and 4998852 or 2571595;
-													else
-														d = T(-20263);
-														h = u[d];
-														d, X = T(-20638), 11202316;
-														t = h[d];
-														z = t;
-													end;
-												else
-													if X < 1464726 then
-														X = O[V[2]];
-														e = T(-20279);
-														J = u[e];
-														Q = X(J);
-														X = 218393;
-													elseif 1511691 > X then
-														E, u = N(l, E);
-														X = E and 7094905 or 13079998;
-													elseif X < 1532037 then
-														Q, M, X = T(-20355), T(-20355), T(-20355);
-														N = R[M];
-														M = T(-20544);
-														D = N[M];
-														u = E[Q];
-														Q = T(-20381);
-														M = u[Q];
-														Q = T(-20381);
-														u = l[Q];
-														N = D(M, u);
-														E[X] = N;
-														X = 338376;
-													else
-														D = O[V[1]];
-														X = not D;
-														X = X and 6551447 or 7181402;
-													end;
-												end;
-											else
-												if X < 1595845 then
-													if X < 1584943 then
-														X, l, E = 385521, nil, nil;
-													elseif X < 1590094 then
-														l = O[V[1]];
-														X, D = l and 11302830 or 642318, l;
-													else
-														F = T(-20401);
-														v = R[F];
-														Y, F, r, G = T(-20613), T(-20484), T(-20488), 5000;
-														X = v[F];
-														F = G / P;
-														G, K, W = 25, T(-20488), 300;
-														v = X(F, G, W);
-														F, W, Th = .55, T(-20372), T(-20408);
-														X = v * F;
-														G = R[W];
-														F, W = X, T(-20544);
-														X = G[W];
-														W = H[Y];
-														Y = H[r];
-														G = X(W, Y);
-														Y, r = T(-20372), T(-20613);
-														W = R[Y];
-														Y = T(-20544);
-														X = W[Y];
-														Y = w[r];
-														r = w[K];
-														W = X(Y, r);
-														r, K = T(-20488), .6;
-														Y = G[r];
-														r = v * K;
-														I = .3;
-														X = Y - r;
-														K = T(-20488);
-														r = W[K];
-														Rh = 2;
-														K = v * I;
-														n, Vh, Y, I = 2, 0, X, T(-20613);
-														X = r + K;
-														r = X;
-														K = G[I];
-														I = F / n;
-														X = K - I;
-														K, n = X, T(-20613);
-														I = G[n];
-														Xh = 9990094 > 5763558;
-														n = F / Rh;
-														X = I + n;
-														I = X;
-														X = r - Y;
-														n = X;
-														X = I - K;
-														Ch, Rh = T(-20406), X;
-														X = b[Th];
-														Th = T(-20499);
-														X[Th] = Xh;
-														Th = T(-20408);
-														X = b[Th];
-														Th = T(-20381);
-														ch = R[Ch];
-														Ch = T(-20544);
-														Xh = ch[Ch];
-														Ch = 0;
-														ch = Xh(Ch, K, Vh, Y);
-														X[Th] = ch;
-														Th, Ch = T(-20408), T(-20406);
-														X = b[Th];
-														Vh, Th = 0, T(-20505);
-														ch = R[Ch];
-														Ch = T(-20544);
-														Xh = ch[Ch];
-														Ch = 0;
-														ch = Xh(Ch, Rh, Vh, n);
-														X[Th] = ch;
-														Th, Xh = T(-20643), t;
-														X = b[Th];
-														Th = T(-20539);
-														X[Th] = Xh;
-														X = O[V[14]];
-														X = X and 4696505 or 4837019;
-													end;
-												else
-													if 1606766 > X then
-														D, X = nil, nil;
-														D = { X, D };
-														X = R[T(-20323)];
-													elseif 1620004 > X then
-														X, N = nil, T(-20401);
-														E = R[N];
-														N, M = T(-20470), T(-20355);
-														D = E[N];
-														E, N = X, D;
-														D = l[M];
-														M = T(-20381);
-														X = D[M];
-														M = X;
-														X = O[V[1]];
-														m, D = T(-20410), T(-20590);
-														D = X[D];
-														D = D(X);
-														u = D;
-														D = T(-20476);
-														X = R[D];
-														e = O[V[2]];
-														m = e[m];
-														z = { m(e) };
-														e = { X(c(z)) };
-														Q, J, D, X = e[2], e[3], e[1], 4137831;
-														e = D;
-													else
-														X = O[V[1]];
-														D = { X };
-														X = R[T(-20547)];
-													end;
-												end;
-											end;
-										end;
-									end;
-								end;
-							end;
-						else
-							if X < 6295682 then
-								if X < 5402447 then
-									if 4880691 > X then
-										if X > 4555839 then
-											if X > 4690233 then
-												if X > 4795854 then
-													if X < 4838806 then
-														Th = T(-20441);
-														X = b[Th];
-														Th, Xh = T(-20499), 109215 >= 3638009;
-														X[Th] = Xh;
-														X = 6715471;
-													elseif X < 4843007 then
-														X, D = R[T(-20556)], {};
-													else
-														u = 0;
-														M = #E;
-														X = M == u;
-														X = X and 2516049 or 1727333;
-													end;
-												else
-													if 4717620 > X then
-														Th = T(-20441);
-														X = b[Th];
-														Xh, Th = 6874023 ~= 3779226, T(-20499);
-														X[Th] = Xh;
-														Th, Xh = T(-20441), t;
-														X = b[Th];
-														Ch, Th = T(-20613), T(-20282);
-														X[Th] = Xh;
-														Xh, yh = T(-20613), 0;
-														Th = E[Xh];
-														ih, Xh = T(-20401), 2;
-														X = Th / Xh;
-														Xh, Th = T(-20488), X;
-														X = E[Xh];
-														ch = G[Ch];
-														Xh = X;
-														X = ch - Th;
-														ch = X;
-														X = r - Xh;
-														Ch = X;
-														Vh = R[ih];
-														ih = T(-20299);
-														X = Vh[ih];
-														kh = ch * ch;
-														Dh = Ch * Ch;
-														ih = kh + Dh;
-														lh, Dh = T(-20401), T(-20401);
-														Vh = X(ih);
-														Eh = 0;
-														kh = R[Dh];
-														Dh = T(-20378);
-														ih = kh[Dh];
-														Oh = R[lh];
-														lh = T(-20614);
-														Dh = Oh[lh];
-														Oh = { Dh(Ch, ch) };
-														lh = T(-20406);
-														kh = ih(c(Oh));
-														ih = 90;
-														X = kh - ih;
-														ih, Ch, kh = X, nil, T(-20441);
-														X = b[kh];
-														kh = T(-20381);
-														Oh = R[lh];
-														lh = T(-20544);
-														Dh = Oh[lh];
-														lh = 0;
-														Oh = Dh(lh, Th, yh, Xh);
-														X[kh] = Oh;
-														kh = T(-20441);
-														X = b[kh];
-														kh, yh, lh = T(-20505), 1.5, T(-20406);
-														Oh = R[lh];
-														Th, lh = nil, T(-20544);
-														Dh = Oh[lh];
-														lh, ch = 0, nil;
-														Oh = Dh(lh, yh, Eh, Vh);
-														X[kh] = Oh;
-														kh, Vh = T(-20441), nil;
-														X = b[kh];
-														kh, Dh = T(-20447), ih;
-														ih, Xh = nil, nil;
-														X[kh] = Dh;
-														X = 6715471;
-													elseif X < 4746713 then
-														f = y();
-														d = y();
-														X = a(3356072, {});
-														O[d] = X;
-														b = y();
-														w = T(-20387);
-														X = U(8850512, {});
-														v = T(-20406);
-														O[f] = X;
-														X = 11866283 >= 16698881;
-														O[b] = X;
-														H = R[w];
-														p, w = T(-20490), T(-20544);
-														X = H[w];
-														w = T(-20653);
-														H = X(w);
-														w = y();
-														O[w] = H;
-														H = T(-20432);
-														X = O[w];
-														W = 180;
-														X[H] = p;
-														H, p = T(-20349), 2722660 > 5991186;
-														X = O[w];
-														X[H] = p;
-														X = O[w];
-														H, p = T(-20307), 2147483647;
-														X[H] = p;
-														H = T(-20390);
-														X = O[w];
-														p = 2401196 ~= 15190135;
-														X[H] = p;
-														H = T(-20638);
-														X = O[w];
-														p = O[h];
-														X[H] = p;
-														p = T(-20387);
-														H = R[p];
-														p = T(-20544);
-														X = H[p];
-														F, p = 320, T(-20415);
-														H = X(p);
-														X = T(-20505);
-														P = R[v];
-														v, G = T(-20544), 0;
-														p = P[v];
-														v = 0;
-														P = p(v, F, G, W);
-														W, v, G = -90, T(-20406), .5;
-														H[X] = P;
-														X = T(-20381);
-														P = R[v];
-														F, v = -160, T(-20544);
-														p = P[v];
-														v = .5;
-														P = p(v, F, G, W);
-														H[X] = P;
-														F, X, v, Y = 22, T(-20282), T(-20266), 30;
-														P = R[v];
-														v, G = T(-20412), 26;
-														p = P[v];
-														v = 22;
-														P = p(v, F, G);
-														p = 0;
-														H[X] = P;
-														X = T(-20481);
-														H[X] = p;
-														G, p, X, W = 80, 11251708 ~= 14513937, T(-20523), 120;
-														H[X] = p;
-														X, F, p = T(-20577), T(-20266), 2268056 >= 126316;
-														H[X] = p;
-														X = T(-20638);
-														p = O[w];
-														H[X] = p;
-														r = 0;
-														X = O[d];
-														P = 6;
-														p = X(H, P);
-														X = O[f];
-														v = R[F];
-														K, F = 32, T(-20412);
-														P = v[F];
-														F = 80;
-														v = P(F, G, W);
-														P = 1;
-														p = X(H, v, P);
-														P = T(-20387);
-														p = R[P];
-														P, W, F = T(-20544), 0, T(-20406);
-														X = p[P];
-														P = T(-20289);
-														p = X(P);
-														v = R[F];
-														X, F = T(-20505), T(-20544);
-														P = v[F];
-														G, F = 0, 1;
-														v = P(F, G, W, Y);
-														W = 255;
-														p[X] = v;
-														P, X = 1, T(-20591);
-														p[X] = P;
-														P, F, X = T(-20551), T(-20266), T(-20619);
-														p[X] = P;
-														G = 255;
-														v = R[F];
-														F = T(-20412);
-														P = v[F];
-														X, F = T(-20356), 255;
-														v = P(F, G, W);
-														p[X] = v;
-														P, X = 13325408 > 13006672, T(-20566);
-														p[X] = P;
-														G, X = T(-20383), T(-20418);
-														F = R[G];
-														G, Y, W = T(-20418), 0, T(-20406);
-														v = F[G];
-														F = T(-20317);
-														P = v[F];
-														p[X] = P;
-														X, P = T(-20638), H;
-														p[X] = P;
-														v = T(-20387);
-														P = R[v];
-														v = T(-20544);
-														X = P[v];
-														v = T(-20456);
-														P = X(v);
-														v = y();
-														O[v] = P;
-														P = T(-20505);
-														X = O[v];
-														G = R[W];
-														W = T(-20544);
-														F = G[W];
-														W = .8;
-														G = F(W, Y, r, K);
-														X[P] = G;
-														X = O[v];
-														P, W, r = T(-20381), T(-20406), 0;
-														G = R[W];
-														W = T(-20544);
-														F = G[W];
-														W, Y, K = .1, 0, 55;
-														G = F(W, Y, r, K);
-														Y = 45;
-														X[P] = G;
-														W, r = T(-20266), 55;
-														X = O[v];
-														G = R[W];
-														P, W = T(-20282), T(-20412);
-														F = G[W];
-														W = 45;
-														G = F(W, Y, r);
-														Y, F = 255, 0;
-														X[P] = G;
-														X = O[v];
-														P = T(-20481);
-														X[P] = F;
-														X = O[v];
-														P, F = T(-20619), T(-20370);
-														X[P] = F;
-														F = T(-20652);
-														X = O[v];
-														W, P = T(-20266), T(-20362);
-														X[P] = F;
-														P = T(-20356);
-														X = O[v];
-														r = 255;
-														G = R[W];
-														W = T(-20412);
-														F = G[W];
-														W = 255;
-														G = F(W, Y, r);
-														X[P] = G;
-														P, Y, r, F = T(-20566), T(-20383), 0, 15007317 >= 9856992;
-														X = O[v];
-														X[P] = F;
-														X = O[v];
-														W = R[Y];
-														Y = T(-20418);
-														G = W[Y];
-														W, P = T(-20414), T(-20418);
-														F = G[W];
-														X[P] = F;
-														X = O[v];
-														G, K, F, P = 4, 0, 11940550 <= 7776641, T(-20367);
-														X[P] = F;
-														I = 20;
-														X = O[v];
-														P, F = T(-20638), H;
-														X[P] = F;
-														X = O[d];
-														Y = T(-20406);
-														F = O[v];
-														P = X(F, G);
-														F = T(-20387);
-														P = R[F];
-														F = T(-20544);
-														X = P[F];
-														F = T(-20289);
-														P = X(F);
-														F = y();
-														O[F] = P;
-														X = O[F];
-														t, P = nil, T(-20505);
-														W = R[Y];
-														Y = T(-20544);
-														G = W[Y];
-														Y = 1;
-														W = G(Y, r, K, I);
-														I = 95;
-														X[P] = W;
-														X = O[F];
-														Y = T(-20406);
-														W = R[Y];
-														P, r, Y = T(-20381), 0, T(-20544);
-														G = W[Y];
-														K, Y = 0, 0;
-														W = G(Y, r, K, I);
-														X[P] = W;
-														P = T(-20591);
-														X = O[F];
-														G = 1;
-														X[P] = G;
-														K, Y = 100, T(-20266);
-														X = O[F];
-														P, G = T(-20619), T(-20370);
-														X[P] = G;
-														P, r = T(-20356), 100;
-														X = O[F];
-														W = R[Y];
-														Y = T(-20412);
-														G = W[Y];
-														Y = 255;
-														W = G(Y, r, K);
-														X[P] = W;
-														P = T(-20566);
-														X = O[F];
-														G = 2749246 < 2865708;
-														X[P] = G;
-														P = T(-20418);
-														X = O[F];
-														p, r = nil, T(-20383);
-														Y = R[r];
-														r = T(-20418);
-														W = Y[r];
-														D, I, Y = {}, 32, T(-20414);
-														G = W[Y];
-														r = 0;
-														X[P] = G;
-														G = H;
-														X = O[F];
-														P = T(-20638);
-														X[P] = G;
-														Y, G = T(-20406), T(-20387);
-														P = R[G];
-														G = T(-20544);
-														X = P[G];
-														G, K = T(-20332), 0;
-														P = X(G);
-														X = T(-20505);
-														W = R[Y];
-														Y = T(-20544);
-														G = W[Y];
-														Y = .8;
-														W = G(Y, r, K, I);
-														Y = T(-20406);
-														P[X] = W;
-														r, X, K = 0, T(-20381), 1;
-														W = R[Y];
-														Y = T(-20544);
-														G = W[Y];
-														I, Y = -45, .1;
-														W = G(Y, r, K, I);
-														P[X] = W;
-														r, K, X, Y = 150, 90, T(-20282), T(-20266);
-														W = R[Y];
-														Y = T(-20412);
-														G = W[Y];
-														Y = 0;
-														W = G(Y, r, K);
-														P[X] = W;
-														X, G = T(-20481), 0;
-														P[X] = G;
-														G, X = T(-20386), T(-20619);
-														P[X] = G;
-														X, Y, r = T(-20356), T(-20266), 255;
-														W = R[Y];
-														Y, K = T(-20412), 255;
-														G = W[Y];
-														Y = 255;
-														W = G(Y, r, K);
-														r = T(-20383);
-														P[X] = W;
-														X, G = T(-20566), 4269599 < 5588367;
-														P[X] = G;
-														X = T(-20418);
-														Y = R[r];
-														r = T(-20418);
-														W = Y[r];
-														Y = T(-20317);
-														G = W[Y];
-														P[X] = G;
-														W, X, G = 4, T(-20638), H;
-														P[X] = G;
-														X = O[d];
-														G = X(P, W);
-														G = y();
-														W = y();
-														X = B(9932618, { Q });
-														r = g(4156929, {
-																G,
-																v,
-																b,
-																w,
-																W,
-																F,
-															});
-														O[G] = X;
-														X = Z(11547523, {
-																b,
-																h,
-																d,
-																f,
-																S,
-																u,
-																E,
-																J,
-																e,
-																N,
-																M,
-																z,
-																m,
-															});
-														S = o(S);
-														Y = T(-20545);
-														E = o(E);
-														H = nil;
-														O[W] = X;
-														X = P[Y];
-														Y = T(-20346);
-														Y = X[Y];
-														Y = Y(X, r);
-														h = o(h);
-														f = o(f);
-														z = o(z);
-														N = o(N);
-														r = T(-20610);
-														Y = O[v];
-														m = o(m);
-														J = o(J);
-														X = Y[r];
-														Y = T(-20346);
-														r = j(13024025, {
-																G,
-																v,
-																b,
-																w,
-																W,
-																F,
-															});
-														W = o(W);
-														v = o(v);
-														e = o(e);
-														w = o(w);
-														F = o(F);
-														Q = o(Q);
-														d = o(d);
-														b = o(b);
-														P = nil;
-														M = o(M);
-														u = o(u);
-														G = o(G);
-														Y = X[Y];
-														Y = Y(X, r);
-														X = R[T(-20581)];
-													else
-														Th = T(-20464);
-														X = b[Th];
-														Xh, Th = 6513804 <= 3060431, T(-20499);
-														X[Th] = Xh;
-														X = 14234075;
-													end;
-												end;
-											else
-												if 4653713 > X then
-													if 4570535 > X then
-														N, Q = M(E, N);
-														X = N and 12163017 or 15887306;
-													elseif 4605371 > X then
-														X = 1065072;
-													elseif 4639434 > X then
-														m, S, t = X, T(-20462), T(-20347);
-														S = z[S];
-														S = S(z, t);
-														X, D, e = S and 15214790 or 4312091, S, J;
-													else
-														N, u = l(E, N);
-														X = N and 10051342 or 10278383;
-													end;
-												else
-													if 4669776 > X then
-														m = T(-20638);
-														z = Q[m];
-														X, e = 2713304, z;
-													elseif X < 4683110 then
-														X = 5916460;
-													else
-														t, S = 3649214 > 8213757, T(-20408);
-														z = u[S];
-														S = T(-20499);
-														z[S] = t;
-														t, S = 16531964 <= 633883, T(-20273);
-														z = u[S];
-														S, h = T(-20499), T(-20263);
-														z[S] = t;
-														S = X;
-														t = u[h];
-														z, X = t, t and 1574501 or 11202316;
-													end;
-												end;
-											end;
-										else
-											if 4418608 > X then
-												if 4373860 > X then
-													if X < 4305762 then
-														w = T(-20381);
-														H = d[w];
-														X, p = T(-20478), T(-20381);
-														X = l[X];
-														X = X(l, H);
-														H = X;
-														X = T(-20478);
-														X = l[X];
-														w = h[p];
-														X = X(l, w);
-														F = T(-20524);
-														v = H[F];
-														F, w = 0, X;
-														P = v > F;
-														X, p = P and 6557106 or 1696354, P;
-													elseif 4313598 > X then
-														X = m;
-														X = D and 14071594 or 354715;
-													elseif X < 4338489 then
-														X = J and 11777766 or 13879338;
-													else
-														X = D and 15012566 or 6225088;
-													end;
-												else
-													if X < 4391398 then
-														m, X = e, nil;
-														z = X;
-														X = e and 13211449 or 7199436;
-													elseif 4399564 > X then
-														t = T(-20381);
-														S = N[t];
-														d = T(-20355);
-														h = l[d];
-														d = T(-20381);
-														t = h[d];
-														z = S - t;
-														S = T(-20311);
-														e = z[S];
-														S = 1500;
-														z = e > S;
-														X = z and 4683961 or 8562666;
-													else
-														X = O[V[6]];
-														e = T(-20279);
-														J = u[e];
-														Q = X(J);
-														X = 11914546;
-													end;
-												end;
-											else
-												if X > 4505709 then
-													if X < 4520484 then
-														X, e, m = 9711398, T(-20266), 90;
-														J = R[e];
-														z, e = 150, T(-20412);
-														Q = J[e];
-														e = 0;
-														J = Q(e, z, m);
-														M = J;
-													elseif 4541359 > X then
-														e = T(-20266);
-														J = R[e];
-														e = T(-20412);
-														Q = J[e];
-														X, z, e, m = 5147665, 150, 0, 90;
-														J = Q(e, z, m);
-														M = J;
-													else
-														M = T(-20327);
-														N = E[M];
-														D, X = N, N and 8851297 or 15304918;
-													end;
-												else
-													if 4439333 > X then
-														S, h = X, T(-20327);
-														t = u[h];
-														X, z = t and 15904338 or 6378049, t;
-													elseif X < 4467702 then
-														kT, DT = VT(iT, kT);
-														X = kT and 11202075 or 14059293;
-													elseif 4496162 > X then
-														H = T(-20273);
-														b = t[H];
-														X, H = 14819918, T(-20638);
-														f = b[H];
-														h = f;
-													else
-														X, z = 931825, T(-20263);
-														e = u[z];
-														z = T(-20638);
-														J = e[z];
-														D = J;
-													end;
-												end;
-											end;
-										end;
-									else
-										if 5151901 > X then
-											if 5017727 > X then
-												if 4942678 > X then
-													if 4916879 > X then
-														X = O[V[4]];
-														D = X(l, E);
-														X = 16595309;
-													elseif 4918404 > X then
-														X = D and 3602969 or 8797708;
-													elseif X < 4928935 then
-														l = T(-20328);
-														O[V[1]] = l;
-														X = 9154474;
-													else
-														X, D = T(-20462), T(-20347);
-														X = N[X];
-														X = X(N, D);
-														X = X and 2645912 or 16670167;
-													end;
-												else
-													if 4965540 > X then
-														D, X = T(-20328), T(-20439);
-														X = l[X];
-														X = X(l, D);
-														N = X;
-														D, X = N, N and 7029906 or 9929820;
-													elseif X < 4991717 then
-														X = nil;
-														D = { X };
-														X = R[T(-20536)];
-													else
-														X = 6865916 < 11189374;
-														D = { X };
-														X = R[T(-20435)];
-													end;
-												end;
-											else
-												if X < 5096341 then
-													if 5047521 > X then
-														X = 4817738 ~= 11807346;
-														D = { X };
-														X = R[T(-20629)];
-													elseif 5077143 > X then
-														u = T(-20273);
-														M = E[u];
-														u = T(-20638);
-														N = M[u];
-														D, X = N, 4361872;
-													else
-														X = 15895575;
-													end;
-												else
-													if 5107513 > X then
-														X = O[V[1]];
-														M, l = T(-20563), T(-20519);
-														M = X[M];
-														D = { M(X, l) };
-														D, X = { c(D) }, R[T(-20267)];
-													elseif X < 5132928 then
-														r, Y, X, I, n, v, F, K, G, W, Rh = nil, nil, 14938560, nil, nil, nil, nil, nil, nil, nil, nil;
-													else
-														X, E = u, M;
-														X = M and 14145666 or 12081646;
-													end;
-												end;
-											end;
-										else
-											if 5321491 > X then
-												if X < 5254780 then
-													if X < 5173141 then
-														X = 1573646;
-													elseif 5204312 > X then
-														X = O[V[4]];
-														D = X();
-														l = D;
-														X = l and 10285222 or 15230964;
-													elseif 5233613 > X then
-														Q = x(3600311, { l });
-														D = T(-20364);
-														X = R[D];
-														J = { X(Q) };
-														u = J[2];
-														D = J[1];
-														Q = D;
-														X, D = Q and 12704432 or 6921532, Q;
-													else
-														X = 6097047;
-														u = O[V[3]];
-														Q = u(E);
-														N = Q;
-													end;
-												else
-													if X < 5265987 then
-														X, J, Q = 15008667, nil, nil;
-													elseif X < 5291056 then
-														N = 60;
-														E = l < N;
-														D, X = E, 10943334;
-													else
-														l = T(-20331);
-														D = R[l];
-														M = O[V[3]];
-														u = { D(M) };
-														l, E, X, N = u[1], u[2], 9657812, u[3];
-													end;
-												end;
-											else
-												if X < 5359039 then
-													if X < 5338500 then
-														X = S;
-														X = m and 3669939 or 13983868;
-													elseif X < 5348688 then
-														l, D = C[1], {};
-														X = l;
-														l = nil;
-														O[V[1]] = X;
-														X = R[T(-20404)];
-													else
-														X, u = 10498519, N;
-														M = u;
-													end;
-												else
-													if X < 5375877 then
-														D = T(-20408);
-														X = E[D];
-														D = T(-20497);
-														D = X[D];
-														D = D(X);
-														X = 10558069;
-													elseif 5389150 > X then
-														Q = u;
-														e = O[V[5]];
-														X = J ~= e;
-														X = X and 13022143 or 12266649;
-													else
-														X, E = u, M;
-														X = M and 8160194 or 1244798;
-													end;
-												end;
-											end;
-										end;
-									end;
-								else
-									if X < 5786740 then
-										if X > 5614287 then
-											if X > 5693073 then
-												if X > 5738939 then
-													if 5748777 > X then
-														X = 13879338;
-													elseif 5755818 > X then
-														Th = T(-20464);
-														X = b[Th];
-														ch, Vh, Xh, Th = T(-20432), 0, 6451045 < 8745966, T(-20499);
-														X[Th] = Xh;
-														Th = T(-20464);
-														X = b[Th];
-														Xh = J[ch];
-														Th = T(-20619);
-														X[Th] = Xh;
-														Th = T(-20464);
-														X = b[Th];
-														Th, Xh = T(-20356), t;
-														X[Th] = Xh;
-														Ch, Th = T(-20406), T(-20464);
-														X = b[Th];
-														kh = 15;
-														ch = R[Ch];
-														Ch, Th = T(-20544), T(-20381);
-														Xh = ch[Ch];
-														Ch = 0;
-														ih = Y - kh;
-														ch = Xh(Ch, K, Vh, ih);
-														ih = 13;
-														X[Th] = ch;
-														Th = T(-20464);
-														X = b[Th];
-														Ch, Vh = T(-20406), 0;
-														ch = R[Ch];
-														Th, Ch = T(-20505), T(-20544);
-														Xh = ch[Ch];
-														Ch = 0;
-														ch = Xh(Ch, Rh, Vh, ih);
-														X[Th] = ch;
-														X = 14234075;
-													else
-														D, u = T(-20476), T(-20410);
-														X = R[D];
-														N = O[V[3]];
-														u = N[u];
-														M = { u(N) };
-														N = { X(c(M)) };
-														E, D, l = N[3], N[1], N[2];
-														N, X = D, 8265485;
-													end;
-												else
-													if X < 5711986 then
-														X = S;
-														X = z and 10635627 or 4435035;
-													elseif 5730344 > X then
-														X = u;
-														X, E = M and 16766674 or 11499014, M;
-													else
-														E, X = nil, 7938836;
-													end;
-												end;
-											else
-												if 5661617 > X then
-													if X < 5628880 then
-														Q = T(-20266);
-														u = R[Q];
-														Q, e, J = T(-20412), 55, 45;
-														M = u[Q];
-														X, Q = 2211159, 45;
-														u = M(Q, J, e);
-														E = u;
-													elseif 5643659 > X then
-														J, X = T(-20370), 12148946;
-														Q = E ~= J;
-														M = Q;
-													elseif 5654633 > X then
-														X = O[V[3]];
-														S = O[V[2]];
-														m = S[J];
-														z = X(m);
-														t = O[V[2]];
-														S = t[J];
-														t = T(-20263);
-														m = S[t];
-														z, X = m, m and 15095174 or 7187515;
-													else
-														d = T(-20408);
-														h = t[d];
-														d = T(-20497);
-														d, X = h[d], 13383021;
-														d = d(h);
-													end;
-												else
-													if X < 5668669 then
-														X, D = 418042, E;
-													elseif X < 5680426 then
-														X = T(-20635);
-														X, D = E[X], T(-20353);
-														X = X(E, D);
-														N = X;
-														X = N and 12850881 or 1573646;
-													else
-														m, z, X = nil, nil, 4137831;
-													end;
-												end;
-											end;
-										else
-											if X > 5527122 then
-												if X < 5578368 then
-													if X < 5554199 then
-														N = T(-20279);
-														X = O[V[1]];
-														E = l[N];
-														D = X(E);
-														X = 15032461;
-													elseif 5561324 > X then
-														X = H and 16179156 or 3088995;
-													else
-														X = S and 10790759 or 3637529;
-													end;
-												else
-													if X < 5595239 then
-														X = O[V[1]];
-														D, l = T(-20499), 1837783 > 14887872;
-														X[D] = l;
-														D = T(-20499);
-														X = O[V[2]];
-														l = 3740865 <= 11623399;
-														X[D] = l;
-														X, D = R[T(-20588)], {};
-													elseif X < 5603847 then
-														e = J;
-														m = M[z];
-														D = not m;
-														X = D and 557830 or 1903929;
-													else
-														X, Q, u = 11762542, nil, nil;
-													end;
-												end;
-											else
-												if X < 5480093 then
-													if 5414889 > X then
-														D, u = T(-20476), T(-20451);
-														u = l[u];
-														X = R[D];
-														M = { u(l) };
-														u = { X(c(M)) };
-														D, X, N = u[1], 14422031, u[3];
-														M, E = D, u[2];
-													elseif 5435836 > X then
-														D = T(-20263);
-														X = E[D];
-														D = T(-20497);
-														D = X[D];
-														D = D(X);
-														X = 4552616;
-													elseif 5464755 > X then
-														J, Q = 14521299 <= 9175091, T(-20263);
-														D = u[Q];
-														X, Q = 9370066, T(-20396);
-														D[Q] = J;
-													else
-														f, b, H = X, T(-20439), T(-20319);
-														b = S[b];
-														b = b(S, H);
-														d, X = b, b and 8082960 or 16596909;
-													end;
-												else
-													if 5493389 > X then
-														X, D = 15635070, T(-20439);
-														D, M = l[D], T(-20535);
-														D = D(l, M);
-														N = D;
-													elseif 5501950 > X then
-														X, H = 10683254, T(-20505);
-														b = m[H];
-														H = T(-20311);
-														f = b[H];
-														b = 10;
-														d = f < b;
-														t = d;
-													else
-														h, X, d = nil, 13374581, nil;
-													end;
-												end;
-											end;
-										end;
-									else
-										if X < 6021445 then
-											if 5926579 > X then
-												if X > 5879950 then
-													if X < 5895582 then
-														X = l;
-														O[V[1]] = X;
-														X = 12247569;
-													elseif X < 5912575 then
-														u, X = T(-20492), 15583760;
-														M = E[u];
-														D = M;
-													else
-														M = T(-20439);
-														M, u = l[M], T(-20328);
-														M = M(l, u);
-														u = not M;
-														X = u and 1093280 or 11788490;
-													end;
-												else
-													if 5834939 > X then
-														e = T(-20266);
-														J = R[e];
-														e, X = T(-20412), 14633127;
-														Q = J[e];
-														e, m, z = 0, 90, 150;
-														J = Q(e, z, m);
-														M = J;
-													elseif 5855337 > X then
-														Th = T(-20333);
-														X = b[Th];
-														Th, Xh = T(-20499), 3063883 > 4189179;
-														X[Th] = Xh;
-														Th = T(-20409);
-														X = b[Th];
-														Th, Xh = T(-20499), 9514927 >= 12935145;
-														X[Th] = Xh;
-														X = 7897449;
-													elseif X < 5867408 then
-														D, X = T(-20423), T(-20343);
-														X = l[X];
-														X = X(l, D);
-														N, D = X, 4731350 <= 13034579;
-														X = N == D;
-														X = X and 10611423 or 6535863;
-													else
-														X, J, Q = 16286317, nil, nil;
-													end;
-												end;
-											else
-												if X > 5980389 then
-													if X < 5991917 then
-														S, h = X, T(-20327);
-														t = u[h];
-														z, X = t, t and 3382963 or 16660016;
-													elseif 5997137 > X then
-														X = 5607828;
-													else
-														z, X = T(-20279), 15620026;
-														e = Q[z];
-														D = e;
-													end;
-												else
-													if X < 5945129 then
-														X = Q;
-														X = D and 12416274 or 15118054;
-													elseif X < 5961714 then
-														t = O[V[2]];
-														S = t[J];
-														t = T(-20263);
-														X = S[t];
-														t, S = 7950419 < 1112775, T(-20396);
-														X[S] = t;
-														X = 149772;
-													else
-														M = not N;
-														X = M and 9992305 or 5916460;
-													end;
-												end;
-											end;
-										else
-											if X > 6167806 then
-												if X < 6233933 then
-													if 6194882 > X then
-														z = T(-20381);
-														e = N[z];
-														z = T(-20478);
-														z = l[z];
-														z = { z(l, e) };
-														J = z[2];
-														S, Q = not J, z[1];
-														e = S;
-														z = X;
-														X = S and 8399383 or 1073136;
-													elseif 6220554 > X then
-														D, X, m = T(-20505), 354715, N;
-														z[D] = m;
-														D, m = T(-20550), 13935294 <= 4220398;
-														z[D] = m;
-													else
-														M = T(-20263);
-														N = E[M];
-														X, D = N and 9164022 or 13077621, N;
-													end;
-												else
-													if X < 6265447 then
-														z = T(-20618);
-														D = O[V[1]];
-														l, X = T(-20619), not D;
-														J, N = X, T(-20636);
-														O[V[1]] = X;
-														J, u = T(-20609), X;
-														u = X;
-														D = O[V[2]];
-														e = O[V[1]];
-														Q = e and z;
-														M = Q or J;
-														E = N .. M;
-														D[l] = E;
-														D = O[V[2]];
-														N = X;
-														Q = O[V[1]];
-														M, l, X = Q, T(-20282), Q and 5816595 or 14633127;
-													elseif X < 6291713 then
-														e = {};
-														O[V[12]] = e;
-														m = T(-20364);
-														z = R[m];
-														S = j(14881824, { V[13] });
-														m = z(S);
-														m = T(-20364);
-														S = g(2188553, { V[14] });
-														X, D = R[T(-20504)], {};
-														z = R[m];
-														m = z(S);
-													else
-														X = m and 485567 or 12353026;
-													end;
-												end;
-											else
-												if 6078427 > X then
-													if X < 6041612 then
-														X, D = 10309814, E;
-													elseif 6044750 > X then
-														X, e, z = 12846832, nil, nil;
-													elseif 6053812 > X then
-														X = u and 9852525 or 13812420;
-													else
-														X = O[V[1]];
-														D = { X };
-														X = R[T(-20330)];
-													end;
-												else
-													if X < 6114167 then
-														X = M;
-														X, D = 985399, N;
-													elseif X < 6146577 then
-														l = T(-20328);
-														D = O[V[1]];
-														X = D == l;
-														X = X and 6544400 or 16407822;
-													else
-														N, u = l(E, N);
-														X = N and 7547332 or 14728160;
-													end;
-												end;
-											end;
-										end;
-									end;
-								end;
-							else
-								if X > 7364583 then
-									if X < 8006268 then
-										if 7753214 > X then
-											if X > 7617045 then
-												if X < 7693097 then
-													if X < 7628623 then
-														X = 6957581;
-													elseif 7653653 > X then
-														X = 11059429;
-													else
-														X = O[V[1]];
-														X = X and 952919 or 12967481;
-													end;
-												else
-													if X < 7726805 then
-														N = T(-20598);
-														D = l[N];
-														N = O[V[2]];
-														X = D == N;
-														X = X and 1919496 or 15956775;
-													elseif 7746999 > X then
-														X, D = R[T(-20649)], {};
-													else
-														h, z, t = T(-20347), e, T(-20462);
-														t = m[t];
-														t = t(m, h);
-														X, S = t and 3191239 or 11875832, t;
-													end;
-												end;
-											else
-												if 7572965 > X then
-													if X < 7384746 then
-														X = 7797613;
-													elseif 7469656 > X then
-														X = D and 3117326 or 10266151;
-													elseif X < 7555904 then
-														M = N;
-														e = O[V[4]];
-														Q = X;
-														J = u ~= e;
-														X, D = J and 4291332 or 12615096, J;
-													else
-														l = T(-20279);
-														D = O[V[3]];
-														X = D[l];
-														l = X;
-														X = l and 12937528 or 6713280;
-													end;
-												else
-													if 7586427 > X then
-														X = D and 11444831 or 5190146;
-													elseif 7600409 > X then
-														h, X = nil, 14894609;
-													else
-														X = H and 15859937 or 2037003;
-													end;
-												end;
-											end;
-										else
-											if 7915241 > X then
-												if X < 7796441 then
-													if 7767278 > X then
-														D = T(-20331);
-														X = R[D];
-														M = { X(l) };
-														D, N, E = M[1], M[3], M[2];
-														M, X = D, 4559062;
-													elseif X < 7786016 then
-														D = T(-20331);
-														X = R[D];
-														J = O[V[4]];
-														e = { X(J) };
-														D, X, u, Q = e[1], 12846832, e[2], e[3];
-														J = D;
-													elseif 7793663 > X then
-														X = D and 1769268 or 10427068;
-													else
-														X = 9536874 > 16243477;
-														O[V[3]] = X;
-														X = 13145215;
-													end;
-												else
-													if X < 7847531 then
-														X, l, D = R[T(-20526)], nil, {};
-													elseif 7904233 > X then
-														X = O[V[20]];
-														X = X and 12194542 or 16617047;
-													else
-														E = C[2];
-														M = O[V[1]];
-														N = not M;
-														D, X, l = N, N and 7792057 or 3594773, C[1];
-													end;
-												end;
-											else
-												if X < 7969383 then
-													if 7929150 > X then
-														E = O[V[1]];
-														l = not E;
-														X, D = l and 12417455 or 665713, l;
-													elseif X < 7944020 then
-														l, D, X = nil, {}, R[T(-20436)];
-													else
-														z, X = T(-20550), 3510654;
-														e = Q[z];
-														J = e;
-													end;
-												else
-													if X < 7990749 then
-														X = Q == l;
-														X, u = X and 2464053 or 1363301, M;
-													elseif 7997623 > X then
-														X = m and 2157109 or 10820554;
-													else
-														X, M, z = 4682260, nil, e;
-														N, e = z, nil;
-													end;
-												end;
-											end;
-										end;
-									else
-										if X > 8273781 then
-											if 8549413 > X then
-												if 8388082 > X then
-													if X < 8290623 then
-														h = T(-20263);
-														t = z[h];
-														h, X = T(-20638), 7991937;
-														S = t[h];
-														m = S;
-													elseif 8322353 > X then
-														D = O[V[3]];
-														l = T(-20279);
-														X = D[l];
-														l = X;
-														X = l and 9770824 or 7797613;
-													elseif 8361159 > X then
-														X = 8681878 < 6364755;
-														D = { X };
-														X = R[T(-20358)];
-													else
-														M, N = X, E;
-														X = E and 5248749 or 6097047;
-													end;
-												else
-													if X < 8436676 then
-														X = z;
-														X = e and 16310966 or 4396947;
-													elseif 8507242 > X then
-														X = h;
-														X = t and 7221261 or 1656355;
-													else
-														P = T(-20263);
-														X = b[P];
-														v, P = 14102212 < 2850848, T(-20396);
-														X[P] = v;
-														X = 8837333;
-													end;
-												end;
-											else
-												if X > 8577648 then
-													if X < 8613710 then
-														D, l = {}, C[1];
-														X = l;
-														l = nil;
-														O[V[1]] = X;
-														X = R[T(-20321)];
-													elseif X < 8639874 then
-														l, u, e, N = C[1], T(-20406), 16, T(-20387);
-														D = R[N];
-														E, N = C[2], T(-20544);
-														X = D[N];
-														N = T(-20289);
-														D = X(N);
-														M = R[u];
-														u, N, J, X, Q = T(-20544), D, 0, T(-20505), 0;
-														D = M[u];
-														u = 1;
-														M = D(u, Q, J, e);
-														N[X] = M;
-														X, Q, u = T(-20381), 0, T(-20406);
-														M = R[u];
-														u, J = T(-20544), 0;
-														D = M[u];
-														u = 0;
-														M = D(u, Q, J, E);
-														D = 1;
-														N[X] = M;
-														X = T(-20591);
-														N[X] = D;
-														Q, M, X, J = T(-20422), T(-20380), T(-20619), 255;
-														u = l .. Q;
-														D = M .. u;
-														N[X] = D;
-														u, X = T(-20266), T(-20356);
-														M = R[u];
-														u, Q = T(-20412), 150;
-														D = M[u];
-														u = 150;
-														M = D(u, Q, J);
-														l, Q = nil, T(-20383);
-														N[X] = M;
-														X, D = T(-20566), 15585139 ~= 9952735;
-														N[X] = D;
-														u = R[Q];
-														X, Q = T(-20418), T(-20418);
-														M = u[Q];
-														u = T(-20317);
-														D = M[u];
-														N[X] = D;
-														D = O[V[1]];
-														X = T(-20638);
-														N[X] = D;
-														D, E, X = 1001, nil, T(-20277);
-														N[X] = D;
-														N, D, X = nil, {}, R[T(-20283)];
-													else
-														D, X = {}, R[T(-20655)];
-													end;
-												else
-													if 8560488 > X then
-														l = C[1];
-														X = l;
-														l = nil;
-														O[V[1]] = X;
-														D, X = {}, R[T(-20303)];
-													elseif X < 8564592 then
-														S, h = X, T(-20263);
-														t = u[h];
-														X, z = t and 8228147 or 5698359, t;
-													else
-														D, l = 0, C[1];
-														X = l > D;
-														X = X and 1114995 or 2064496;
-													end;
-												end;
-											end;
-										else
-											if 8168598 > X then
-												if X > 8119053 then
-													if X < 8155613 then
-														l, X = nil, 8257476;
-													elseif 8158136 > X then
-														h = T(-20273);
-														t = z[h];
-														h = T(-20638);
-														S = t[h];
-														X, m = 6295312, S;
-													else
-														D[l] = E;
-														X, D = N, {};
-														X = R[T(-20530)];
-													end;
-												else
-													if X < 8034520 then
-														X = E;
-														X[D] = l;
-														X, D = R[T(-20296)], {};
-													elseif 8064484 > X then
-														X, f = 9895246, T(-20505);
-														D = d[f];
-														M[d] = D;
-													elseif 8076058 > X then
-														X = v and 1320392 or 16222759;
-													else
-														h, X = d, f;
-														X = 410828;
-													end;
-												end;
-											else
-												if X > 8237428 then
-													if 8252093 > X then
-														X, Q, e = 6620940, T(-20266), 55;
-														u = R[Q];
-														Q, J = T(-20412), 45;
-														M = u[Q];
-														Q = 45;
-														u = M(Q, J, e);
-														E = u;
-													elseif X < 8261480 then
-														E = O[V[1]];
-														l = not E;
-														X, D = l and 2931166 or 13179921, l;
-													else
-														E, u = N(l, E);
-														X = E and 14757226 or 8177002;
-													end;
-												else
-													if X < 8197171 then
-														X = 7624673;
-													elseif X < 8222744 then
-														l = C[1];
-														D, X = not l, l;
-														O[V[1]] = X;
-														X = D and 9231147 or 1120524;
-													else
-														d, X = T(-20263), 5698359;
-														h = u[d];
-														d = T(-20638);
-														t = h[d];
-														z = t;
-													end;
-												end;
-											end;
-										end;
-									end;
-								else
-									if X < 6876190 then
-										if X > 6592946 then
-											if 6703824 > X then
-												if X > 6673410 then
-													if 6677188 > X then
-														z, X, J = T(-20347), T(-20462), u;
-														X = e[X];
-														X = X(e, z);
-														X = X and 1644961 or 10284016;
-													elseif 6686633 > X then
-														X, h, d, S, t, f = 9013715, nil, nil, nil, nil, nil;
-													else
-														X = D and 12234194 or 576715;
-													end;
-												else
-													if 6607727 > X then
-														z, S = J(e, z);
-														X = z and 3043898 or 5992924;
-													elseif X < 6619650 then
-														D, X = l, 14752440;
-													elseif X < 6646142 then
-														X = N;
-														D[l] = E;
-														l = O[V[1]];
-														D = not l;
-														X = D and 5310949 or 7068949;
-													else
-														D, l, X = {}, nil, R[T(-20603)];
-													end;
-												end;
-											else
-												if X < 6755278 then
-													if X < 6714375 then
-														E = 0;
-														D = O[V[5]];
-														X = D > E;
-														X = X and 3981707 or 8155147;
-													elseif X < 6731319 then
-														X = O[V[15]];
-														X = X and 5754751 or 4754690;
-													else
-														D = O[V[1]];
-														l = C[1];
-														X = D[l];
-														X = X and 2277834 or 3190100;
-													end;
-												else
-													if X < 6767065 then
-														f = o(f);
-														OT = 50;
-														CT = O[N];
-														Rh = o(Rh);
-														DT, lT = T(-20437), T(-20346);
-														kT = O[V[6]];
-														z = nil;
-														iT = kT[DT];
-														Hh = o(Hh);
-														DT = j(13123087, { cT, V[6] });
-														lT = iT[lT];
-														kT = { lT(iT, DT) };
-														VT = CT(c(kT));
-														iT = T(-20387);
-														VT = R[iT];
-														iT = T(-20544);
-														CT = VT[iT];
-														ET = 50;
-														Th = o(Th);
-														iT, yT, m = T(-20332), 0, nil;
-														VT = CT(iT);
-														iT = T(-20505);
-														CT = y();
-														lT = T(-20406);
-														b = o(b);
-														O[CT] = VT;
-														VT = O[CT];
-														hh = o(hh);
-														DT = R[lT];
-														lT = T(-20544);
-														kT = DT[lT];
-														lT = 0;
-														DT = kT(lT, OT, yT, ET);
-														VT[iT] = DT;
-														iT = T(-20381);
-														VT = O[CT];
-														ET = -25;
-														G = o(G);
-														lT = T(-20406);
-														DT = R[lT];
-														lT, yT = T(-20544), .5;
-														kT = DT[lT];
-														lT, S, OT = 0, nil, 20;
-														F = o(F);
-														Ah = o(Ah);
-														n = o(n);
-														DT = kT(lT, OT, yT, ET);
-														lT = T(-20266);
-														Ph = o(Ph);
-														VT[iT] = DT;
-														iT, OT = T(-20282), 30;
-														VT = O[CT];
-														DT = R[lT];
-														lT, yT = T(-20412), 40;
-														kT = DT[lT];
-														ET, lT = 120, 30;
-														DT = kT(lT, OT, yT);
-														VT[iT] = DT;
-														iT = T(-20481);
-														VT = O[CT];
-														I = o(I);
-														kT = 0;
-														VT[iT] = kT;
-														iT = T(-20619);
-														VT = O[CT];
-														kT = T(-20293);
-														p = o(p);
-														VT[iT] = kT;
-														jh = o(jh);
-														K = o(K);
-														fh = o(fh);
-														VT = O[CT];
-														H = o(H);
-														cT = o(cT);
-														OT = 255;
-														kh = o(kh);
-														yT, lT, iT = 255, T(-20266), T(-20356);
-														DT = R[lT];
-														bh = o(bh);
-														lT = T(-20412);
-														dh = o(dh);
-														kT = DT[lT];
-														Vh = o(Vh);
-														gh = o(gh);
-														Ch = o(Ch);
-														lT = 255;
-														DT = kT(lT, OT, yT);
-														VT[iT] = DT;
-														kT, iT = 6256999 >= 3288654, T(-20566);
-														VT = O[CT];
-														VT[iT] = kT;
-														lh = o(lh);
-														VT = O[CT];
-														ah = o(ah);
-														P = nil;
-														sh = o(sh);
-														Wh = o(Wh);
-														Qh = o(Qh);
-														h = o(h);
-														iT, OT = T(-20418), T(-20383);
-														lT = R[OT];
-														XT = o(XT);
-														Dh = o(Dh);
-														Uh = o(Uh);
-														OT = T(-20418);
-														DT = lT[OT];
-														lT = T(-20317);
-														ih = o(ih);
-														kT = DT[lT];
-														VT[iT] = kT;
-														kT, iT = 8649199 >= 16411741, T(-20499);
-														VT = O[CT];
-														DT = 25;
-														VT[iT] = kT;
-														iT = T(-20638);
-														VT = O[CT];
-														kT = O[M];
-														w = o(w);
-														VT[iT] = kT;
-														iT = T(-20277);
-														VT = O[CT];
-														kT = 1000;
-														VT[iT] = kT;
-														VT = O[V[3]];
-														N = o(N);
-														yh = o(yh);
-														kT = O[CT];
-														Y = o(Y);
-														zh = o(zh);
-														Zh = o(Zh);
-														OT = T(-20266);
-														iT = VT(kT, DT);
-														yT = 80;
-														VT = O[V[4]];
-														rh = nil;
-														kT = O[CT];
-														lT = R[OT];
-														OT = T(-20412);
-														DT = lT[OT];
-														OT = 80;
-														lT = DT(OT, yT, ET);
-														DT = 2;
-														iT = VT(kT, lT, DT);
-														kT = A(5590613, { u, CT });
-														iT = T(-20545);
-														VT = J[iT];
-														iT = T(-20346);
-														ch = o(ch);
-														iT, J = VT[iT], nil;
-														iT = iT(VT, kT);
-														iT = O[CT];
-														kT, t = T(-20545), nil;
-														VT = iT[kT];
-														iT = T(-20346);
-														kT = x(8656650, { u, CT });
-														d = o(d);
-														Q, iT = nil, VT[iT];
-														iT = iT(VT, kT);
-														v = o(v);
-														kT = x(15134968, {
-																l,
-																E,
-																Oh,
-																oh,
-																Lh,
-																Jh,
-																Sh,
-																vh,
-																V[7],
-																Xh,
-																qh,
-																Fh,
-																V[6],
-																M,
-															});
-														iT = T(-20545);
-														VT = e[iT];
-														Lh = o(Lh);
-														CT = o(CT);
-														E = o(E);
-														u = o(u);
-														vh = o(vh);
-														qh = o(qh);
-														r, D = nil, {};
-														Oh = o(Oh);
-														e = nil;
-														th = o(th);
-														X, iT = R[T(-20534)], T(-20346);
-														Sh = o(Sh);
-														l = o(l);
-														oh = o(oh);
-														Jh = o(Jh);
-														M = o(M);
-														iT = VT[iT];
-														iT = iT(VT, kT);
-														Fh = o(Fh);
-														Xh = o(Xh);
-														W = o(W);
-													elseif 6811637 > X then
-														X = E and 5673065 or 6403880;
-													else
-														K = T(-20266);
-														r = R[K];
-														n, I, K = 60, 60, T(-20412);
-														Y = r[K];
-														X, K = 6317266, 255;
-														r = Y(K, I, n);
-														G = r;
-													end;
-												end;
-											end;
-										else
-											if 6489041 > X then
-												if X > 6385615 then
-													if 6398531 > X then
-														J, z = u(Q, J);
-														X = J and 4628733 or 11532065;
-													elseif X < 6423049 then
-														X = 601961 > 13717130;
-														D = { X };
-														X = R[T(-20301)];
-													else
-														D = O[V[1]];
-														N, X = T(-20582), not D;
-														u, l = X, T(-20619);
-														u = X;
-														O[V[1]] = X;
-														z, J = T(-20618), X;
-														D = O[V[2]];
-														e = O[V[1]];
-														J, Q = T(-20609), e and z;
-														M = Q or J;
-														E = N .. M;
-														D[l] = E;
-														D = O[V[2]];
-														l, N = T(-20282), X;
-														Q = O[V[1]];
-														X, M = Q and 11738641 or 5725613, Q;
-													end;
-												else
-													if X < 6306659 then
-														e, X = T(-20279), 1694041;
-														D = O[V[7]];
-														J = u[e];
-														Q = D(J);
-													elseif X < 6334875 then
-														X = W;
-														X, v = G and 12550892 or 13030296, G;
-													elseif X < 6365267 then
-														S, X = m, 5566124;
-													else
-														X = S;
-														X = z and 1665084 or 15783536;
-													end;
-												end;
-											else
-												if X < 6554276 then
-													if X < 6540131 then
-														X, N = 6770742, nil;
-													elseif 6546800 > X then
-														X = T(-20575);
-														O[V[1]] = X;
-														X = 9154474;
-													elseif X < 6550323 then
-														X = 12854397 > 2119162;
-														D = { X };
-														X = R[T(-20382)];
-													else
-														D = T(-20331);
-														X = R[D];
-														N = O[V[2]];
-														M = { X(N) };
-														E, D = M[3], M[1];
-														N, l, X = D, M[2], 2234192;
-													end;
-												else
-													if X < 6558432 then
-														v, Y, r = X, T(-20401), T(-20613);
-														W = R[Y];
-														Y = T(-20540);
-														G = W[Y];
-														Y = H[r];
-														W = G(Y);
-														r = T(-20613);
-														Y = E[r];
-														r = 2;
-														G = Y * r;
-														F = W < G;
-														P, X = F, F and 2991215 or 10524395;
-													elseif 6574279 > X then
-														Q, M = T(-20279), N;
-														D = u[Q];
-														X = D and 6296052 or 1694041;
-													else
-														Q = T(-20408);
-														D = u[Q];
-														X, Q = 12943492, T(-20497);
-														Q = D[Q];
-														Q = Q(D);
-													end;
-												end;
-											end;
-										end;
-									else
-										if X > 7184458 then
-											if X > 7243701 then
-												if X < 7289702 then
-													if 7264621 > X then
-														N, E, M, S, J, Q, l = C[3], C[2], C[4], 26, T(-20387), C[6], C[1];
-														D = R[J];
-														u, J = C[5], T(-20544);
-														X = D[J];
-														J = T(-20332);
-														D = X(J);
-														J, z, m = D, T(-20406), 0;
-														e = R[z];
-														X, z = T(-20505), T(-20544);
-														D = e[z];
-														z = 0;
-														e = D(M, z, m, S);
-														z = T(-20406);
-														J[X] = e;
-														X, m = T(-20381), 0;
-														e = R[z];
-														z = T(-20544);
-														D = e[z];
-														z = 0;
-														e = D(E, z, m, N);
-														J[X] = e;
-														X, D, z = T(-20282), u, T(-20266);
-														J[X] = D;
-														m, X, D = 255, T(-20481), 0;
-														J[X] = D;
-														D, X = l, T(-20619);
-														J[X] = D;
-														S = 255;
-														e = R[z];
-														X, z = T(-20356), T(-20412);
-														D = e[z];
-														z = 255;
-														e = D(z, m, S);
-														J[X] = e;
-														D, X = 845296 ~= 13578135, T(-20566);
-														J[X] = D;
-														m, X = T(-20383), T(-20418);
-														z = R[m];
-														m = T(-20418);
-														e = z[m];
-														z = T(-20317);
-														D = e[z];
-														J[X] = D;
-														X = T(-20638);
-														D = O[V[1]];
-														J[X] = D;
-														e, D, X = 4, 1001, T(-20277);
-														J[X] = D;
-														X = O[V[2]];
-														D = X(J, e);
-														X = Q and 14343651 or 2838160;
-													elseif X < 7280397 then
-														X = 6957581;
-													else
-														t = T(-20462);
-														t, h = z[t], T(-20347);
-														t = t(z, h);
-														m, X = t, 5332033;
-													end;
-												else
-													if X < 7308819 then
-														X = O[V[3]];
-														P = X(b);
-														F = T(-20263);
-														v = b[F];
-														P, X = v, v and 9623405 or 15952399;
-													elseif 7339322 > X then
-														X = z;
-														X = e and 7351653 or 8641105;
-													else
-														z = T(-20327);
-														e = u[z];
-														S, z = 11447569 < 5357028, T(-20396);
-														e[z] = S;
-														X = 8641105;
-													end;
-												end;
-											else
-												if X > 7215112 then
-													if X < 7218849 then
-														X, f, b = 410828, T(-20439), T(-20328);
-														f = S[f];
-														f = f(S, b);
-														h = f;
-													elseif 7225730 > X then
-														h = T(-20263);
-														t = S[h];
-														h = T(-20497);
-														h = t[h];
-														h = h(t);
-														X = 1656355;
-													else
-														D, l = 0, C[1];
-														X = l >= D;
-														X = X and 3102635 or 14486394;
-													end;
-												else
-													if X < 7188796 then
-														X = z and 16415567 or 5095847;
-													elseif 7194757 > X then
-														X = S and 5953560 or 149772;
-													elseif X < 7206611 then
-														X = m and 582594 or 2711358;
-													else
-														N = D;
-														X, D = N and 5664273 or 418042, N;
-													end;
-												end;
-											end;
-										else
-											if 7059959 > X then
-												if X < 7009191 then
-													if X < 6910689 then
-														M = O[V[4]];
-														Q = O[V[3]];
-														u = M(Q);
-														E, X = u, 13005777;
-													elseif X < 6939556 then
-														X = D and 11857731 or 4984583;
-													elseif X < 6973029 then
-														E = O[V[1]];
-														l = not E;
-														D, X = l, l and 11263540 or 6694368;
-													else
-														Y, P, W = T(-20329), M, T(-20381);
-														G = h[W];
-														F = G - P;
-														W = R[Y];
-														Y = T(-20544);
-														G = W[Y];
-														W = G();
-														K = O[V[3]];
-														G = T(-20628);
-														I = T(-20279);
-														r = K[I];
-														I = T(-20638);
-														K = h[I];
-														Y, I = { r, K }, T(-20383);
-														W[G] = Y;
-														G = T(-20276);
-														K = R[I];
-														I = T(-20520);
-														r = K[I];
-														K = T(-20489);
-														Y = r[K];
-														W[G] = Y;
-														Y = T(-20365);
-														G = R[Y];
-														Y = T(-20531);
-														Y = G[Y];
-														Y = Y(G, P, F, W);
-														G = not Y;
-														X = G and 14755471 or 10591945;
-													end;
-												else
-													if 7039907 > X then
-														u, M = T(-20347), T(-20462);
-														M, X = N[M], 9929820;
-														M = M(N, u);
-														D = M;
-													elseif 7050439 > X then
-														l = C[1];
-														N = O[V[1]];
-														D, E, X = N, C[2], N and 10309814 or 6041540;
-													else
-														X = D and 3270066 or 10206465;
-													end;
-												end;
-											else
-												if 7117943 > X then
-													if 7081927 > X then
-														X, D = R[T(-20510)], {};
-													elseif 7103474 > X then
-														M, Q = E, T(-20279);
-														X = u[Q];
-														X = X and 1436897 or 218393;
-													else
-														yT = T(-20541);
-														OT = R[yT];
-														yT = T(-20442);
-														lT = OT[yT];
-														yT = x(12219022, { cT, DT });
-														OT = lT(yT);
-														X = 2517900;
-													end;
-												else
-													if X < 7151637 then
-														X, D = R[T(-20559)], {};
-													elseif 7180417 > X then
-														l = T(-20365);
-														D = R[l];
-														l = T(-20360);
-														X = D[l];
-														l = X;
-														X = not l;
-														X = X and 3978741 or 1616141;
-													else
-														E = T(-20365);
-														l = R[E];
-														E = T(-20360);
-														X = l[E];
-														l = X;
-														X = not l;
-														X = X and 12850943 or 11662931;
-													end;
-												end;
-											end;
-										end;
-									end;
-								end;
-							end;
-						end;
-					else
-						if X < 12653861 then
-							if X > 10590050 then
-								if X > 11700786 then
-									if X < 12155273 then
-										if 11919006 > X then
-											if X > 11827860 then
-												if X < 11874065 then
-													if X < 11843664 then
-														X, z = T(-20635), T(-20353);
-														X = e[X];
-														X = X(e, z);
-														z = X;
-														X = O[V[6]];
-														m = X(J, e);
-														t = O[V[7]];
-														S, X = t, t and 6352485 or 5566124;
-													elseif X < 11865015 then
-														D, e = T(-20304), T(-20482);
-														J = R[e];
-														e = J(u);
-														X = D .. e;
-														D = { X };
-														X = R[T(-20465)];
-													else
-														X, z = 16523352, T(-20279);
-														D = O[V[6]];
-														e = Q[z];
-														J = D(e, Q);
-													end;
-												else
-													if 11878087 > X then
-														X = S and 1942268 or 11048721;
-													elseif 11897444 > X then
-														D, l = T(-20365), T(-20454);
-														X = R[D];
-														D = T(-20439);
-														D = X[D];
-														D = D(X, l);
-														l = D;
-														X = not l;
-														X = X and 11468814 or 2236662;
-													else
-														X = 10451873;
-													end;
-												end;
-											else
-												if X < 11783128 then
-													if 11741867 > X then
-														e = T(-20266);
-														J = R[e];
-														e = T(-20412);
-														Q = J[e];
-														z, X, m, e = 150, 5725613, 90, 0;
-														J = Q(e, z, m);
-														M = J;
-													elseif 11753817 > X then
-														u, J = N(M, u);
-														X = u and 5386083 or 3809274;
-													elseif 11770154 > X then
-														M, Q = E(N, M);
-														X = M and 16183659 or 16738024;
-													else
-														J, X = T(-20608), T(-20462);
-														X = Q[X];
-														X = X(Q, J);
-														X = X and 13708960 or 5742803;
-													end;
-												else
-													if 11799924 > X then
-														u = not M;
-														X = u and 5352408 or 10498519;
-													elseif X < 11818740 then
-														f, w = b(d, f);
-														X = f and 11502991 or 4738736;
-													else
-														S = T(-20279);
-														m = Q[S];
-														z, e = X, m;
-														X = m and 12414367 or 16408132;
-													end;
-												end;
-											end;
-										else
-											if X < 12079209 then
-												if X > 11973834 then
-													if 12000175 > X then
-														e, t = M, T(-20385);
-														S = R[t];
-														t, h = T(-20384), 7;
-														m = S[t];
-														S = m(E, e);
-														t = e * h;
-														e, h = nil, 3;
-														m = t + h;
-														z = S * m;
-														D = N + z;
-														z = 1000000;
-														X = D % z;
-														N = X;
-														X = 3313809;
-													elseif 12043158 > X then
-														X = 1920578;
-													else
-														l = C[1];
-														X = not l;
-														X = X and 10935598 or 7754581;
-													end;
-												else
-													if 11925651 > X then
-														E, l, D = T(-20593), T(-20621), T(-20650);
-														X = R[D];
-														E = X[E];
-														D = { E(X, l) };
-														X, D = R[T(-20371)], { c(D) };
-													elseif X < 11934217 then
-														X, l = 5096835, nil;
-													elseif X < 11948730 then
-														e, t = Q, T(-20408);
-														S = z[t];
-														X, m = S and 9228321 or 10807281, S;
-													else
-														D = O[V[1]];
-														J = O[V[1]];
-														Q = #J;
-														u = N % Q;
-														Q = 1;
-														M = u + Q;
-														X = D[M];
-														D = { X };
-														X = R[T(-20616)];
-													end;
-												end;
-											else
-												if X < 12113872 then
-													if 12082860 > X then
-														Q, e = T(-20266), 55;
-														u = R[Q];
-														Q = T(-20412);
-														M = u[Q];
-														X, J, Q = 14145666, 45, 45;
-														u = M(Q, J, e);
-														E = u;
-													elseif X < 12097479 then
-														H, X, p, w = nil, 11811358, nil, nil;
-													else
-														S = T(-20638);
-														m = e[S];
-														z, X = m, 3183055;
-													end;
-												else
-													if 12130382 > X then
-														S = T(-20279);
-														X = m[S];
-														S = X;
-														X = S and 15013616 or 1897766;
-													elseif 12146426 > X then
-														d, S = T(-20498), X;
-														h = R[d];
-														d = h(Q);
-														h = T(-20387);
-														t = d == h;
-														m, X = t, t and 15233020 or 10006362;
-													else
-														D, X = M, u;
-														X = 106830;
-													end;
-												end;
-											end;
-										end;
-									else
-										if X < 12347447 then
-											if 12237705 > X then
-												if X < 12206782 then
-													if 12162309 > X then
-														X = 3089044;
-														M = O[V[3]];
-														N = not M;
-														l = N;
-													elseif X < 12175425 then
-														z, u = T(-20643), N;
-														e = u ~= z;
-														X, J = e and 16517010 or 4315106, e;
-													elseif X < 12191188 then
-														l = C[1];
-														X = l;
-														O[V[1]] = X;
-														l, X, D = nil, R[T(-20567)], {};
-													else
-														Th = T(-20637);
-														X = b[Th];
-														Xh, Th, Vh = 5103295 ~= 5264879, T(-20499), T(-20401);
-														X[Th] = Xh;
-														Th = T(-20637);
-														X = b[Th];
-														Th = T(-20619);
-														Ch = R[Vh];
-														Vh = T(-20431);
-														ch = Ch[Vh];
-														Ch = ch(P);
-														ch = T(-20516);
-														Xh = Ch .. ch;
-														X[Th] = Xh;
-														Th = T(-20637);
-														X = b[Th];
-														Th, Ch = T(-20381), T(-20406);
-														ch = R[Ch];
-														Vh, Ch, kh = 0, T(-20544), 20;
-														Xh = ch[Ch];
-														Ch = 0;
-														ih = r + kh;
-														ch = Xh(Ch, K, Vh, ih);
-														X[Th] = ch;
-														ih, Th = 11, T(-20637);
-														X = b[Th];
-														Th, Ch = T(-20505), T(-20406);
-														ch = R[Ch];
-														Ch, Vh = T(-20544), 0;
-														Xh = ch[Ch];
-														Ch = 0;
-														ch = Xh(Ch, Rh, Vh, ih);
-														X[Th] = ch;
-														X = 5118191;
-													end;
-												else
-													if 12220612 > X then
-														X = O[V[1]];
-														N = T(-20279);
-														E = O[V[2]];
-														l = E[N];
-														E = O[V[2]];
-														D = X(l, E);
-														D, X = {}, R[T(-20533)];
-													elseif X < 12228198 then
-														X = 9013715;
-													else
-														X = O[V[2]];
-														X = X and 5756886 or 7624673;
-													end;
-												end;
-											else
-												if X > 12257109 then
-													if X < 12286228 then
-														X, Q, J = 11745093, nil, nil;
-													elseif X < 12323838 then
-														X = O[V[1]];
-														E, D = nil, nil;
-														X[l] = D;
-														X = 3190100;
-													else
-														D, X = nil, nil;
-														D = { X, D };
-														X = R[T(-20312)];
-													end;
-												else
-													if X < 12242771 then
-														D, X = {}, R[T(-20337)];
-													elseif 12245947 > X then
-														W = T(-20263);
-														G = b[W];
-														W = T(-20638);
-														F = G[W];
-														X, v = 8069156, F;
-													else
-														X, D, l = R[T(-20496)], {}, nil;
-													end;
-												end;
-											end;
-										else
-											if X > 12471275 then
-												if X < 12599302 then
-													if 12519172 > X then
-														l = C[1];
-														X = not l;
-														X = X and 14113095 or 12455099;
-													elseif X < 12567481 then
-														X, r, G, E, l = F, 18, T(-20406), nil, nil;
-														b[P] = v;
-														P, N, D = T(-20273), nil, {};
-														b = u[P];
-														P, W = T(-20381), 0;
-														F = R[G];
-														h, G = nil, T(-20544);
-														v = F[G];
-														G, p = 0, nil;
-														Y = d - r;
-														F = v(G, t, W, Y);
-														S = nil;
-														b[P] = F;
-														P, J, e, f = T(-20273), nil, nil, nil;
-														b = u[P];
-														t, u, G = nil, nil, T(-20406);
-														F = R[G];
-														w, G, d, Q, P, W = nil, T(-20544), nil, nil, T(-20505), 0;
-														v = F[G];
-														X, G, M, Y = R[T(-20459)], 0, nil, 16;
-														F = v(G, z, W, Y);
-														H = nil;
-														b[P] = F;
-														z = nil;
-													else
-														X, D = R[T(-20514)], {};
-													end;
-												else
-													if X < 12614814 then
-														p, v, w, X = nil, nil, nil, 16060447;
-													elseif X < 12634269 then
-														X = Q;
-														X = D and 16705201 or 10954746;
-													else
-														u, e = Q(M, u);
-														X = u and 6675477 or 10205397;
-													end;
-												end;
-											else
-												if X > 12415320 then
-													if X < 12416864 then
-														Q = T(-20327);
-														D = u[Q];
-														Q = T(-20497);
-														Q = D[Q];
-														Q = Q(D);
-														X = 15118054;
-													elseif 12436277 > X then
-														X, N = 665713, T(-20541);
-														E = R[N];
-														N = T(-20379);
-														l = E[N];
-														N = 3;
-														E = l(N);
-														D = E;
-													else
-														D = T(-20482);
-														X = R[D];
-														D = X(l);
-														X = 0;
-														N, E = X, D;
-														D, X = 1, 3313809;
-														M = #E;
-														u = M;
-														M = 1;
-														Q = M;
-														M = 0;
-														J = Q < M;
-														M = D - Q;
-													end;
-												else
-													if X < 12363247 then
-														t = T(-20263);
-														S = z[t];
-														X, m = S and 8282077 or 7991937, S;
-													elseif X < 12389058 then
-														d = T(-20327);
-														h = t[d];
-														X, d = 12827417, T(-20497);
-														d = h[d];
-														d = d(h);
-													elseif 12409507 > X then
-														e, Q, X = 75, T(-20266), 13363927;
-														u = R[Q];
-														Q = T(-20412);
-														M = u[Q];
-														J, Q = 60, 60;
-														u = M(Q, J, e);
-														E = u;
-													else
-														X, d = 16408132, T(-20279);
-														S = O[V[5]];
-														h = Q[d];
-														t = S(Q, h);
-														m = not t;
-														e = m;
-													end;
-												end;
-											end;
-										end;
-									end;
-								else
-									if X > 11135764 then
-										if X > 11456822 then
-											if X > 11551621 then
-												if X > 11630736 then
-													if 11639820 > X then
-														X = 4443632;
-														DT = o(DT);
-														CT = nil;
-													elseif 11652730 > X then
-														S, t = z(m, S);
-														X = S and 2780823 or 6288115;
-													else
-														E, N, e = T(-20630), T(-20476), T(-20410);
-														X = l[E];
-														E = X;
-														X = R[N];
-														Q = O[V[4]];
-														e = Q[e];
-														J = { e(Q) };
-														Q = { X(c(J)) };
-														u, N, X, M = Q[3], Q[1], 11745093, Q[2];
-													end;
-												else
-													if X < 11564677 then
-														e, X = nil, 12266649;
-													elseif 11598998 > X then
-														Ch = T(-20336);
-														X = b[Ch];
-														Vh = O[V[19]];
-														Ch = T(-20282);
-														X[Ch] = Vh;
-														X = 9584792;
-													else
-														X = O[V[2]];
-														D = X(l);
-														M, E = nil, D;
-														N = E ~= M;
-														X, D = N and 8685628 or 12654279, N;
-													end;
-												end;
-											else
-												if X < 11517528 then
-													if 11481538 > X then
-														X, D = nil, nil;
-														D = { X, D };
-														X = R[T(-20369)];
-													elseif X < 11496638 then
-														f = M[d];
-														D = not f;
-														X = D and 8059813 or 9895246;
-													elseif X < 11501002 then
-														Q = T(-20266);
-														u = R[Q];
-														Q = T(-20412);
-														M = u[Q];
-														Q, e, J = 45, 55, 45;
-														u = M(Q, J, e);
-														E, X = u, 16766674;
-													else
-														H, p = f, T(-20439);
-														X = O[h];
-														p = X[p];
-														p = p(X, w);
-														X = p and 9985834 or 12084074;
-													end;
-												else
-													if X < 11536485 then
-														M, N, D, E, l, X = nil, nil, {}, nil, nil, R[T(-20472)];
-													elseif 11544214 > X then
-														X = O[V[3]];
-														h = O[V[2]];
-														t = h[J];
-														S = X(t);
-														d = O[V[2]];
-														h = d[J];
-														d = T(-20263);
-														t = h[d];
-														X, S = t and 2144286 or 7190078, t;
-													else
-														D = O[V[1]];
-														X = not D;
-														X = X and 7742150 or 1422336;
-													end;
-												end;
-											end;
-										else
-											if 11322829 > X then
-												if X > 11216077 then
-													if X < 11246689 then
-														D, E, X = nil, nil, nil;
-														D = { X, D, E };
-														X = R[T(-20554)];
-													elseif 11283185 > X then
-														N = T(-20541);
-														E = R[N];
-														N = T(-20379);
-														l = E[N];
-														X, N = 6694368, .3;
-														E = l(N);
-														D = E;
-													else
-														X = D and 13579847 or 8299170;
-													end;
-												else
-													if X < 11180248 then
-														X, D = 7391980, E;
-													elseif X < 11198841 then
-														D = T(-20650);
-														X = R[D];
-														l, D, J = C, T(-20593), T(-20521);
-														D, z, E = X[D], T(-20300), T(-20573);
-														D = D(X, E);
-														E = y();
-														Q = T(-20558);
-														O[E] = D;
-														D, N = T(-20650), T(-20626);
-														X = R[D];
-														P, D = 200, T(-20593);
-														D = X[D];
-														D = D(X, N);
-														M = T(-20326);
-														N = y();
-														O[N] = D;
-														D = T(-20650);
-														X = R[D];
-														D, m = T(-20593), T(-20641);
-														D, u = X[D], T(-20334);
-														D = D(X, M);
-														M = y();
-														O[M] = D;
-														D = O[E];
-														X = D[u];
-														u = y();
-														e = T(-20269);
-														O[u] = X;
-														D = T(-20532);
-														X = {
-																D,
-																Q,
-																J,
-																e,
-																z,
-																m,
-															};
-														J = y();
-														z = 255;
-														Q = y();
-														O[Q] = X;
-														e, S, h, X = T(-20266), 0, 160, 15;
-														O[J] = X;
-														m = 0;
-														D = R[e];
-														e = T(-20412);
-														X = D[e];
-														e = 0;
-														D = X(e, z, m);
-														e = y();
-														O[e] = D;
-														d, w, z = 255, 255, T(-20266);
-														D = R[z];
-														m, H, z, v = 200, 50, T(-20412), 220;
-														X = D[z];
-														z = 255;
-														D = X(z, m, S);
-														t = 0;
-														z = y();
-														O[z] = D;
-														m = T(-20266);
-														D = R[m];
-														m, p = T(-20412), 0;
-														X = D[m];
-														S, m = 0, 255;
-														D = X(m, S, t);
-														m = y();
-														O[m] = D;
-														t = T(-20266);
-														S = R[t];
-														t = T(-20412);
-														D = S[t];
-														t = 80;
-														S = D(t, h, d);
-														h, d = T(-20266), 80;
-														t = R[h];
-														h = T(-20412);
-														D = t[h];
-														h, f = 255, 80;
-														t = D(h, d, f);
-														d = T(-20266);
-														h = R[d];
-														d, f, b = T(-20412), 255, 80;
-														D = h[d];
-														d = 80;
-														h = D(d, f, b);
-														f = T(-20266);
-														d = R[f];
-														b, f = 200, T(-20412);
-														D = d[f];
-														f = 255;
-														d = D(f, b, H);
-														b = T(-20266);
-														f = R[b];
-														b, H = T(-20412), 80;
-														D = f[b];
-														b = 200;
-														f = D(b, H, w);
-														w, H = 140, T(-20266);
-														b = R[H];
-														H = T(-20412);
-														D = b[H];
-														H = 255;
-														b = D(H, w, p);
-														w, p = T(-20266), 100;
-														H = R[w];
-														w = T(-20412);
-														D = H[w];
-														w = 255;
-														H = D(w, p, P);
-														p = T(-20266);
-														w = R[p];
-														p, P = T(-20412), 255;
-														D = w[p];
-														p = 100;
-														w = { D(p, P, v) };
-														X, p = {
-																S,
-																t,
-																h,
-																d,
-																f,
-																b,
-																H,
-																c(w),
-															}, T(-20444);
-														S = y();
-														O[S] = X;
-														D = T(-20476);
-														X = A(14445078, { u });
-														H, t, w = T(-20359), X, T(-20490);
-														b = { H, w, p };
-														h = y();
-														X = t();
-														O[h] = X;
-														X = R[D];
-														H = { X(b) };
-														d, D, X = H[2], H[1], 11811358;
-														b, f = D, H[3];
-													elseif X < 11202195 then
-														lT = y();
-														CT = kT;
-														O[lT] = DT;
-														DT = lT;
-														OT = O[DT];
-														yT = O[V[6]];
-														lT = OT ~= yT;
-														X = lT and 2503387 or 11637112;
-													else
-														X = S;
-														X = z and 8697560 or 5990910;
-													end;
-												end;
-											else
-												if X > 11394814 then
-													if X < 11420851 then
-														X, D = R[T(-20348)], {};
-													elseif X < 11437434 then
-														X = 7919465;
-													else
-														D, X = {}, R[T(-20543)];
-													end;
-												else
-													if X < 11346279 then
-														X = m and 13558053 or 9781436;
-													elseif 11363846 > X then
-														f = O[V[4]];
-														h, d = f, X;
-														X = f and 10285996 or 15571904;
-													else
-														J, X, e = nil, 3709006, nil;
-													end;
-												end;
-											end;
-										end;
-									else
-										if X > 10841326 then
-											if X < 10984176 then
-												if X < 10949040 then
-													if 10881965 > X then
-														X = 6671344;
-													elseif X < 10918715 then
-														X = h and 11349729 or 975475;
-													elseif 10939466 > X then
-														X, D = R[T(-20634)], {};
-													else
-														X = D and 1078017 or 6671344;
-													end;
-												else
-													if 10955771 > X then
-														X, M, u = 6161868, nil, nil;
-													elseif 10966851 > X then
-														X = O[V[1]];
-														D = { X };
-														X = R[T(-20354)];
-													else
-														P = T(-20613);
-														p = b[P];
-														v = T(-20613);
-														P = u[v];
-														w = p - P;
-														F = T(-20488);
-														v = T(-20488);
-														P = b[v];
-														v = u[F];
-														F = T(-20401);
-														p = P - v;
-														v = R[F];
-														F = T(-20299);
-														P = v[F];
-														G = w * w;
-														W = p * p;
-														F = G + W;
-														v = P(F);
-														F = X;
-														W = O[V[7]];
-														G = v < W;
-														X, P = G and 13940074 or 15378580, G;
-													end;
-												end;
-											else
-												if X < 11037956 then
-													if X < 11006006 then
-														D, J = T(-20471), T(-20383);
-														D = N[D];
-														D = D(N);
-														Q = R[J];
-														J = T(-20469);
-														u = Q[J];
-														Q = T(-20423);
-														M = u[Q];
-														X = D == M;
-														X = X and 3795238 or 5156137;
-													elseif 11023878 > X then
-														X = Q;
-														X = D and 6588800 or 12943492;
-													else
-														O[V[5]] = l;
-														X, D = R[T(-20440)], {};
-													end;
-												else
-													if 11054075 > X then
-														m, X, z = nil, 14951712, nil;
-													elseif 11083034 > X then
-														D, X = {}, R[T(-20345)];
-													else
-														X, D = 9518018, nil;
-														O[V[3]] = D;
-													end;
-												end;
-											end;
-										else
-											if X > 10697695 then
-												if 10801213 > X then
-													if X < 10744542 then
-														l = O[V[3]];
-														D = not l;
-														X = D and 10557166 or 12895306;
-													elseif X < 10783853 then
-														Th, Dh = T(-20274), 0;
-														X = f[Th];
-														Th, ih, ch = X, 1, T(-20401);
-														Xh = R[ch];
-														ch = T(-20452);
-														X = Xh[ch];
-														Vh, Ch = 0, T(-20298);
-														ch = f[Ch];
-														Ch = 1;
-														Xh = X(ch, Ch);
-														Ch = T(-20401);
-														ch = R[Ch];
-														Ch = T(-20484);
-														X = ch[Ch];
-														Ch = Th / Xh;
-														ch = X(Ch, Vh, ih);
-														Vh = 9632508 ~= 5110384;
-														Ch = T(-20333);
-														X = b[Ch];
-														Ch = T(-20499);
-														X[Ch] = Vh;
-														lh, kh, Ch = 2, T(-20406), T(-20333);
-														X = b[Ch];
-														ih = R[kh];
-														kh, Ch = T(-20544), T(-20381);
-														Vh = ih[kh];
-														Oh = r + lh;
-														kh = 0;
-														ih = Vh(kh, K, Dh, Oh);
-														X[Ch] = ih;
-														Dh, kh, Ch = 0, T(-20406), T(-20333);
-														X = b[Ch];
-														Oh = 4;
-														ih = R[kh];
-														Ch, kh = T(-20505), T(-20544);
-														Vh = ih[kh];
-														kh = 0;
-														ih = Vh(kh, Rh, Dh, Oh);
-														Dh, Oh = 1, 0;
-														X[Ch] = ih;
-														Ch = T(-20336);
-														X = b[Ch];
-														Ch, kh = T(-20505), T(-20406);
-														ih = R[kh];
-														kh = T(-20544);
-														Vh = ih[kh];
-														kh = 0;
-														ih = Vh(ch, kh, Dh, Oh);
-														X[Ch] = ih;
-														Ch = .5;
-														X = ch > Ch;
-														X = X and 14294027 or 8889153;
-													elseif X < 10793951 then
-														X = O[V[8]];
-														S = X(e);
-														S = T(-20476);
-														X = R[S];
-														f = T(-20451);
-														f = e[f];
-														d = { f(e) };
-														f = { X(c(d)) };
-														t, h, X, S = f[2], f[3], 3899430, f[1];
-													else
-														D = T(-20630);
-														X = l[D];
-														E = X;
-														X = O[V[3]];
-														M = { X() };
-														D, N = M[1], M[2];
-														M = D;
-														u = not M;
-														X, D = u and 14640451 or 3638829, u;
-													end;
-												else
-													if 10806282 > X then
-														X = 5285125 <= 3307786;
-														D = { X };
-														X = R[T(-20392)];
-													elseif 10813917 > X then
-														X = m and 15312977 or 4210041;
-													else
-														t = T(-20327);
-														S = z[t];
-														m, X = S, S and 15885552 or 14654252;
-													end;
-												end;
-											else
-												if X < 10635512 then
-													if 10597726 > X then
-														Y, X, P, F, W = nil, 15252302, nil, nil, nil;
-													elseif X < 10607465 then
-														E, l = C[2], C[1];
-														X = l and 5857391 or 6770742;
-													elseif 10623410 > X then
-														X = 341068 ~= 16610624;
-														D = { X };
-														X = R[T(-20508)];
-													else
-														Q, X = 1, u;
-														M[X] = D;
-														D = N or Q;
-														N, E, X = nil, nil, T(-20280);
-														M[X] = D;
-														u, D = X, T(-20638);
-														u = l;
-														l = nil;
-														M[D] = u;
-														X, D, M = R[T(-20561)], {}, nil;
-													end;
-												else
-													if X < 10643938 then
-														S = T(-20263);
-														z = u[S];
-														t, X, S = 14709800 ~= 1814624, 4435035, T(-20396);
-														z[S] = t;
-													elseif 10667751 > X then
-														u = O[V[4]];
-														X = u[M];
-														u = X;
-														X = not u;
-														X = X and 1896643 or 6173745;
-													else
-														S, X = t, h;
-														X = 11875832;
-													end;
-												end;
-											end;
-										end;
-									end;
-								end;
-							else
-								if X < 9690132 then
-									if X > 9239653 then
-										if X < 9443977 then
-											if X > 9346165 then
-												if X < 9381018 then
-													if X < 9363123 then
-														H, X = T(-20408), 4273378;
-														b = t[H];
-														H = T(-20638);
-														f = b[H];
-														h = f;
-													elseif X < 9370791 then
-														M, u, X = nil, nil, 4650135;
-													else
-														N, E = T(-20541), C[2];
-														D = R[N];
-														l, N = C[1], T(-20379);
-														X = D[N];
-														N = .5;
-														D = X(N);
-														X = O[V[1]];
-														X = X and 9476991 or 390609;
-													end;
-												else
-													if 9416678 > X then
-														N, l, z = T(-20597), T(-20619), T(-20618);
-														D = O[V[1]];
-														X = not D;
-														O[V[1]] = X;
-														u = X;
-														D = O[V[2]];
-														J = X;
-														e = O[V[1]];
-														Q, J = e and z, T(-20609);
-														M = Q or J;
-														E = N .. M;
-														D[l] = E;
-														N, l = X, T(-20282);
-														D = O[V[2]];
-														u = X;
-														Q = O[V[1]];
-														X, M = Q and 9166216 or 13698839, Q;
-													elseif 9442986 > X then
-														D, X = {}, R[T(-20648)];
-													else
-														z, J, e = 90, T(-20266), 150;
-														Q = R[J];
-														J = T(-20412);
-														u = Q[J];
-														J = 0;
-														Q = u(J, e, z);
-														X, N = 2611213, Q;
-													end;
-												end;
-											else
-												if 9288954 > X then
-													if X < 9260981 then
-														M, z = J, T(-20439);
-														z = l[z];
-														z = z(l, e);
-														S = X;
-														X, m = z and 7288756 or 5332033, z;
-													elseif 9274160 > X then
-														u, X = T(-20408), 8706994;
-														M = E[u];
-														u = T(-20638);
-														N = M[u];
-														D = N;
-													elseif X < 9279734 then
-														X = O[V[1]];
-														M, D = T(-20482), T(-20619);
-														N = R[M];
-														u = O[V[3]];
-														M = N(u);
-														X[D] = M;
-														X = 5735075;
-													else
-														D, X = {}, R[T(-20606)];
-													end;
-												else
-													if X < 9297295 then
-														Q, S = M, T(-20498);
-														m = R[S];
-														S = m(J);
-														m = T(-20387);
-														z = S == m;
-														X, e = z and 16553117 or 16528987, z;
-													elseif X < 9318891 then
-														J, u = T(-20502), T(-20381);
-														D = N[u];
-														Q = M[J];
-														J = O[V[4]];
-														m = T(-20355);
-														u = Q * J;
-														X = D + u;
-														u, J = X, T(-20355);
-														Q = R[J];
-														J = T(-20544);
-														D = Q[J];
-														X = T(-20355);
-														z = N[m];
-														m = T(-20586);
-														e = z[m];
-														J = u + e;
-														Q = D(u, J);
-														u = nil;
-														N[X] = Q;
-														X = 9868567;
-													else
-														N, E, Q = C[3], C[2], T(-20387);
-														u = y();
-														M = y();
-														t = 22;
-														O[M] = C[4];
-														z, l = T(-20406), C[1];
-														O[u] = C[5];
-														S, m = 0, 0;
-														D = R[Q];
-														Q = T(-20544);
-														X = D[Q];
-														Q = T(-20332);
-														D = X(Q);
-														Q = y();
-														O[Q] = D;
-														D = T(-20505);
-														X = O[Q];
-														e = R[z];
-														z = T(-20544);
-														J = e[z];
-														z = .43;
-														e = J(z, m, S, t);
-														m = 0;
-														X[D] = e;
-														X = O[Q];
-														z, D = T(-20406), T(-20381);
-														e = R[z];
-														z = T(-20544);
-														J = e[z];
-														z = 0;
-														e = J(E, z, m, N);
-														X[D] = e;
-														D = T(-20282);
-														X = O[Q];
-														S = O[M];
-														m, e = X, X;
-														t = S();
-														z, X = t, t and 187180 or 12790057;
-													end;
-												end;
-											end;
-										else
-											if 9583795 > X then
-												if X < 9498858 then
-													if X < 9445851 then
-														E, l = C[2], C[1];
-														N = O[V[1]];
-														D, X = N, N and 7391980 or 11164889;
-													elseif 9461938 > X then
-														X, D = R[T(-20270)], { E };
-													elseif X < 9478345 then
-														X, D = R[T(-20487)], {};
-													else
-														N, Q = M(E, N);
-														X = N and 661553 or 7377513;
-													end;
-												else
-													if X < 9536974 then
-														X, D = R[T(-20560)], {};
-													elseif X < 9569364 then
-														z, J = T(-20331), {};
-														O[V[11]] = J;
-														X = 11642529;
-														e = R[z];
-														t = O[V[12]];
-														h = { e(t) };
-														z, m, S = h[1], h[2], h[3];
-													else
-														X = Q;
-														X = D and 2834795 or 1848424;
-													end;
-												end;
-											else
-												if 9640608 > X then
-													if 9591410 > X then
-														Ch = T(-20409);
-														X = b[Ch];
-														Vh, Ch = 15086408 < 15211644, T(-20499);
-														X[Ch] = Vh;
-														Dh, Ch = T(-20401), T(-20409);
-														X = b[Ch];
-														Ch = T(-20619);
-														kh = R[Dh];
-														yh, Dh = T(-20401), T(-20431);
-														ih = kh[Dh];
-														kh = ih(Th);
-														Dh, ch = T(-20587), nil;
-														lh = R[yh];
-														yh = T(-20431);
-														Oh = lh[yh];
-														lh = Oh(Xh);
-														ih = Dh .. lh;
-														Vh = kh .. ih;
-														X[Ch] = Vh;
-														kh, Ch, Dh = T(-20406), T(-20409), 0;
-														X = b[Ch];
-														Xh = nil;
-														ih = R[kh];
-														Ch, kh = T(-20381), T(-20544);
-														Vh = ih[kh];
-														kh, lh = 0, 7;
-														Oh = r + lh;
-														ih = Vh(kh, K, Dh, Oh);
-														Oh = 11;
-														X[Ch] = ih;
-														Th, Ch = nil, T(-20409);
-														X = b[Ch];
-														Ch, kh = T(-20505), T(-20406);
-														ih = R[kh];
-														Dh, kh = 0, T(-20544);
-														Vh = ih[kh];
-														kh = 0;
-														ih = Vh(kh, Rh, Dh, Oh);
-														X[Ch] = ih;
-														X = 7897449;
-													elseif X < 9610716 then
-														X, D = R[T(-20611)], {};
-													else
-														G = T(-20263);
-														F = b[G];
-														X, G = 15952399, T(-20638);
-														v = F[G];
-														P = v;
-													end;
-												else
-													if 9658797 > X then
-														N, u = l(E, N);
-														X = N and 9983006 or 641964;
-													elseif 9668485 > X then
-														m = T(-20370);
-														z = u ~= m;
-														X, J = 13949438, z;
-													else
-														Q = T(-20263);
-														D = u[Q];
-														Q = T(-20497);
-														Q = D[Q];
-														Q = Q(D);
-														X = 14848657;
-													end;
-												end;
-											end;
-										end;
-									else
-										if X < 8957783 then
-											if X < 8822361 then
-												if X > 8727384 then
-													if X < 8772741 then
-														X, D = R[T(-20645)], {};
-													elseif X < 8809658 then
-														l = T(-20365);
-														D = R[l];
-														l = T(-20360);
-														X = D[l];
-														l = X;
-														X = not l;
-														X = X and 4840594 or 10797143;
-													else
-														X = {};
-														D = O[V[6]];
-														M = X;
-														u = M;
-														D[l] = u;
-														X = 16706627;
-													end;
-												else
-													if X < 8671139 then
-														D, l = T(-20499), 109683 < 1048753;
-														X = O[V[1]];
-														X[D] = l;
-														D, l = T(-20499), 3398337 >= 10026839;
-														X = O[V[2]];
-														X[D] = l;
-														D, X = {}, R[T(-20455)];
-													elseif 8691594 > X then
-														M = O[V[1]];
-														N = E == M;
-														X, D = 12654279, N;
-													elseif 8702277 > X then
-														S = T(-20263);
-														z = u[S];
-														S, X, t = T(-20396), 5990910, 10391966 >= 15448478;
-														z[S] = t;
-													else
-														X = D and 5365671 or 10558069;
-													end;
-												end;
-											else
-												if 8851172 > X then
-													if 8830224 > X then
-														X, h, u = 230988, t, nil;
-														M, S, t = h, nil, nil;
-													elseif X < 8843922 then
-														X = 651075;
-													elseif X < 8850780 then
-														M, l, E, N = T(-20387), C[1], C[2], C[3];
-														D = R[M];
-														M = T(-20544);
-														X = D[M];
-														M = T(-20654);
-														D = X(M);
-														M, X = D, T(-20539);
-														D, u = E, X;
-														X = E and 10635397 or 16101018;
-													else
-														N, z, l = T(-20599), T(-20618), T(-20619);
-														D = O[V[1]];
-														X = not D;
-														J = X;
-														O[V[1]] = X;
-														u = X;
-														D = O[V[2]];
-														u = X;
-														e = O[V[1]];
-														J, Q = T(-20609), e and z;
-														M = Q or J;
-														E = N .. M;
-														D[l] = E;
-														l = T(-20282);
-														D = O[V[2]];
-														Q = O[V[1]];
-														N = X;
-														X, M = Q and 4510866 or 9711398, Q;
-													end;
-												else
-													if X < 8870225 then
-														u = T(-20327);
-														M = E[u];
-														X, u = 15304918, T(-20638);
-														N = M[u];
-														D = N;
-													elseif X < 8895502 then
-														Ch = .25;
-														X = ch > Ch;
-														X = X and 14977194 or 11573636;
-													else
-														u, m, z = T(-20476), T(-20575), T(-20319);
-														M = R[u];
-														d, h, S, t = T(-20493), T(-20463), T(-20315), T(-20448);
-														e = {
-																z,
-																m,
-																S,
-																t,
-																h,
-																d,
-															};
-														z = { M(e) };
-														u, J, Q, X = z[1], z[3], z[2], 13742370;
-													end;
-												end;
-											end;
-										else
-											if X > 9152552 then
-												if 9184011 > X then
-													if X < 9159248 then
-														u = T(-20316);
-														E = O[V[2]];
-														X, N, D = R[T(-20306)], T(-20619), {};
-														Q = O[V[1]];
-														M = u .. Q;
-														E[N] = M;
-													elseif X < 9165119 then
-														X, u = 13077621, T(-20263);
-														M = E[u];
-														u = T(-20638);
-														N = M[u];
-														D = N;
-													else
-														e = T(-20266);
-														J = R[e];
-														z, e, X = 150, T(-20412), 13698839;
-														Q = J[e];
-														m, e = 90, 0;
-														J = Q(e, z, m);
-														M = J;
-													end;
-												else
-													if 9215064 > X then
-														N, u = l(E, N);
-														X = N and 13798668 or 1837067;
-													elseif 9229734 > X then
-														X, h = 10807281, T(-20408);
-														t = z[h];
-														h = T(-20638);
-														S = t[h];
-														m = S;
-													else
-														J, E = T(-20410), T(-20476);
-														D = R[E];
-														u = O[V[2]];
-														J = u[J];
-														Q = { J(u) };
-														u = { D(c(Q)) };
-														X, E, N, M = 11762542, u[1], u[2], u[3];
-													end;
-												end;
-											else
-												if 9087670 > X then
-													if X < 9017795 then
-														z, m, X = nil, nil, 11555719;
-													elseif X < 9024154 then
-														N = A(2519690, { l });
-														D = T(-20364);
-														X = R[D];
-														M = { X(N) };
-														D = M[1];
-														N, E = D, M[2];
-														D, X = N, N and 14700673 or 106830;
-													elseif 9028668 > X then
-														X, l, D = R[T(-20272)], nil, {};
-													else
-														S = T(-20433);
-														m = R[S];
-														S = T(-20426);
-														X = m[S];
-														m = X(E, e);
-														X = 9846380;
-													end;
-												else
-													if X < 9144929 then
-														X = T(-20439);
-														X, D = E[X], T(-20453);
-														X = X(E, D);
-														N = X;
-														X = not N;
-														X = X and 1597391 or 4938859;
-													elseif X < 9148024 then
-														D = O[V[1]];
-														X, N = not D, T(-20585);
-														J, u, z = X, X, T(-20618);
-														u = X;
-														O[V[1]] = X;
-														l = T(-20619);
-														D = O[V[2]];
-														J = T(-20609);
-														e = O[V[1]];
-														Q = e and z;
-														M = Q or J;
-														E = N .. M;
-														N = X;
-														D[l] = E;
-														D = O[V[2]];
-														Q = O[V[1]];
-														M, l, X = Q, T(-20282), Q and 4530103 or 5147665;
-													else
-														X = 9026434;
-													end;
-												end;
-											end;
-										end;
-									end;
-								else
-									if X < 10094716 then
-										if 9881906 > X then
-											if X < 9806503 then
-												if 9752375 > X then
-													if X < 9707237 then
-														M = T(-20619);
-														X = O[V[1]];
-														N = O[V[2]];
-														E = N[M];
-														D = X(E);
-														X = D and 15542076 or 4060577;
-													elseif 9726497 > X then
-														X = u;
-														X, E = M and 12723386 or 3393531, M;
-													elseif X < 9743248 then
-														l = C[1];
-														X = not l;
-														X = X and 10468898 or 14262233;
-													else
-														l = C[1];
-														X = l;
-														l = nil;
-														O[V[1]] = X;
-														D, X = {}, R[T(-20373)];
-													end;
-												else
-													if 9765337 > X then
-														d, b = X, T(-20327);
-														f = t[b];
-														X, h = f and 9970613 or 1034537, f;
-													elseif 9776130 > X then
-														D = T(-20476);
-														X = R[D];
-														u = T(-20451);
-														u = l[u];
-														M = { u(l) };
-														u = { X(c(M)) };
-														D, X, E, N = u[1], 9479699, u[2], u[3];
-														M = D;
-													else
-														z, X = nil, 11377964;
-													end;
-												end;
-											else
-												if 9840931 > X then
-													if 9832520 > X then
-														H, X = T(-20263), 13295691;
-														b = t[H];
-														H = T(-20638);
-														f = b[H];
-														h = f;
-													elseif 9834476 > X then
-														d, X = T(-20328), T(-20439);
-														X = S[X];
-														X = X(S, d);
-														h = X;
-														X = 410828;
-													else
-														M, D, N, l, e = 4929026 > 10698742, {}, 12055574 > 13769841, 4149842 > 13189766, T(-20364);
-														O[V[2]] = D;
-														u = 8427888 > 16443950;
-														O[V[3]] = l;
-														z = A(14490868, { V[9], V[10] });
-														E = 8028051 > 15366346;
-														O[V[4]] = E;
-														O[V[5]] = N;
-														Q = 1124469 > 15844071;
-														O[V[6]] = M;
-														O[V[7]] = u;
-														O[V[8]] = Q;
-														J = R[e];
-														e = J(z);
-														e = T(-20331);
-														J = R[e];
-														S = O[V[11]];
-														t = { J(S) };
-														m, z, X, e = t[3], t[2], 3737952, t[1];
-													end;
-												else
-													if 9849452 > X then
-														X = 9781436;
-													elseif X < 9860546 then
-														X, e = 13812420, T(-20433);
-														J = R[e];
-														e = T(-20426);
-														Q = J[e];
-														J = Q(E, u);
-													else
-														M, X = nil, 16222302;
-													end;
-												end;
-											end;
-										else
-											if 9984420 > X then
-												if X > 9935857 then
-													if 9954854 > X then
-														D = O[V[6]];
-														e = T(-20279);
-														J = u[e];
-														Q = D(u, J);
-														X = Q and 16235149 or 2759113;
-													elseif 9976809 > X then
-														H = T(-20327);
-														b = t[H];
-														X, H = 1034537, T(-20638);
-														f = b[H];
-														h = f;
-													else
-														M, e = N, T(-20408);
-														J = u[e];
-														D, Q = J, X;
-														X = J and 3840046 or 11020566;
-													end;
-												else
-													if X < 9911955 then
-														D, f = T(-20505), N;
-														d[D] = f;
-														f, D, X = 12602074 < 11602655, T(-20550), 5502370;
-														d[D] = f;
-													elseif X < 9929242 then
-														w = O[V[2]];
-														H = w[J];
-														X, b = H and 692441 or 1163216, H;
-													elseif 9931219 > X then
-														X = D and 2173917 or 14276767;
-													else
-														D, l = T(-20482), C[1];
-														X = R[D];
-														D = X(l);
-														E = T(-20476);
-														X = R[E];
-														l = D;
-														u = O[V[1]];
-														Q = { X(u) };
-														M, N, X, E = Q[3], Q[2], 2976989, Q[1];
-													end;
-												end;
-											else
-												if X < 10028852 then
-													if X < 9989069 then
-														X = T(-20497);
-														X = p[X];
-														X = X(p);
-														X = 12084074;
-													elseif 9999333 > X then
-														X, u, z = 14899779, T(-20476), T(-20451);
-														M = R[u];
-														z = l[z];
-														e = { z(l) };
-														z = { M(c(e)) };
-														u, J, Q = z[1], z[3], z[2];
-													else
-														X, e = S, m;
-														X = 15673120;
-													end;
-												else
-													if 10058877 > X then
-														D = O[V[4]];
-														Q = D(u);
-														Q, M, e = X, N, T(-20263);
-														J = u[e];
-														X, D = J and 13072077 or 15473522, J;
-													elseif X < 10075522 then
-														S, z = 11440389 < 8053961, T(-20263);
-														e = u[z];
-														X, z = 587144, T(-20396);
-														e[z] = S;
-													else
-														N, l = 0, C[1];
-														E = l > N;
-														D, X = E, E and 5271163 or 10943334;
-													end;
-												end;
-											end;
-										end;
-									else
-										if 10315438 > X then
-											if X > 10272267 then
-												if X > 10284619 then
-													if X < 10285609 then
-														E = T(-20365);
-														D = R[E];
-														E = T(-20360);
-														X = D[E];
-														E = X;
-														X = E and 1530827 or 338376;
-													elseif X < 10297905 then
-														X = 15571904;
-														f = O[V[5]];
-														b = f(m);
-														h = b;
-													else
-														X = D and 13419054 or 7711461;
-													end;
-												else
-													if X < 10280213 then
-														X = 9598028;
-													elseif 10283029 > X then
-														Q, X = T(-20492), 1713830;
-														u = E[Q];
-														N = u;
-													else
-														J, e, X = nil, nil, 12653443;
-													end;
-												end;
-											else
-												if X < 10205931 then
-													if 10129638 > X then
-														u, t = e, T(-20439);
-														t = l[t];
-														t = t(l, S);
-														d = X;
-														X, h = t and 1991195 or 1333500, t;
-													elseif X < 10162888 then
-														J, X, u = T(-20347), T(-20462), N;
-														X = Q[X];
-														X = X(Q, J);
-														X = X and 2933191 or 16139990;
-													elseif X < 10188348 then
-														N = nil;
-														X = O[V[1]];
-														X[l] = N;
-														E, D, X, l = nil, {}, R[T(-20506)], nil;
-													else
-														u, M = T(-20467), T(-20347);
-														u = N[u];
-														X = { u(N, M) };
-														D = { N, c(X) };
-														X = R[T(-20450)];
-													end;
-												else
-													if X < 10226175 then
-														X, u, Q = 5218478, nil, nil;
-													elseif X < 10256018 then
-														E = O[V[2]];
-														X, l = 4917797, not E;
-														D = l;
-													else
-														N = T(-20598);
-														D = l[N];
-														N = O[V[2]];
-														X = D == N;
-														X = X and 7795269 or 13145215;
-													end;
-												end;
-											end;
-										else
-											if X < 10508991 then
-												if 10462535 > X then
-													if 10374065 > X then
-														X = O[V[1]];
-														D = { X };
-														X = R[T(-20376)];
-													elseif 10439470 > X then
-														N = O[V[2]];
-														X, D = N and 8376782 or 985399, N;
-													elseif X < 10454022 then
-														M, X, u = nil, 8265485, nil;
-													else
-														J, S = T(-20476), T(-20279);
-														D = R[J];
-														t = T(-20451);
-														m = Q[S];
-														t = m[t];
-														S = { t(m) };
-														m = { D(c(S)) };
-														z, J, e, X = m[3], m[1], m[2], 6597093;
-													end;
-												else
-													if X < 10472226 then
-														D, X = {}, R[T(-20549)];
-													elseif X < 10487037 then
-														X = O[V[2]];
-														N = O[l];
-														M, u = T(-20437), T(-20346);
-														E = N[M];
-														u = E[u];
-														M = B(767109, { V[3], l });
-														N = { u(E, M) };
-														D = X(c(N));
-														X = 3088057;
-													else
-														X, D = R[T(-20631)], { N, M, E };
-													end;
-												end;
-											else
-												if X < 10544914 then
-													if 10521929 > X then
-														J, u = 75, T(-20266);
-														M = R[u];
-														u, Q = T(-20412), 60;
-														N = M[u];
-														X, u = 8009227, 60;
-														M = N(u, Q, J);
-														l = M;
-													elseif X < 10528528 then
-														p, X = P, v;
-														X = 1696354;
-													else
-														h = T(-20263);
-														t = u[h];
-														h = T(-20638);
-														S = t[h];
-														X, e = 12663818, S;
-													end;
-												else
-													if X < 10557617 then
-														E = T(-20541);
-														l = R[E];
-														E = T(-20442);
-														D = l[E];
-														E = O[V[4]];
-														X = 12895306;
-														l = D(E);
-														O[V[3]] = l;
-													elseif X < 10573112 then
-														M = T(-20273);
-														N = E[M];
-														X, D = N and 5058440 or 4361872, N;
-													else
-														G = T(-20263);
-														X = O[V[3]];
-														v = X(b);
-														F = b[G];
-														X, v = F and 12244326 or 8069156, F;
-													end;
-												end;
-											end;
-										end;
-									end;
-								end;
-							end;
-						else
-							if 14788572 > X then
-								if 13703899 > X then
-									if X > 13078809 then
-										if X < 13378801 then
-											if X > 13220362 then
-												if X > 13319689 then
-													if 13353807 > X then
-														t, D = 0, T(-20352);
-														S[D] = t;
-														X = 15802209;
-													elseif X < 13369254 then
-														D[l] = E;
-														D = O[V[3]];
-														X = N;
-														X = D and 16695980 or 12584071;
-													else
-														t, d = m(S, t);
-														X = t and 13019650 or 15565201;
-													end;
-												else
-													if X < 13249712 then
-														X = Th and 10776948 or 5853283;
-													elseif 13282920 > X then
-														N = T(-20368);
-														D = R[N];
-														N = T(-20544);
-														X = D[N];
-														N = O[V[5]];
-														M = O[V[5]];
-														u = O[V[5]];
-														D = X(N, M, u);
-														N = D;
-														D = O[V[6]];
-														X = D[l];
-														M = X;
-														X = not M;
-														X = X and 8821608 or 16706627;
-													else
-														X = d;
-														X = h and 121581 or 9759850;
-													end;
-												end;
-											else
-												if 13154500 > X then
-													if X < 13101542 then
-														X, D = R[T(-20268)], {};
-													elseif X < 13128024 then
-														l = C[1];
-														X = O[V[1]];
-														E = O[V[2]];
-														D = X(l, E);
-														D, l, X = {}, nil, R[T(-20342)];
-													elseif X < 13139088 then
-														E = T(-20387);
-														D = R[E];
-														e, N, E = 60, T(-20387), T(-20544);
-														X = D[E];
-														E = T(-20415);
-														D = X(E);
-														J, E = 255, D;
-														D, X = T(-20522), T(-20432);
-														E[X] = D;
-														X, D = T(-20591), 1;
-														E[X] = D;
-														Q, D, X = 255, 8050455 > 9952871, T(-20499);
-														E[X] = D;
-														D = O[V[3]];
-														X, b = T(-20638), T(-20637);
-														E[X] = D;
-														X, u, D = T(-20277), T(-20266), 50;
-														E[X] = D;
-														D = R[N];
-														N = T(-20544);
-														X = D[N];
-														N = T(-20654);
-														D = X(N);
-														N = D;
-														M = R[u];
-														u, X = T(-20412), T(-20539);
-														D = M[u];
-														u = 255;
-														M = D(u, Q, J);
-														D, H, f = 1.5, T(-20263), T(-20409);
-														N[X] = M;
-														M, X = T(-20387), T(-20280);
-														N[X] = D;
-														D, X = E, T(-20638);
-														N[X] = D;
-														D = R[M];
-														M = T(-20544);
-														X = D[M];
-														M = T(-20415);
-														D = X(M);
-														M, d, S = D, T(-20336), 1;
-														D, X, h = T(-20513), T(-20432), 220;
-														M[X] = D;
-														Q = T(-20266);
-														u = R[Q];
-														Q, J, X = T(-20412), 60, T(-20282);
-														D = u[Q];
-														Q = 255;
-														u = D(Q, J, e);
-														M[X] = u;
-														J, X, D, Q = 0, T(-20481), 0, T(-20372);
-														M[X] = D;
-														u = R[Q];
-														X, Q, w = T(-20570), T(-20544), nil;
-														D = u[Q];
-														e, Q = 255, .5;
-														u = D(Q, J);
-														z = 255;
-														M[X] = u;
-														X, D = T(-20499), 16232006 < 2899235;
-														M[X] = D;
-														D = O[V[3]];
-														X = T(-20638);
-														M[X] = D;
-														X, D = T(-20277), 40;
-														M[X] = D;
-														u = T(-20387);
-														D = R[u];
-														u = T(-20544);
-														X = D[u];
-														u = T(-20289);
-														D = X(u);
-														X, u = T(-20432), D;
-														D = T(-20302);
-														u[X] = D;
-														D, J, X = 1, T(-20266), T(-20591);
-														u[X] = D;
-														Q = R[J];
-														m, J, X = 0, T(-20412), T(-20356);
-														D = Q[J];
-														J = 255;
-														Q = D(J, e, z);
-														D = 16030173 > 11171840;
-														u[X] = Q;
-														e, X = T(-20383), T(-20566);
-														u[X] = D;
-														t, X = 0, T(-20418);
-														J = R[e];
-														z, e = 0, T(-20418);
-														Q = J[e];
-														e, J = 0, T(-20317);
-														D = Q[J];
-														u[X] = D;
-														D, J, X = .3, T(-20266), T(-20600);
-														u[X] = D;
-														X = T(-20391);
-														Q = R[J];
-														J = T(-20412);
-														D = Q[J];
-														J = 0;
-														Q = D(J, e, z);
-														u[X] = Q;
-														D, X = 4410110 > 10464414, T(-20499);
-														u[X] = D;
-														D = O[V[3]];
-														X = T(-20638);
-														u[X] = D;
-														X, D, Q = T(-20277), 60, T(-20387);
-														u[X] = D;
-														z = 0;
-														D = R[Q];
-														Q = T(-20544);
-														X = D[Q];
-														Q = T(-20415);
-														D = X(Q);
-														Q, X, e = D, T(-20432), T(-20266);
-														D = T(-20291);
-														Q[X] = D;
-														J = R[e];
-														e, X = T(-20412), T(-20282);
-														D = J[e];
-														e = 0;
-														J = D(e, z, m);
-														Q[X] = J;
-														D, X = 0, T(-20481);
-														Q[X] = D;
-														X, m, D = T(-20499), 0, 6005932 <= 4022029;
-														Q[X] = D;
-														D = O[V[3]];
-														X = T(-20638);
-														Q[X] = D;
-														D, X = 60, T(-20277);
-														Q[X] = D;
-														J = T(-20387);
-														D = R[J];
-														J = T(-20544);
-														X = D[J];
-														J = T(-20415);
-														D = X(J);
-														X, J = T(-20432), D;
-														D = T(-20605);
-														J[X] = D;
-														D = O[V[4]];
-														X = T(-20282);
-														J[X] = D;
-														X, D = T(-20481), 0;
-														J[X] = D;
-														z = T(-20406);
-														e = R[z];
-														z = T(-20544);
-														D = e[z];
-														X, z = T(-20505), 1;
-														e = D(z, m, S, t);
-														J[X] = e;
-														X, D = T(-20638), Q;
-														J[X] = D;
-														X, D, m = T(-20277), 61, T(-20266);
-														J[X] = D;
-														e = T(-20387);
-														D = R[e];
-														e = T(-20544);
-														X = D[e];
-														e, t, S = T(-20289), 255, 255;
-														D = X(e);
-														e, X = D, T(-20432);
-														D = T(-20583);
-														e[X] = D;
-														X, D = T(-20591), 1;
-														e[X] = D;
-														z = R[m];
-														X, m = T(-20356), T(-20412);
-														D = z[m];
-														m = 255;
-														z = D(m, S, t);
-														e[X] = z;
-														D, X, S, t = 4237103 ~= 3604388, T(-20566), T(-20383), 0;
-														e[X] = D;
-														m = R[S];
-														X, S = T(-20418), T(-20418);
-														z = m[S];
-														m, S = T(-20317), 0;
-														D = z[m];
-														e[X] = D;
-														D, X = .3, T(-20600);
-														e[X] = D;
-														X, m = T(-20391), T(-20266);
-														z = R[m];
-														m = T(-20412);
-														D = z[m];
-														m = 0;
-														z = D(m, S, t);
-														e[X] = z;
-														z, S, D, X = T(-20387), T(-20266), 4350573 > 10078539, T(-20499);
-														e[X] = D;
-														X = T(-20638);
-														D = O[V[3]];
-														e[X] = D;
-														D, X = 62, T(-20277);
-														e[X] = D;
-														t = 220;
-														D = R[z];
-														z = T(-20544);
-														X = D[z];
-														z = T(-20289);
-														D = X(z);
-														X, z = T(-20432), D;
-														D = T(-20294);
-														z[X] = D;
-														X, D = T(-20591), 1;
-														z[X] = D;
-														X = T(-20356);
-														m = R[S];
-														S = T(-20412);
-														D = m[S];
-														S = 220;
-														m = D(S, t, h);
-														D, t = 5895194 < 9331496, T(-20383);
-														z[X] = m;
-														X = T(-20566);
-														z[X] = D;
-														X = T(-20418);
-														S = R[t];
-														t = T(-20418);
-														m = S[t];
-														S = T(-20414);
-														D = m[S];
-														z[X] = D;
-														D, X, h, S = .3, T(-20600), 0, T(-20266);
-														z[X] = D;
-														m = R[S];
-														X, S, t = T(-20391), T(-20412), 0;
-														D = m[S];
-														S = 0;
-														m = D(S, t, h);
-														D = 6757850 > 13741605;
-														z[X] = m;
-														X = T(-20499);
-														z[X] = D;
-														D = O[V[3]];
-														S, h, t, X = T(-20441), T(-20333), T(-20464), T(-20638);
-														z[X] = D;
-														D, X, m = 60, T(-20277), T(-20643);
-														z[X] = D;
-														D = T(-20408);
-														X = {
-																[D] = E,
-																[m] = N,
-																[S] = M,
-																[t] = u,
-																[h] = Q,
-																[d] = J,
-																[f] = e,
-																[b] = z,
-																[H] = w,
-															};
-														m = X;
-														X = O[V[2]];
-														D = m;
-														X[l] = D;
-														X, D = R[T(-20363)], { m };
-													else
-														X, D, l, E = R[T(-20411)], {}, nil, nil;
-													end;
-												else
-													if X < 13171853 then
-														X = O[V[4]];
-														D = X(E, l);
-														X = D and 11411665 or 13270149;
-													elseif X < 13195685 then
-														X = D and 7564476 or 14284017;
-													else
-														d, t, h = T(-20347), X, T(-20462);
-														h = e[h];
-														h = h(e, d);
-														S, X = h, h and 16445401 or 1161478;
-													end;
-												end;
-											end;
-										else
-											if 13593072 > X then
-												if X > 13549412 then
-													if 13568950 > X then
-														t = T(-20433);
-														S = R[t];
-														t = T(-20607);
-														m = S[t];
-														S = m(E, e);
-														X = not S;
-														X = X and 9030902 or 9846380;
-													elseif 13581757 > X then
-														D, X = {}, R[T(-20644)];
-													else
-														l = T(-20476);
-														D = R[l];
-														M = O[V[3]];
-														Q = T(-20410);
-														Q = M[Q];
-														u = { Q(M) };
-														M = { D(c(u)) };
-														E, N, l, X = M[2], M[3], M[1], 6161868;
-													end;
-												else
-													if X < 13401037 then
-														b = T(-20273);
-														f = t[b];
-														h, d = f, X;
-														X = f and 4491772 or 14819918;
-													elseif 13479321 > X then
-														X, D = R[T(-20375)], {};
-													elseif X < 13540180 then
-														e, z, m = T(-20266), 150, 90;
-														J = R[e];
-														e = T(-20412);
-														Q = J[e];
-														e, X = 0, 5392217;
-														J = Q(e, z, m);
-														M = J;
-													else
-														Q, X, u = nil, 9479699, nil;
-													end;
-												end;
-											else
-												if 13625016 > X then
-													if X < 13607935 then
-														X = O[V[1]];
-														l = C[1];
-														D = X(l);
-														D, l, X = {}, nil, R[T(-20584)];
-													elseif X < 13616388 then
-														b, d = T(-20263), X;
-														f = t[b];
-														X, h = f and 9831571 or 13295691, f;
-													else
-														e, S = Q(J, e);
-														X = e and 10104800 or 230988;
-													end;
-												else
-													if 13644975 > X then
-														X, M = 16009981, N;
-														D = y();
-														O[D] = u;
-														Q, u, M = T(-20364), D, nil;
-														D = R[Q];
-														J = x(1703601, { u });
-														u = o(u);
-														Q = D(J);
-													elseif X < 13679070 then
-														X = Q and 2018247 or 10451873;
-													else
-														X, E = u, M;
-														X = M and 2211159 or 5620747;
-													end;
-												end;
-											end;
-										end;
-									else
-										if X > 12854323 then
-											if X < 13012713 then
-												if X > 12948260 then
-													if X < 12960255 then
-														X = O[V[1]];
-														E = O[V[2]];
-														N = E();
-														l = not N;
-														D = X(l);
-														D = T(-20282);
-														X = O[V[3]];
-														E, M = X, X;
-														u = O[V[2]];
-														Q = u();
-														N, X = Q, Q and 9443136 or 2611213;
-													elseif X < 12986629 then
-														D = T(-20364);
-														X = R[D];
-														l = g(1533248, {
-																V[2],
-																V[3],
-																V[4],
-																V[5],
-																V[6],
-																V[7],
-																V[8],
-																V[9],
-																V[10],
-																V[11],
-																V[12],
-																V[13],
-																V[14],
-																V[15],
-																V[16],
-																V[17],
-																V[18],
-																V[19],
-																V[20],
-																V[21],
-															});
-														D = X(l);
-														X, D = R[T(-20297)], {};
-													else
-														X, l = N, E;
-														X = E and 11027191 or 16088490;
-													end;
-												else
-													if 12876505 > X then
-														X, P = 15252302, h;
-														E, F = P, v;
-														N = F;
-													elseif X < 12916417 then
-														X = 9518018;
-													elseif 12940510 > X then
-														D, X = T(-20353), T(-20635);
-														X = l[X];
-														X = X(l, D);
-														M, E = X, X;
-														N, X = E, E and 10282043 or 1713830;
-													else
-														e, Q = T(-20273), X;
-														J = u[e];
-														X, D = J and 14122624 or 9582799, J;
-													end;
-												end;
-											else
-												if X < 13027160 then
-													if 13020896 > X then
-														D = T(-20462);
-														D, f, h = d[D], T(-20347), t;
-														D = D(d, f);
-														X = D and 11494263 or 5502370;
-													elseif X < 13023084 then
-														e = T(-20279);
-														X = J[e];
-														e = X;
-														z, X = e, e and 12110885 or 3183055;
-													else
-														l = C[1];
-														X = l and 9703077 or 1920578;
-													end;
-												else
-													if 13051186 > X then
-														r, Y = 200, T(-20266);
-														W = R[Y];
-														Y, K = T(-20412), 0;
-														G = W[Y];
-														X, Y = 12550892, 255;
-														W = G(Y, r, K);
-														v = W;
-													elseif 13074849 > X then
-														z = T(-20263);
-														e = u[z];
-														z = T(-20638);
-														J = e[z];
-														D, X = J, 15473522;
-													else
-														X = D and 5417101 or 4552616;
-													end;
-												end;
-											end;
-										else
-											if 12757948 > X then
-												if X > 12701798 then
-													if X < 12713909 then
-														X, D = 6921532, u;
-													elseif 12726814 > X then
-														D[l] = E;
-														l = O[V[1]];
-														D, X = not l, N;
-														X = D and 16675011 or 9598028;
-													else
-														l = O[V[1]];
-														X, D = l and 7581454 or 2186550, l;
-													end;
-												else
-													if X < 12659048 then
-														D, X = { D }, R[T(-20625)];
-													elseif 12672316 > X then
-														X = z;
-														X = e and 10066412 or 587144;
-													elseif X < 12689989 then
-														D, X = {}, R[T(-20579)];
-													else
-														J = X;
-														z = O[V[4]];
-														e = Q ~= z;
-														D, X, u = e, e and 11826122 or 13764238, M;
-													end;
-												end;
-											else
-												if X < 12837124 then
-													if X < 12787855 then
-														X = T(-20635);
-														X, D = l[X], T(-20353);
-														X = X(l, D);
-														E = X;
-														X, D = nil, E;
-														N = X;
-														X = E and 5908690 or 15583760;
-													elseif X < 12802524 then
-														X = m;
-														X, J = z and 13886465 or 1183211, z;
-													elseif 12821204 > X then
-														W, F = T(-20355), T(-20381);
-														v = h[F];
-														G = l[W];
-														W = T(-20381);
-														F = G[W];
-														P = v - F;
-														v = T(-20311);
-														X = P[v];
-														P, v = X, 1500;
-														X = P < v;
-														X = X and 1594299 or 10588155;
-													else
-														t, X, e = nil, 11642529, nil;
-													end;
-												else
-													if X < 12848856 then
-														Q, z = J(u, Q);
-														X = Q and 11940599 or 12680814;
-													elseif 12850912 > X then
-														M = T(-20274);
-														D = N[M];
-														M = 0;
-														X = D <= M;
-														X = X and 5036603 or 10991447;
-													else
-														X, D = R[T(-20427)], {};
-													end;
-												end;
-											end;
-										end;
-									end;
-								else
-									if 14269500 > X then
-										if X > 13944756 then
-											if X < 14117859 then
-												if X < 14060875 then
-													if X < 13966653 then
-														D, X = J, e;
-														X = 7050970;
-													elseif 14010256 > X then
-														z, e, M, X = nil, nil, nil, 13742370;
-													elseif X < 14047968 then
-														l, D = C[1], 0;
-														X = l > D;
-														X = X and 5882474 or 12247569;
-													else
-														lT, DT = T(-20346), T(-20402);
-														CT = O[N];
-														kT = O[V[7]];
-														iT = kT[DT];
-														DT = j(2727626, { V[6], N, cT });
-														lT = iT[lT];
-														kT = { lT(iT, DT) };
-														DT, lT = T(-20425), T(-20346);
-														VT = CT(c(kT));
-														CT = O[N];
-														kT = O[V[7]];
-														iT = kT[DT];
-														lT = iT[lT];
-														DT = x(13602477, { kh });
-														kT = { lT(iT, DT) };
-														VT = CT(c(kT));
-														iT = T(-20279);
-														VT = O[V[6]];
-														CT = VT[iT];
-														X = CT and 3493741 or 6763389;
-													end;
-												else
-													if X < 14067026 then
-														h = T(-20327);
-														t = u[h];
-														X, h = 7326991, T(-20638);
-														S = t[h];
-														e = S;
-													elseif 14092344 > X then
-														m = M[z];
-														D = not m;
-														X = D and 912546 or 6216020;
-													else
-														E = T(-20266);
-														D = R[E];
-														E = T(-20412);
-														X = D[E];
-														M, E, N = 255, 255, 255;
-														D = { X(E, N, M) };
-														D, X = { c(D) }, R[T(-20617)];
-													end;
-												end;
-											else
-												if X > 14230494 then
-													if 14240304 > X then
-														Xh = O[V[16]];
-														Th, X = Xh, Xh and 1156777 or 13229275;
-													elseif 14254383 > X then
-														X = O[V[1]];
-														E, N = nil, nil;
-														X[l] = N;
-														X, D, l = R[T(-20400)], {}, nil;
-													else
-														D = O[V[1]];
-														X = D[l];
-														E = X;
-														X = not E;
-														X = X and 12241217 or 981550;
-													end;
-												else
-													if 14134145 > X then
-														z, X = T(-20273), 9582799;
-														e = u[z];
-														z = T(-20638);
-														J = e[z];
-														D = J;
-													elseif 14186289 > X then
-														D[l] = E;
-														D = O[V[1]];
-														X = N;
-														X = D and 10712137 or 11106639;
-													else
-														d = T(-20273);
-														h = t[d];
-														X, d = 13613393, T(-20497);
-														d = h[d];
-														d = d(h);
-													end;
-												end;
-											end;
-										else
-											if X < 13820257 then
-												if X < 13753304 then
-													if X < 13714740 then
-														X, J = T(-20499), 15292144 < 9008517;
-														Q[X] = J;
-														X = 5742803;
-													elseif 13723586 > X then
-														X = O[V[1]];
-														D = { X };
-														X = R[T(-20443)];
-													elseif X < 13734511 then
-														X = Q;
-														X = D and 9939096 or 1065072;
-													else
-														J, e = u(Q, J);
-														X = J and 9248160 or 2130039;
-													end;
-												else
-													if 13781453 > X then
-														X = J;
-														X = D and 11872299 or 16523352;
-													elseif 13805544 > X then
-														M = N;
-														e = O[V[5]];
-														J = u ~= e;
-														Q, D = X, J;
-														X = J and 3379336 or 13726653;
-													else
-														u, X, M = nil, 1727333, nil;
-													end;
-												end;
-											else
-												if X < 13884592 then
-													if 13853716 > X then
-														X, b = 6678899, nil;
-													elseif 13881028 > X then
-														Q, u, X = nil, nil, 4559062;
-													else
-														S, t = T(-20607), T(-20403);
-														S = z[S];
-														S = S(z, t);
-														X, m = 11342829, S;
-													end;
-												else
-													if X < 13899261 then
-														X = e;
-														X[D] = J;
-														X = O[Q];
-														S, J, D = 255, 0, T(-20481);
-														X[D] = J;
-														J, D, z = l, T(-20619), T(-20266);
-														X = O[Q];
-														X[D] = J;
-														X = O[Q];
-														D = T(-20356);
-														e = R[z];
-														z = T(-20412);
-														J = e[z];
-														z, m = 255, 255;
-														e = J(z, m, S);
-														X[D] = e;
-														D = T(-20566);
-														X = O[Q];
-														J = 12642219 <= 16550269;
-														X[D] = J;
-														X = O[Q];
-														m = T(-20383);
-														z = R[m];
-														m, D = T(-20418), T(-20418);
-														e = z[m];
-														z = T(-20414);
-														J = e[z];
-														X[D] = J;
-														X = O[Q];
-														J = O[V[1]];
-														D = T(-20638);
-														X[D] = J;
-														D = T(-20277);
-														X = O[Q];
-														J = 1001;
-														X[D] = J;
-														e = 4;
-														X = O[V[2]];
-														J = O[Q];
-														D = X(J, e);
-														D = O[Q];
-														J = T(-20545);
-														X = D[J];
-														D = T(-20346);
-														D = X[D];
-														J = B(12953029, { u, M, Q });
-														D = D(X, J);
-														X = O[Q];
-														D = { X };
-														X = R[T(-20474)];
-													elseif X < 13926066 then
-														Q = M;
-														X, e = Q and 4657292 or 2713304, Q;
-													else
-														G = v < N;
-														P, X = G, 15378580;
-													end;
-												end;
-											end;
-										end;
-									else
-										if 14488631 > X then
-											if 14390166 > X then
-												if X < 14298465 then
-													if X < 14280392 then
-														D = T(-20476);
-														X = R[D];
-														J = T(-20451);
-														J = l[J];
-														Q = { J(l) };
-														J = { X(c(Q)) };
-														M, D = J[2], J[1];
-														Q, X, u = D, 3709006, J[3];
-													elseif X < 14285751 then
-														D, X = {}, R[T(-20313)];
-													elseif X < 14290756 then
-														P = T(-20263);
-														p = b[P];
-														w = not p;
-														H, X = w, w and 5556524 or 3297506;
-													else
-														Ch = T(-20336);
-														X = b[Ch];
-														Ch = T(-20282);
-														Vh = O[V[17]];
-														X[Ch] = Vh;
-														X = 9584792;
-													end;
-												else
-													if X < 14323277 then
-														X = b and 9928664 or 6678899;
-													elseif X < 14364780 then
-														D = T(-20545);
-														X = J[D];
-														D = T(-20346);
-														D = X[D];
-														D = D(X, Q);
-														X = 2838160;
-													else
-														X = p;
-														X = w and 10976905 or 16060447;
-													end;
-												end;
-											else
-												if X < 14442661 then
-													if X < 14408227 then
-														l = C[1];
-														X = l;
-														O[V[1]] = X;
-														D, X, l = {}, R[T(-20284)], nil;
-													elseif X < 14431137 then
-														N, Q = M(E, N);
-														X = N and 10154477 or 9150630;
-													else
-														D = O[V[1]];
-														l = C[1];
-														X = l == D;
-														X = X and 196330 or 1669320;
-													end;
-												else
-													if X < 14459066 then
-														D = T(-20466);
-														X = R[D];
-														X = X and 1665425 or 385521;
-													elseif 14479724 > X then
-														X = O[V[2]];
-														D = X(E);
-														X = 5735075;
-													else
-														l, D, X = nil, {}, R[T(-20395)];
-													end;
-												end;
-											end;
-										else
-											if 14677462 > X then
-												if X > 14636789 then
-													if X < 14645826 then
-														X = D and 7779975 or 10652249;
-													elseif X < 14652727 then
-														X, D = R[T(-20557)], {};
-													else
-														X = m and 2692190 or 6041685;
-													end;
-												else
-													if 14504967 > X then
-														D = T(-20476);
-														X = R[D];
-														u = T(-20410);
-														N = O[V[1]];
-														u = N[u];
-														M = { u(N) };
-														N = { X(c(M)) };
-														E, X, D, l = N[3], 1492555, N[1], N[2];
-														N = D;
-													elseif 14519087 > X then
-														X = D and 6549200 or 16054584;
-													elseif 14576117 > X then
-														X = O[V[1]];
-														D = { X };
-														X = R[T(-20562)];
-													else
-														E, X = M, u;
-														X = M and 13363927 or 12404648;
-													end;
-												end;
-											else
-												if 14741184 > X then
-													if 14714416 > X then
-														u, J = X, nil;
-														Q = E ~= J;
-														X, M = Q and 5637013 or 12148946, Q;
-													elseif 14729044 > X then
-														X = 11059429;
-													else
-														N = T(-20279);
-														X = O[V[1]];
-														E = O[V[2]];
-														l = E[N];
-														E = O[V[2]];
-														D = X(l, E);
-														D, X = {}, R[T(-20509)];
-													end;
-												else
-													if X < 14753955 then
-														X = D and 16157645 or 1583997;
-													elseif 14756348 > X then
-														G, X, r = h, 10591945, v;
-														N, E = r, G;
-													else
-														e = O[V[4]];
-														M = E;
-														J = u ~= e;
-														Q, X = J, J and 15044212 or 13659302;
-													end;
-												end;
-											end;
-										end;
-									end;
-								end;
-							else
-								if X > 15899956 then
-									if 16380495 > X then
-										if 16144846 > X then
-											if 16040633 > X then
-												if 16004485 > X then
-													if X < 15928368 then
-														d = T(-20327);
-														h = u[d];
-														d = T(-20638);
-														t = h[d];
-														z, X = t, 6378049;
-													elseif X < 15954587 then
-														X = P and 8540516 or 8837333;
-													elseif 15980262 > X then
-														E, l, X, D = nil, nil, R[T(-20503)], {};
-													else
-														X = O[V[7]];
-														e = T(-20279);
-														J = u[e];
-														Q = X(J, u);
-														X = 11914546;
-													end;
-												else
-													if X < 16007601 then
-														N, u = l(E, N);
-														X = N and 6559759 or 7632573;
-													elseif 16018331 > X then
-														N, u = l(E, N);
-														X = N and 13630649 or 9835483;
-													else
-														l, X = C[1], {};
-														E = X;
-														X = not l;
-														X = X and 9446885 or 4946497;
-													end;
-												end;
-											else
-												if 16094754 > X then
-													if X < 16057515 then
-														X, N, M = 6403880, nil, nil;
-													elseif X < 16074468 then
-														b, X, H = nil, 7591400, nil;
-													else
-														M, u = T(-20266), 255;
-														N = R[M];
-														M = T(-20412);
-														E = N[M];
-														M, Q = 255, 255;
-														N = E(M, u, Q);
-														X, l = 11027191, N;
-													end;
-												else
-													if 16108969 > X then
-														m, e = 100, T(-20266);
-														J = R[e];
-														e, z = T(-20412), 80;
-														Q = J[e];
-														e = 80;
-														J = Q(e, z, m);
-														X, D = 10635397, J;
-													elseif X < 16128455 then
-														z = T(-20439);
-														z, m, X = N[z], T(-20449), 4385849;
-														z = z(N, m);
-														e = z;
-													else
-														u, X, Q = nil, 14422031, nil;
-													end;
-												end;
-											end;
-										else
-											if 16221618 > X then
-												if X > 16181407 then
-													if X < 16196117 then
-														z = O[V[3]];
-														u = M;
-														e = Q ~= z;
-														D, J = e, X;
-														X = e and 6001350 or 15620026;
-													elseif 16214754 > X then
-														p = T(-20381);
-														w = h[p];
-														p = T(-20478);
-														p = l[p];
-														p = { p(l, w) };
-														b = p[1];
-														H = p[2];
-														w, p = H, X;
-														X = H and 902493 or 14385909;
-													else
-														u, t, X, S = nil, nil, 13619384, nil;
-													end;
-												else
-													if 16153674 > X then
-														S, t = T(-20327), 5405453 <= 366613;
-														z = u[S];
-														S, X = T(-20396), 9284951;
-														z[S] = t;
-													elseif X < 16167859 then
-														D, X = { l }, R[T(-20477)];
-													elseif X < 16178615 then
-														z, S = T(-20462), T(-20347);
-														z = e[z];
-														z = z(e, S);
-														M, X = J, z and 8003309 or 15289100;
-													else
-														w = T(-20387);
-														H = R[w];
-														w = T(-20544);
-														X = H[w];
-														w = T(-20571);
-														H = X(w);
-														X, v = T(-20287), T(-20383);
-														P = R[v];
-														v = T(-20340);
-														p = P[v];
-														P = T(-20627);
-														w = p[P];
-														H[X] = w;
-														X, w = T(-20322), 0;
-														H[X] = w;
-														w, X = .75, T(-20604);
-														H[X] = w;
-														X, w = T(-20638), e;
-														H[X] = w;
-														X, w = T(-20263), H;
-														b[X] = w;
-														X, H = 3088995, nil;
-													end;
-												end;
-											else
-												if X > 16260733 then
-													if 16298641 > X then
-														M, J = u(N, M);
-														X = M and 9292957 or 14246534;
-													elseif 16332067 > X then
-														t, z = T(-20263), T(-20408);
-														e = u[z];
-														S, z = 809187 > 12352840, T(-20499);
-														e[z] = S;
-														S, z = 4264435 >= 12967413, T(-20273);
-														e = u[z];
-														z = T(-20499);
-														e[z] = S;
-														z = X;
-														S = u[t];
-														X, e = S and 10532662 or 12663818, S;
-													else
-														X = D and 4915961 or 16595309;
-													end;
-												else
-													if 16222530 > X then
-														E, X, N = nil, 6713280, nil;
-													elseif X < 16228954 then
-														X = 14938560;
-													else
-														e = T(-20279);
-														D = O[V[7]];
-														X = 4582009;
-														J = u[e];
-														Q = D(J);
-													end;
-												end;
-											end;
-										end;
-									else
-										if X > 16596109 then
-											if X < 16685495 then
-												if X < 16655477 then
-													if 16599835 > X then
-														H, b = T(-20575), T(-20439);
-														b = S[b];
-														b = b(S, H);
-														d, X = b, 8082960;
-													elseif 16609904 > X then
-														z = O[V[2]];
-														X = z[J];
-														X = X and 5650305 or 15895575;
-													elseif 16633993 > X then
-														Th = T(-20637);
-														X = b[Th];
-														Xh, Th = 11617099 <= 8325310, T(-20499);
-														X[Th] = Xh;
-														X = 5118191;
-													else
-														S = O[V[3]];
-														z = J;
-														X = m ~= S;
-														X = X and 12116859 or 5687787;
-													end;
-												else
-													if 16665091 > X then
-														X = S;
-														X = z and 16149703 or 9284951;
-													elseif X < 16672589 then
-														J, D = T(-20451), T(-20476);
-														X = R[D];
-														J = N[J];
-														Q = { J(N) };
-														J = { X(c(Q)) };
-														D, X = J[1], 12653443;
-														Q, u, M = D, J[3], J[2];
-													else
-														l = T(-20331);
-														D = R[l];
-														M = O[V[3]];
-														u = { D(M) };
-														N, E, X, l = u[3], u[2], 4650135, u[1];
-													end;
-												end;
-											else
-												if X < 16705914 then
-													if 16696511 > X then
-														X, l, Q = 9201807, T(-20476), T(-20410);
-														D = R[l];
-														M = O[V[4]];
-														Q = M[Q];
-														u = { Q(M) };
-														M = { D(c(u)) };
-														E, N, l = M[2], M[3], M[1];
-													elseif X < 16701121 then
-														D = O[V[1]];
-														l, X = C[1], not D;
-														X = X and 10805283 or 11624360;
-													else
-														D = O[V[6]];
-														e, X = T(-20279), 10954746;
-														J = u[e];
-														Q = D(J, u);
-													end;
-												else
-													if X < 16722325 then
-														u = T(-20476);
-														D = R[u];
-														e = O[V[7]];
-														z = { e(l) };
-														e = { D(c(z)) };
-														J, X, u, Q = e[3], 16460575, e[1], e[2];
-													elseif X < 16752349 then
-														X = 1120524;
-													else
-														X = N;
-														X = R[T(-20461)];
-														D[l] = E;
-														D = {};
-													end;
-												end;
-											end;
-										else
-											if X > 16520181 then
-												if X < 16556224 then
-													if X < 16526169 then
-														u, X, Q = nil, 14876686, nil;
-													elseif 16541052 > X then
-														X = e and 4064730 or 5877426;
-													else
-														X, m = 16528987, T(-20638);
-														z = J[m];
-														e = z;
-													end;
-												else
-													if X < 16567357 then
-														X = nil;
-														D = { X };
-														X = R[T(-20438)];
-													elseif X < 16585346 then
-														D = O[V[2]];
-														X = D[l];
-														D = { X };
-														X = R[T(-20507)];
-													else
-														E, D, X, l = nil, {}, R[T(-20578)], nil;
-													end;
-												end;
-											else
-												if 16452988 > X then
-													if 16407977 > X then
-														E = T(-20575);
-														l = O[V[1]];
-														D = l == E;
-														X = D and 3102230 or 4919012;
-													elseif X < 16411849 then
-														X, D = z, e;
-														X = 13764238;
-													elseif 16430484 > X then
-														m = O[V[2]];
-														z = m[J];
-														m = T(-20263);
-														X = z[m];
-														m, z = 2535646 >= 10591251, T(-20396);
-														X[z] = m;
-														X = 5095847;
-													else
-														h = e ~= N;
-														S, X = h, 1161478;
-													end;
-												else
-													if 16474523 > X then
-														J, z = u(Q, J);
-														X = J and 5599866 or 15634020;
-													elseif 16502741 > X then
-														X, b = T(-20462), T(-20347);
-														X = f[X];
-														X = X(f, b);
-														d, X = h, X and 3424961 or 1903843;
-													else
-														S = T(-20263);
-														m = u ~= S;
-														z, e = X, m;
-														X = m and 12143906 or 15673120;
-													end;
-												end;
-											end;
-										end;
-									end;
-								else
-									if X > 15356272 then
-										if X < 15657210 then
-											if X < 15568552 then
-												if X < 15466128 then
-													if 15384265 > X then
-														X = F;
-														X = P and 1300689 or 12614533;
-													elseif X < 15395809 then
-														f, d, X = nil, nil, 3899430;
-													elseif 15430201 > X then
-														l = C[1];
-														X = l and 3511950 or 7938836;
-													else
-														z, X = T(-20327), 5936698;
-														e = u[z];
-														z = T(-20638);
-														J = e[z];
-														D = J;
-													end;
-												else
-													if X < 15507799 then
-														X = Q;
-														X = D and 5454572 or 9370066;
-													elseif 15553638 > X then
-														X = 13451110 >= 6095616;
-														O[V[3]] = X;
-														E = T(-20497);
-														D = O[V[4]];
-														E, X = D[E], 12009543;
-														E = E(D);
-														D = O[V[5]];
-														E = D();
-													else
-														z, e, X = nil, nil, 16460575;
-													end;
-												end;
-											else
-												if 15627023 > X then
-													if 15577832 > X then
-														X = d;
-														X = not h;
-														X = X and 688212 or 14894609;
-													elseif X < 15601893 then
-														X = D and 764173 or 5485247;
-													else
-														X = J;
-														X = D and 10456172 or 5607828;
-													end;
-												else
-													if 15634545 > X then
-														z, u = T(-20517), T(-20476);
-														D = R[u];
-														z = l[z];
-														e = { z(l) };
-														X = 6393182;
-														z = { D(c(e)) };
-														J, Q, u = z[3], z[2], z[1];
-													elseif 15638185 > X then
-														M = not N;
-														X = M and 8901851 or 5969868;
-													else
-														l = C[1];
-														X, D = l, {};
-														l = nil;
-														O[V[1]] = X;
-														X = R[T(-20290)];
-													end;
-												end;
-											end;
-										else
-											if X > 15843631 then
-												if 15881142 > X then
-													if 15866544 > X then
-														H = T(-20263);
-														X = b[H];
-														w, H = 4645477 < 2116743, T(-20396);
-														X[H] = w;
-														X = 2037003;
-													elseif X < 15874942 then
-														J, E = T(-20410), T(-20476);
-														D = R[E];
-														u = O[V[3]];
-														J = u[J];
-														Q = { J(u) };
-														u = { D(c(Q)) };
-														X, M, E, N = 14876686, u[3], u[1], u[2];
-													else
-														t, D = 0, T(-20552);
-														S[D] = t;
-														t, X, D = 9615564 > 4370353, 3633968, T(-20550);
-														S[D] = t;
-													end;
-												else
-													if X < 15886429 then
-														h = T(-20327);
-														t = z[h];
-														h = T(-20638);
-														S = t[h];
-														m, X = S, 14654252;
-													elseif 15891440 > X then
-														l, X, D = nil, R[T(-20527)], {};
-													else
-														X = 11555719;
-													end;
-												end;
-											else
-												if X < 15773135 then
-													if 15691642 > X then
-														J, X = e, z;
-														X = 4315106;
-													elseif X < 15721051 then
-														P = T(-20263);
-														p = b[P];
-														P = T(-20638);
-														w = p[P];
-														H, X = w, 7609418;
-													elseif 15747336 > X then
-														X = H and 14287485 or 2290596;
-													else
-														X = 14275146 ~= 5955195;
-														O[V[3]] = X;
-														X, l = 9442837, T(-20497);
-														D = O[V[4]];
-														l = D[l];
-														l = l(D);
-														D = O[V[5]];
-														l = D();
-													end;
-												else
-													if 15792872 > X then
-														t, P = T(-20401), 0;
-														S = R[t];
-														f, h, t, b = T(-20613), 5000, T(-20484), T(-20488);
-														z = S[t];
-														t = h / e;
-														d, h = 200, 30;
-														S = z(t, h, d);
-														t, d = .55, T(-20372);
-														H = 2;
-														z = S * t;
-														p = T(-20406);
-														h = R[d];
-														d = T(-20544);
-														t = h[d];
-														d = Q[f];
-														f = Q[b];
-														h = t(d, f);
-														f, b = T(-20613), 2;
-														d = h[f];
-														f = z / b;
-														t = d - f;
-														b = T(-20488);
-														f = h[b];
-														b = S / H;
-														d = f - b;
-														b = T(-20408);
-														f = u[b];
-														H, b = 15316224 >= 7553951, T(-20499);
-														f[b] = H;
-														b = T(-20408);
-														f = u[b];
-														b = T(-20381);
-														w = R[p];
-														p = T(-20544);
-														H = w[p];
-														p = 0;
-														w = H(p, t, P, d);
-														f[b] = w;
-														P, p, b = 0, T(-20406), T(-20408);
-														f = u[b];
-														b = T(-20505);
-														w = R[p];
-														p = T(-20544);
-														H = w[p];
-														p = 0;
-														w = H(p, z, P, S);
-														f[b] = w;
-														Y, H, w = T(-20385), T(-20512), T(-20434);
-														b = R[H];
-														P = 40;
-														H = b();
-														b = u[w];
-														f = H - b;
-														w = T(-20401);
-														H = R[w];
-														w = T(-20452);
-														b = H[w];
-														w = 0;
-														p = P - f;
-														P = T(-20401);
-														H = b(w, p);
-														p = T(-20401);
-														w = R[p];
-														p = T(-20431);
-														b = w[p];
-														w = b(H);
-														F = 100;
-														p = R[P];
-														P = T(-20431);
-														b = p[P];
-														v = H - w;
-														P = v * F;
-														v = 9954126 > 4802150;
-														p = b(P);
-														P = T(-20273);
-														b = u[P];
-														P, F = T(-20499), T(-20538);
-														b[P] = v;
-														P = T(-20273);
-														b = u[P];
-														W = R[Y];
-														P, Y = T(-20619), T(-20485);
-														G = W[Y];
-														Y = T(-20338);
-														W = G(Y, w, p);
-														v = F .. W;
-														b[P] = v;
-														r, F, P = 10, X, T(-20273);
-														b = u[P];
-														P, W = T(-20356), X;
-														Y = H < r;
-														G, X = Y, Y and 6852533 or 6317266;
-													elseif X < 15814767 then
-														m, S, X = nil, nil, 6597093;
-													else
-														D = O[V[1]];
-														l = C[1];
-														X = D[l];
-														E = X;
-														X = not E;
-														X = X and 14651202 or 2404047;
-													end;
-												end;
-											end;
-										end;
-									else
-										if 15023038 > X then
-											if 14914843 > X then
-												if X < 14879255 then
-													if X < 14834287 then
-														X = d;
-														X = h and 14226913 or 13613393;
-													elseif X < 14860877 then
-														Q, e = X, T(-20327);
-														J = u[e];
-														D, X = J, J and 15458735 or 5936698;
-													elseif 14874892 > X then
-														X, J = T(-20550), 8455075 > 13226570;
-														Q[X] = J;
-														X = 13540772;
-													else
-														M, Q = E(N, M);
-														X = M and 12699165 or 2475270;
-													end;
-												else
-													if 14888216 > X then
-														D = O[V[1]];
-														l = T(-20279);
-														X = D[l];
-														l = X;
-														X = l and 5412678 or 9026434;
-													elseif 14897194 > X then
-														X = 975475;
-													else
-														J, e = u(Q, J);
-														X = J and 16178074 or 4682260;
-													end;
-												end;
-											else
-												if X < 14992930 then
-													if X < 14934233 then
-														D = O[V[1]];
-														l, X = T(-20619), not D;
-														O[V[1]] = X;
-														z, N, u = T(-20618), T(-20424), X;
-														D = O[V[2]];
-														J = X;
-														e = O[V[1]];
-														Q, J = e and z, T(-20609);
-														M = Q or J;
-														E = N .. M;
-														u = X;
-														D[l] = E;
-														D = O[V[2]];
-														l, N = T(-20282), X;
-														Q = O[V[1]];
-														M, X = Q, Q and 13539589 or 5392217;
-													elseif 14945136 > X then
-														X, P = 651075, nil;
-													elseif 14964453 > X then
-														e, m = Q(J, e);
-														X = e and 7751848 or 6047816;
-													else
-														Ch = T(-20336);
-														X = b[Ch];
-														Ch = T(-20282);
-														Vh = O[V[18]];
-														X[Ch] = Vh;
-														X = 9584792;
-													end;
-												else
-													if X < 15010616 then
-														M, J = u(N, M);
-														X = M and 13912058 or 10171299;
-													elseif X < 15013091 then
-														D = T(-20273);
-														X = E[D];
-														D = T(-20497);
-														D = X[D];
-														D = D(X);
-														X = 6225088;
-													else
-														t, X = T(-20353), T(-20635);
-														X = S[X];
-														X = X(S, t);
-														t = X;
-														X, h = t and 4172848 or 10901833, t;
-													end;
-												end;
-											end;
-										else
-											if X > 15231992 then
-												if X < 15297009 then
-													if X < 15242661 then
-														h, X = T(-20638), 10006362;
-														t = Q[h];
-														m = t;
-													elseif X < 15270701 then
-														X = 12614533;
-													else
-														M, X, e = nil, 14899779, nil;
-													end;
-												else
-													if 15308947 > X then
-														X = D and 996643 or 12305808;
-													elseif 15323470 > X then
-														m = T(-20408);
-														X = z[m];
-														m, S = T(-20499), 6130736 > 11634767;
-														X[m] = S;
-														X = 4210041;
-													else
-														X, l = 16005222, T(-20476);
-														D = R[l];
-														M = O[V[3]];
-														Q = T(-20410);
-														Q = M[Q];
-														u = { Q(M) };
-														M = { D(c(u)) };
-														E, N, l = M[2], M[3], M[1];
-													end;
-												end;
-											else
-												if 15126511 > X then
-													if X < 15038336 then
-														l, X, D = nil, R[T(-20501)], {};
-													elseif X < 15069693 then
-														e = T(-20279);
-														J = u[e];
-														Q, X = J, 13659302;
-													elseif 15106614 > X then
-														h = O[V[2]];
-														t = h[J];
-														h, X = T(-20263), 7187515;
-														S = t[h];
-														t = T(-20638);
-														m = S[t];
-														z = m;
-													else
-														M, u, X = nil, nil, 9657812;
-													end;
-												else
-													if 15174879 > X then
-														X = 13062521 > 10790909;
-														O[V[1]] = X;
-														l = T(-20476);
-														D = R[l];
-														M = O[V[2]];
-														u = { D(M) };
-														N, l, X, E = u[3], u[1], 16009981, u[2];
-													elseif X < 15222877 then
-														t = T(-20432);
-														S = z[t];
-														X, t = 4312091, T(-20457);
-														t, h = S[t], T(-20622);
-														t = t(S);
-														S = T(-20607);
-														S = t[S];
-														S = S(t, h);
-														D = S;
-													else
-														X, l, D = R[T(-20589)], nil, {};
-													end;
-												end;
-											end;
-										end;
-									end;
-								end;
-							end;
-						end;
-					end;
-				end;
-				X = #i;
-				return c(D);
-			end, function(R, T)
-				local c = N(T);
-				local C = function(C, V, i, k, D, O, l, y)
-						return X(R, {
-							C,
-							V,
-							i,
-							k,
-							D,
-							O,
-							l,
-							y,
-						}, T, c);
-					end;
-				return C;
-			end, function(R)
-				l[R] = l[R] - 1;
-				if l[R] == 0 then
-					l[R], O[R] = nil, nil;
-				end;
-			end, function(R, T)
-				local c = N(T);
-				local C = function(C)
-						return X(R, { C }, T, c);
-					end;
-				return C;
-			end, function()
-				E = 1 + E;
-				l[E] = 1;
-				return E;
-			end, function(R, T)
-				local c = N(T);
-				local C = function(C, V, i, k, D)
-						return X(R, {
-							C,
-							V,
-							i,
-							k,
-							D,
-						}, T, c);
-					end;
-				return C;
-			end, function(R)
-				local T, X = 1, R[1];
-				while X do
-					l[X], T = l[X] - 1, 1 + T;
-					if l[X] == 0 then
-						l[X], O[X] = nil, nil;
-					end;
-					X = R[T];
-				end;
-			end, function(R, T)
-				local c = N(T);
-				local C = function(C, V, i, k, D, O)
-						return X(R, {
-							C,
-							V,
-							i,
-							k,
-							D,
-							O,
-						}, T, c);
-					end;
-				return C;
-			end, function(R, T)
-				local c = N(T);
-				local C = function(C, V, i, k, D, O, l)
-						return X(R, {
-							C,
-							V,
-							i,
-							k,
-							D,
-							O,
-							l,
-						}, T, c);
-					end;
-				return C;
-			end, {}, function(R, T)
-				local c = N(T);
-				local C = function(...)
-						return X(R, { ... }, T, c);
-					end;
-				return C;
-			end, function(R, T)
-				local c = N(T);
-				local C = function()
-						return X(R, {}, T, c);
-					end;
-				return C;
-			end, function(R, T)
-				local c = N(T);
-				local C = function(C, V, i, k, D, O, l, y, E, N)
-						return X(R, {
-							C,
-							V,
-							i,
-							k,
-							D,
-							O,
-							l,
-							y,
-							E,
-							N,
-						}, T, c);
-					end;
-				return C;
-			end, 0, {};
-		return (u(11195608, {}))(c(D));
-	end)({ ... }, setmetatable, select, newproxy, unpack or table[T(-20491)], getfenv and getfenv() or _ENV, getmetatable);
-end)(...);
+-- ✅ FIX #1: httpPost защищён от падения JSONEncode и от нестандартного ответа экзекутора
+local function httpPost(url,body)
+    local okEnc,json=pcall(function() return HttpService:JSONEncode(body) end)
+    if not okEnc or not json then return nil,"encode_failed" end
+    local opts={Url=url,Method="POST",Headers={["Content-Type"]="application/json"},Body=json}
+    if syn and syn.request then
+        local ok,r=pcall(syn.request,opts)
+        if ok and type(r)=="table" then return r.Body end
+    end
+    if request then
+        local ok,r=pcall(request,opts)
+        if ok and type(r)=="table" then return r.Body end
+    end
+    if http and http.request then
+        local ok,r=pcall(http.request,opts)
+        if ok and type(r)=="table" then return r.Body end
+    end
+    return nil,"no_request"
+end
+local function saveLocal(data) if writefile then pcall(function() writefile(DATA_FILE,HttpService:JSONEncode(data)) end) end end
+local function loadLocal()
+    if isfile and isfile(DATA_FILE) then
+        local ok,data=pcall(function() return HttpService:JSONDecode(readfile(DATA_FILE)) end)
+        if ok and type(data)=="table" then return data end
+    end
+    return nil
+end
+local function generateHWID()
+    math.randomseed(os.time()+math.floor(tick()*1000))
+    local s="" for i=1,10 do s=s..tostring(math.random(0,9)) end
+    return s
+end
+local function copyToClipboard(txt)
+    if setclipboard then pcall(setclipboard, txt); return true end
+    if syn and syn.setclipboard then pcall(syn.setclipboard, txt); return true end
+    if toclipboard then pcall(toclipboard, txt); return true end
+    return false
+end
+local localData=loadLocal() or {}
+if not localData.hwid then localData.hwid=generateHWID() end
+saveLocal(localData)
+local currentHWID=localData.hwid
+local currentRank=localData.rank or "player"
+local currentKey=localData.key
+local isBanned=false
+local banInfo={}
+
+local function registerOnServer()
+    local res=httpPost(API_URL.."/register",{secret=API_SECRET,hwid=currentHWID,nickname=LocalPlayer.Name,roblox_id=LocalPlayer.UserId})
+    if not res then return false end
+    local ok,data=pcall(function() return HttpService:JSONDecode(res) end)
+    if not ok or not data then return false end
+    currentRank=data.rank or "player"
+    isBanned=data.banned==true
+    banInfo={reason=data.ban_reason,expires=data.ban_expires}
+    return true
+end
+local function hasAccess(tab)
+    local r=RANKS[currentRank] or RANKS.player
+    for _,t in ipairs(r.access) do if t==tab then return true end end
+    return false
+end
+local function getGuiParent()
+    if gethui then local ok,res=pcall(gethui) if ok and res then return res end end
+    local ok,cg=pcall(function() return game:GetService("CoreGui") end)
+    if ok and cg then
+        local ok2=pcall(function() local t=Instance.new("Folder") t.Parent=cg t:Destroy() end)
+        if ok2 then return cg end
+    end
+    return LocalPlayer:WaitForChild("PlayerGui")
+end
+local parent=getGuiParent()
+for _,name in ipairs({"_bs_root","_bs_key","_bs_wrong","_bs_ban","_bs_notif","_bs_reset_dialog","_bs_hud","_bs_season","_bs_tinfo","_bs_freeze","_bs_popups"}) do
+    local o=parent:FindFirstChild(name) if o then o:Destroy() end
+end
+local function addCorner(obj,r) local c=Instance.new("UICorner") c.CornerRadius=UDim.new(0,r or 4) c.Parent=obj end
+local function addStroke(obj,col,th) local s=Instance.new("UIStroke") s.Color=col or UI.border s.Thickness=th or 1 s.Parent=obj return s end
+local function setButtonState(btn,on,activeColor)
+    local stroke=btn:FindFirstChildOfClass("UIStroke")
+    local col=activeColor or UI.accent
+    if on then btn.BackgroundColor3=UI.panel2 btn.TextColor3=col if stroke then stroke.Color=col stroke.Thickness=1.5 end
+    else btn.BackgroundColor3=UI.panel2 btn.TextColor3=UI.text if stroke then stroke.Color=UI.border stroke.Thickness=1 end end
+end
+task.spawn(function() registerOnServer() end)
+
+local function getRoot(char)
+    if not char then return nil end
+    if char:IsA("Model") and char.PrimaryPart then return char.PrimaryPart end
+    local humanoid=char:FindFirstChildOfClass("Humanoid")
+    if humanoid and humanoid.RootPart then return humanoid.RootPart end
+    for _,name in ipairs({"HumanoidRootPart","RootPart","Root","Body","Torso","UpperTorso","LowerTorso","Chest","Trunk","Head"}) do
+        local p=char:FindFirstChild(name) if p and p:IsA("BasePart") then return p end
+    end
+    for _,p in ipairs(char:GetDescendants()) do if p:IsA("BasePart") and p.Name:lower():find("root") then return p end end
+    for _,p in ipairs(char:GetDescendants()) do if p:IsA("BasePart") then return p end end
+    return nil
+end
+local function getCharPos(char)
+    if not char then return Vector3.zero end
+    if char:IsA("Model") then local ok,pivot=pcall(function() return char:GetPivot() end) if ok and pivot then return pivot.Position end end
+    local root=getRoot(char)
+    return root and root.Position or Vector3.zero
+end
+local function moveChar(char,newCFrame)
+    if not char then return end
+    if char:IsA("Model") then local ok=pcall(function() char:PivotTo(newCFrame) end) if ok then return end end
+    local root=getRoot(char) if root then root.CFrame=newCFrame end
+end
+local function unanchorChar(char)
+    if not char then return end
+    for _,p in ipairs(char:GetDescendants()) do if p:IsA("BasePart") and p.Anchored then p.Anchored=false end end
+end
+local function findHeadPart(char)
+    if not char then return nil end
+    local direct=char:FindFirstChild("Head")
+    if direct and direct:IsA("BasePart") then return direct end
+    for _,p in ipairs(char:GetDescendants()) do
+        if p:IsA("BasePart") and p.Name:lower()=="head" then return p end
+    end
+    for _,p in ipairs(char:GetDescendants()) do
+        if p:IsA("BasePart") and p.Name:lower():find("head") then return p end
+    end
+    return nil
+end
+
+-- NOTIFICATIONS
+local notifSg=Instance.new("ScreenGui")
+notifSg.Name="_bs_notif" notifSg.ResetOnSpawn=false notifSg.DisplayOrder=2147483646 notifSg.IgnoreGuiInset=true notifSg.ZIndexBehavior=Enum.ZIndexBehavior.Global notifSg.Parent=parent
+local notifHolder=Instance.new("Frame")
+notifHolder.Size=UDim2.new(0,340,0,600) notifHolder.Position=UDim2.new(1,-360,0,60) notifHolder.BackgroundTransparency=1 notifHolder.Parent=notifSg notifHolder.ZIndex=5000
+local notifLayout=Instance.new("UIListLayout")
+notifLayout.Padding=UDim.new(0,6) notifLayout.SortOrder=Enum.SortOrder.LayoutOrder notifLayout.HorizontalAlignment=Enum.HorizontalAlignment.Right notifLayout.VerticalAlignment=Enum.VerticalAlignment.Top notifLayout.Parent=notifHolder
+local notifCounter=0
+local notificationsEnabled=false
+local activeNotifs={}
+local function notify(text,color)
+    if not notificationsEnabled then return end
+    notifCounter=notifCounter+1
+    local n=Instance.new("Frame")
+    n.Size=UDim2.new(1,0,0,40) n.BackgroundColor3=UI.panel2 n.BackgroundTransparency=0.05 n.BorderSizePixel=0 n.LayoutOrder=-notifCounter n.ZIndex=5001 n.Parent=notifHolder
+    addCorner(n,4) addStroke(n,UI.border,1)
+    local accentBar=Instance.new("Frame")
+    accentBar.Size=UDim2.new(0,3,1,-10) accentBar.Position=UDim2.new(0,0,0,5) accentBar.BackgroundColor3=color or UI.accent accentBar.BorderSizePixel=0 accentBar.Parent=n addCorner(accentBar,2)
+    local lbl=Instance.new("TextLabel")
+    lbl.Size=UDim2.new(1,-22,1,0) lbl.Position=UDim2.new(0,14,0,0) lbl.BackgroundTransparency=1 lbl.Text=text lbl.TextColor3=UI.text lbl.TextSize=13 lbl.Font=Enum.Font.GothamMedium lbl.TextXAlignment=Enum.TextXAlignment.Left lbl.TextWrapped=true lbl.ZIndex=5002 lbl.Parent=n
+    table.insert(activeNotifs,n)
+    if #activeNotifs>8 then local old=table.remove(activeNotifs,1) if old and old.Parent then old:Destroy() end end
+    n.BackgroundTransparency=1 lbl.TextTransparency=1 accentBar.BackgroundTransparency=1
+    task.spawn(function()
+        for i=0,8 do n.BackgroundTransparency=1-(i/8)*0.95 lbl.TextTransparency=1-(i/8) accentBar.BackgroundTransparency=1-(i/8) task.wait(0.02) end
+        task.wait(3.2)
+        for i=0,10 do n.BackgroundTransparency=0.05+(i/10)*0.95 lbl.TextTransparency=i/10 accentBar.BackgroundTransparency=i/10 task.wait(0.03) end
+        n:Destroy()
+        for idx,o in ipairs(activeNotifs) do if o==n then table.remove(activeNotifs,idx) break end end
+    end)
+end
+
+-- HUD
+local hudEnabled=false
+local hudSg=Instance.new("ScreenGui")
+hudSg.Name="_bs_hud" hudSg.ResetOnSpawn=false hudSg.DisplayOrder=2147483635 hudSg.IgnoreGuiInset=true hudSg.ZIndexBehavior=Enum.ZIndexBehavior.Global hudSg.Parent=parent
+local hudMain=Instance.new("Frame")
+hudMain.Size=UDim2.new(0,200,0,88) hudMain.Position=UDim2.new(0,16,0,16) hudMain.BackgroundColor3=UI.bg hudMain.BackgroundTransparency=0.15 hudMain.BorderSizePixel=0 hudMain.Visible=false hudMain.Parent=hudSg hudMain.ZIndex=4000
+addCorner(hudMain,6) addStroke(hudMain,UI.border,1)
+local hudAccent=Instance.new("Frame")
+hudAccent.Size=UDim2.new(0,3,1,-16) hudAccent.Position=UDim2.new(0,0,0,8) hudAccent.BackgroundColor3=UI.accent hudAccent.BorderSizePixel=0 hudAccent.Parent=hudMain hudAccent.ZIndex=4001 addCorner(hudAccent,2)
+local hudTitle=Instance.new("TextLabel")
+hudTitle.Size=UDim2.new(1,-14,0,18) hudTitle.Position=UDim2.new(0,12,0,6) hudTitle.BackgroundTransparency=1 hudTitle.Text="WorkClient" hudTitle.TextColor3=UI.text hudTitle.TextSize=13 hudTitle.Font=Enum.Font.GothamBold hudTitle.TextXAlignment=Enum.TextXAlignment.Left hudTitle.Parent=hudMain hudTitle.ZIndex=4001
+local hudSep=Instance.new("Frame")
+hudSep.Size=UDim2.new(1,-20,0,1) hudSep.Position=UDim2.new(0,10,0,26) hudSep.BackgroundColor3=UI.border hudSep.BorderSizePixel=0 hudSep.Parent=hudMain hudSep.ZIndex=4001
+local function hudMakeRow(labelText,yPos)
+    local l=Instance.new("TextLabel") l.Size=UDim2.new(0.5,-12,0,16) l.Position=UDim2.new(0,12,0,yPos) l.BackgroundTransparency=1 l.Text=labelText l.TextColor3=UI.textDim l.TextSize=11 l.Font=Enum.Font.GothamBold l.TextXAlignment=Enum.TextXAlignment.Left l.Parent=hudMain l.ZIndex=4001
+    local v=Instance.new("TextLabel") v.Size=UDim2.new(0.5,-8,0,16) v.Position=UDim2.new(0.5,4,0,yPos) v.BackgroundTransparency=1 v.Text="—" v.TextColor3=UI.text v.TextSize=11 v.Font=Enum.Font.Code v.TextXAlignment=Enum.TextXAlignment.Right v.Parent=hudMain v.ZIndex=4001
+    return v
+end
+local hudFpsVal=hudMakeRow("FPS",32)
+local hudPingVal=hudMakeRow("PING",48)
+local hudRankVal=hudMakeRow("RANK",64)
+local _hudFrames=0
+local _hudTimer=0
+RunService.RenderStepped:Connect(function(dt)
+    if not hudEnabled then return end
+    _hudFrames=_hudFrames+1 _hudTimer=_hudTimer+dt
+    if _hudTimer>=0.5 then
+        local fps=_hudFrames/_hudTimer
+        _hudFrames=0 _hudTimer=0
+        hudFpsVal.Text=tostring(math.floor(fps+0.5))
+        local ping=0
+        pcall(function() ping=math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()+0.5) end)
+        hudPingVal.Text=tostring(ping).."ms"
+        hudRankVal.Text=string.upper(currentRank)
+        hudRankVal.TextColor3=(RANKS[currentRank] or RANKS.player).color
+    end
+end)
+local function setHudVisible(v) hudEnabled=v hudMain.Visible=v end
+
+-- TARGET INFO
+local tinfoSg=Instance.new("ScreenGui")
+tinfoSg.Name="_bs_tinfo" tinfoSg.ResetOnSpawn=false tinfoSg.DisplayOrder=2147483634 tinfoSg.IgnoreGuiInset=true tinfoSg.ZIndexBehavior=Enum.ZIndexBehavior.Global tinfoSg.Parent=parent
+local tinfoCard=Instance.new("Frame")
+tinfoCard.Size=UDim2.new(0,260,0,68) tinfoCard.Position=UDim2.new(0.5,-130,0.5,60) tinfoCard.BackgroundColor3=UI.bg tinfoCard.BackgroundTransparency=0.08 tinfoCard.BorderSizePixel=0 tinfoCard.Visible=false tinfoCard.Parent=tinfoSg tinfoCard.ZIndex=4500
+addCorner(tinfoCard,6) addStroke(tinfoCard,UI.border,1)
+local tinfoAvatar=Instance.new("ImageLabel")
+tinfoAvatar.Size=UDim2.new(0,56,0,56) tinfoAvatar.Position=UDim2.new(0,6,0,6) tinfoAvatar.BackgroundColor3=UI.panel3 tinfoAvatar.BorderSizePixel=0 tinfoAvatar.Image="" tinfoAvatar.ZIndex=4501 tinfoAvatar.Parent=tinfoCard
+addCorner(tinfoAvatar,6) addStroke(tinfoAvatar,UI.accent,1)
+local tinfoName=Instance.new("TextLabel")
+tinfoName.Size=UDim2.new(1,-74,0,18) tinfoName.Position=UDim2.new(0,68,0,6) tinfoName.BackgroundTransparency=1 tinfoName.Text="PlayerName" tinfoName.TextColor3=UI.text tinfoName.TextSize=13 tinfoName.Font=Enum.Font.GothamBold tinfoName.TextXAlignment=Enum.TextXAlignment.Left tinfoName.ZIndex=4501 tinfoName.Parent=tinfoCard
+local tinfoHpBg=Instance.new("Frame")
+tinfoHpBg.Size=UDim2.new(1,-74,0,8) tinfoHpBg.Position=UDim2.new(0,68,0,28) tinfoHpBg.BackgroundColor3=UI.panel3 tinfoHpBg.BorderSizePixel=0 tinfoHpBg.ZIndex=4501 tinfoHpBg.Parent=tinfoCard
+addCorner(tinfoHpBg,3)
+local tinfoHpFill=Instance.new("Frame")
+tinfoHpFill.Size=UDim2.new(1,0,1,0) tinfoHpFill.BackgroundColor3=HP_HIGH tinfoHpFill.BorderSizePixel=0 tinfoHpFill.ZIndex=4502 tinfoHpFill.Parent=tinfoHpBg
+addCorner(tinfoHpFill,3)
+local tinfoHpText=Instance.new("TextLabel")
+tinfoHpText.Size=UDim2.new(1,-74,0,12) tinfoHpText.Position=UDim2.new(0,68,0,38) tinfoHpText.BackgroundTransparency=1 tinfoHpText.Text="100 / 100" tinfoHpText.TextColor3=UI.textDim tinfoHpText.TextSize=10 tinfoHpText.Font=Enum.Font.Code tinfoHpText.TextXAlignment=Enum.TextXAlignment.Left tinfoHpText.ZIndex=4501 tinfoHpText.Parent=tinfoCard
+local tinfoWeapon=Instance.new("TextLabel")
+tinfoWeapon.Size=UDim2.new(1,-74,0,14) tinfoWeapon.Position=UDim2.new(0,68,0,50) tinfoWeapon.BackgroundTransparency=1 tinfoWeapon.Text="Weapon: —" tinfoWeapon.TextColor3=UI.warn tinfoWeapon.TextSize=11 tinfoWeapon.Font=Enum.Font.GothamBold tinfoWeapon.TextXAlignment=Enum.TextXAlignment.Left tinfoWeapon.ZIndex=4501 tinfoWeapon.Parent=tinfoCard
+
+-- POPUP SYSTEM
+local popupSg=Instance.new("ScreenGui")
+popupSg.Name="_bs_popups" popupSg.ResetOnSpawn=false
+popupSg.DisplayOrder=2147483647 popupSg.IgnoreGuiInset=true
+popupSg.ZIndexBehavior=Enum.ZIndexBehavior.Global popupSg.Parent=parent
+local popupQueue={}
+local showingPopup=false
+local currentPopupFrame=nil
+local popupIdsToAck={}
+local function ackPopups()
+    if #popupIdsToAck==0 then return end
+    local ids=popupIdsToAck
+    popupIdsToAck={}
+    task.spawn(function() pcall(function() httpPost(API_URL.."/popup/ack",{secret=API_SECRET, ids=ids}) end) end)
+end
+local function closeCurrentPopup()
+    if currentPopupFrame then currentPopupFrame:Destroy(); currentPopupFrame=nil end
+    showingPopup=false
+    task.wait(0.15)
+    if #popupQueue>0 then task.spawn(function() showNextPopup() end) else ackPopups() end
+end
+function showNextPopup()
+    if showingPopup then return end
+    if #popupQueue==0 then return end
+    showingPopup=true
+    local item=table.remove(popupQueue,1)
+    local borderColor=UI.accent
+    if item.color then
+        local hex=item.color:gsub("#","")
+        local ok,c=pcall(function() return Color3.fromHex(hex) end)
+        if ok and c then borderColor=c end
+    end
+    local main=Instance.new("Frame")
+    main.Size=UDim2.new(0,460,0,240) main.Position=UDim2.new(0.5,-230,0.5,-120)
+    main.BackgroundColor3=UI.bg main.BorderSizePixel=0 main.Active=true main.Draggable=true main.Parent=popupSg
+    addCorner(main,8) addStroke(main,borderColor,2)
+    local accent=Instance.new("Frame")
+    accent.Size=UDim2.new(0,4,1,-24) accent.Position=UDim2.new(0,10,0,12)
+    accent.BackgroundColor3=borderColor accent.BorderSizePixel=0 accent.Parent=main
+    addCorner(accent,2)
+    local title=Instance.new("TextLabel")
+    title.Size=UDim2.new(1,-30,0,30) title.Position=UDim2.new(0,22,0,14)
+    title.BackgroundTransparency=1 title.Text=tostring(item.title or "Notification")
+    title.TextColor3=borderColor title.TextSize=16 title.Font=Enum.Font.GothamBold
+    title.TextXAlignment=Enum.TextXAlignment.Left title.Parent=main
+    local sep=Instance.new("Frame")
+    sep.Size=UDim2.new(1,-40,0,1) sep.Position=UDim2.new(0,20,0,50)
+    sep.BackgroundColor3=UI.border sep.BorderSizePixel=0 sep.Parent=main
+    local info=Instance.new("TextLabel")
+    info.Size=UDim2.new(1,-40,0,120) info.Position=UDim2.new(0,20,0,60)
+    info.BackgroundTransparency=1 info.Text=tostring(item.body or "")
+    info.TextColor3=UI.text info.TextSize=13 info.Font=Enum.Font.Gotham
+    info.TextXAlignment=Enum.TextXAlignment.Left info.TextYAlignment=Enum.TextYAlignment.Top
+    info.TextWrapped=true info.Parent=main
+    local okBtn=Instance.new("TextButton")
+    okBtn.Size=UDim2.new(1,-40,0,36) okBtn.Position=UDim2.new(0,20,1,-48)
+    okBtn.BackgroundColor3=UI.panel2 okBtn.BorderSizePixel=0
+    okBtn.Text="OK" okBtn.TextColor3=borderColor okBtn.TextSize=13
+    okBtn.Font=Enum.Font.GothamBold okBtn.Parent=main
+    addCorner(okBtn,4) addStroke(okBtn,borderColor,1.5)
+    okBtn.MouseButton1Click:Connect(function() closeCurrentPopup() end)
+    currentPopupFrame=main
+end
+local function enqueuePopup(item)
+    table.insert(popupQueue,item)
+    if item.id then table.insert(popupIdsToAck,item.id) end
+    if not showingPopup then task.spawn(function() showNextPopup() end) end
+end
+
+-- BAN
+if isBanned then
+    local sg=Instance.new("ScreenGui") sg.Name="_bs_ban" sg.ResetOnSpawn=false sg.DisplayOrder=2147483647 sg.IgnoreGuiInset=true sg.Parent=parent
+    local main=Instance.new("Frame") main.Size=UDim2.new(0,400,0,220) main.Position=UDim2.new(0.5,-200,0.5,-110) main.BackgroundColor3=UI.bg main.BorderSizePixel=0 main.Active=true main.Draggable=true main.Parent=sg
+    addCorner(main,6) addStroke(main,UI.bad,1.5)
+    local t=Instance.new("TextLabel") t.Size=UDim2.new(1,0,0,40) t.Position=UDim2.new(0,0,0,12) t.BackgroundTransparency=1 t.Text="ACCESS DENIED — BANNED" t.TextColor3=UI.bad t.TextScaled=true t.Font=Enum.Font.GothamBold t.Parent=main
+    local info=Instance.new("TextLabel") info.Size=UDim2.new(0.9,0,0,130) info.Position=UDim2.new(0.05,0,0,62) info.BackgroundTransparency=1 info.Text="REASON: "..(banInfo.reason or "not specified").."\n\nDURATION: "..(banInfo.expires or "permanent").."\n\nHWID: "..currentHWID info.TextColor3=UI.text info.TextScaled=true info.Font=Enum.Font.Code info.TextWrapped=true info.Parent=main
+end
+
+-- KEY MENU
+local keyPassed=false
+local function showKeyMenu()
+    local keySg=Instance.new("ScreenGui") keySg.Name="_bs_key" keySg.ResetOnSpawn=false keySg.DisplayOrder=2147483647 keySg.IgnoreGuiInset=true keySg.Parent=parent
+    local km=Instance.new("Frame") km.Size=UDim2.new(0,380,0,250) km.Position=UDim2.new(0.5,-190,0.5,-125) km.BackgroundColor3=UI.bg km.BorderSizePixel=0 km.Active=true km.Draggable=true km.Parent=keySg
+    addCorner(km,6) addStroke(km,UI.border,1)
+    local kt=Instance.new("TextLabel") kt.Size=UDim2.new(1,-20,0,26) kt.Position=UDim2.new(0,12,0,14) kt.BackgroundTransparency=1 kt.Text="ACTIVATION REQUIRED" kt.TextColor3=UI.text kt.TextSize=15 kt.Font=Enum.Font.GothamBold kt.TextXAlignment=Enum.TextXAlignment.Left kt.Parent=km
+    local sep=Instance.new("Frame") sep.Size=UDim2.new(1,-24,0,1) sep.Position=UDim2.new(0,12,0,44) sep.BackgroundColor3=UI.border sep.BorderSizePixel=0 sep.Parent=km
+    local info=Instance.new("TextLabel") info.Size=UDim2.new(1,-24,0,18) info.Position=UDim2.new(0,12,0,52) info.BackgroundTransparency=1 info.Text="HWID  "..currentHWID info.TextColor3=UI.textDim info.TextSize=12 info.Font=Enum.Font.Code info.TextXAlignment=Enum.TextXAlignment.Left info.Parent=km
+    local box=Instance.new("TextBox") box.Size=UDim2.new(1,-24,0,38) box.Position=UDim2.new(0,12,0,84) box.BackgroundColor3=UI.input box.BorderSizePixel=0 box.Text="" box.PlaceholderText="Enter license key" box.TextColor3=UI.text box.TextSize=14 box.Font=Enum.Font.Code box.ClearTextOnFocus=false box.Parent=km
+    addCorner(box,4) addStroke(box,UI.border,1)
+    local status=Instance.new("TextLabel") status.Size=UDim2.new(1,-24,0,20) status.Position=UDim2.new(0,12,0,130) status.BackgroundTransparency=1 status.Text="Key is bound to HWID. Enter once." status.TextColor3=UI.textDim status.TextSize=11 status.Font=Enum.Font.Gotham status.TextXAlignment=Enum.TextXAlignment.Left status.Parent=km
+    local btn=Instance.new("TextButton") btn.Size=UDim2.new(1,-24,0,40) btn.Position=UDim2.new(0,12,0,162) btn.BackgroundColor3=UI.panel2 btn.BorderSizePixel=0 btn.Text="ACTIVATE" btn.TextColor3=UI.accent btn.TextSize=13 btn.Font=Enum.Font.GothamBold btn.Parent=km
+    addCorner(btn,4) addStroke(btn,UI.accent,1.5)
+    local function tryActivate()
+        local input=box.Text:gsub("%s+","")
+        if input=="" then return end
+        status.Text="Checking..." status.TextColor3=UI.warn
+        local res=httpPost(API_URL.."/activate",{secret=API_SECRET,hwid=currentHWID,nickname=LocalPlayer.Name,key=input})
+        if not res then status.Text="Network error" status.TextColor3=UI.bad return end
+        local ok,data=pcall(function() return HttpService:JSONDecode(res) end)
+        if not ok or not data then status.Text="Response error" status.TextColor3=UI.bad return end
+        if data.status=="ok" then
+            currentRank=data.rank or "player" currentKey=input
+            localData.activated=true localData.key=input localData.rank=currentRank saveLocal(localData)
+            status.Text="Activated — rank "..string.upper(currentRank) status.TextColor3=UI.good
+            task.wait(1) keySg:Destroy() keyPassed=true runMainGUI()
+        elseif data.status=="already" then
+            currentKey=input localData.activated=true localData.key=input localData.rank=currentRank saveLocal(localData)
+            status.Text="Key restored" status.TextColor3=UI.good
+            task.wait(1) keySg:Destroy() keyPassed=true runMainGUI()
+        elseif data.status=="limit" then status.Text="Activation limit reached" status.TextColor3=UI.warn
+        elseif data.status=="invalid" then status.Text="Invalid key" status.TextColor3=UI.bad
+        else status.Text=tostring(data.status) status.TextColor3=UI.bad end
+    end
+    btn.MouseButton1Click:Connect(tryActivate)
+    box.FocusLost:Connect(function(e) if e then tryActivate() end end)
+end
+
+-- RESET DIALOG
+local function showResetDialog(notice,callback)
+    local n=notice
+    if type(notice)=="string" then
+        local ok,decoded=pcall(function() return HttpService:JSONDecode(notice) end)
+        if ok and decoded then n=decoded end
+    end
+    if type(n)~="table" then n={} end
+    local dialogSg=Instance.new("ScreenGui") dialogSg.Name="_bs_reset_dialog" dialogSg.ResetOnSpawn=false dialogSg.DisplayOrder=2147483647 dialogSg.IgnoreGuiInset=true dialogSg.Parent=parent
+    local dMain=Instance.new("Frame") dMain.Size=UDim2.new(0,420,0,250) dMain.Position=UDim2.new(0.5,-210,0.5,-125) dMain.BackgroundColor3=UI.bg dMain.BorderSizePixel=0 dMain.Active=true dMain.Draggable=true dMain.Parent=dialogSg
+    addCorner(dMain,6) addStroke(dMain,UI.warn,1.5)
+    local t=Instance.new("TextLabel") t.Size=UDim2.new(1,-20,0,26) t.Position=UDim2.new(0,12,0,14) t.BackgroundTransparency=1 t.Text="KEY RESET NOTICE" t.TextColor3=UI.warn t.TextSize=15 t.Font=Enum.Font.GothamBold t.TextXAlignment=Enum.TextXAlignment.Left t.Parent=dMain
+    local sep=Instance.new("Frame") sep.Size=UDim2.new(1,-24,0,1) sep.Position=UDim2.new(0,12,0,44) sep.BackgroundColor3=UI.border sep.BorderSizePixel=0 sep.Parent=dMain
+    local typeName=(n.type=="hwid") and "HWID" or "key"
+    local info=Instance.new("TextLabel") info.Size=UDim2.new(1,-24,0,140) info.Position=UDim2.new(0,12,0,56) info.BackgroundTransparency=1 info.Text="ADMIN: "..tostring(n.admin or "unknown").."\n\nREASON: "..tostring(n.reason or "not specified").."\n\nRESET: "..typeName.."\n\nEnter key again." info.TextColor3=UI.text info.TextSize=12 info.Font=Enum.Font.Code info.TextXAlignment=Enum.TextXAlignment.Left info.TextWrapped=true info.Parent=dMain
+    local btn=Instance.new("TextButton") btn.Size=UDim2.new(1,-24,0,38) btn.Position=UDim2.new(0,12,1,-50) btn.BackgroundColor3=UI.panel2 btn.BorderSizePixel=0 btn.Text="OK" btn.TextColor3=UI.warn btn.TextSize=13 btn.Font=Enum.Font.GothamBold btn.Parent=dMain
+    addCorner(btn,4) addStroke(btn,UI.warn,1.5)
+    btn.MouseButton1Click:Connect(function() dialogSg:Destroy() if callback then callback() end end)
+end
+
+-- MAIN GUI
+function runMainGUI()
+if not keyPassed then return end
+local S={unloaded=false,connections={},espEnabled=false,showTracer=true,showHP=true,showName=true,showDist=true,showChams=true,deadCleanup=false,showHitbar=true,skeletonEnabled=false,c4Enabled=false,c4Color=Color3.fromRGB(255,120,0),c4Timers={},espCache={},wallhackEnabled=false,mapSpawnedParts={},savedMapChildren={},wallhackState="idle",wallhackCountdownStart=0,xrayEnabled=false,xraySavedTransparency={},timeSliderValue=12,timeLockerEnabled=false,skyEnabled=false,skyObject=nil,skySaved=nil,seasonState=0,snowPlates={},rainSound=nil,fallLeavesEmitter=nil,rainEmitter=nil,snowEmitter=nil,winterHats={},fullbrightEnabled=false,fullbrightSaved=nil,noFogEnabled=false,noFogSaved=nil,noFogAtmSaved=nil,graphicEnabled=false,graphicObjects={},fpsBoostEnabled=false,fpsBoostSaved={decals={},particles={},beams={},atmosphere=nil,shadows=nil},cameraMode=1,camMetaHookInstalled=false,camOldNewIndex=nil,morphState=0,noRecoilEnabled=false,bunnyHopEnabled=false,speedEnabled=false,speedStep=3,speedThread=nil,headshotAssistEnabled=false,lastCamLook=nil,bigHeadEnabled=false,bigHeadTeamCheck=false,originalSizes={},noclipEnabled=false,aimEnabled=false,aimFov=200,aimPart="Head",aimWallCheck=true,aimTeamCheck=true,aimHolding=false,aimHoldKey=Enum.UserInputType.MouseButton2,wallbangEnabled=false,rawMeta=nil,oldNamecall=nil,launchEnabled=false,launchHeight=35,launchBasePos=nil,spinEnabled=false,spinSpeed=720,giantEnabled=false,giantScale=3,giantOriginal={},tallEnabled=false,tallScale=2,tallOriginal={},betaNoclip=false,betaFly=false,betaSpeedVal=50,targetPlayerName="",tinfoEnabled=false,tinfoLastUserId=nil,hudEnabled=false,accountStatus={state="loading",checked=false,lastPoll=nil,details=nil},feedbackCooldown=0}
+local KEEP_FOLDERS={Zones=true,ReplicationFocus=true,DeathBarriers=true,Barriers=true}
+local MORPHS={{name="NoModel",id=0},{name="Tung Tung Sahur",id=129575258275209},{name="Kotost",id=9834014321}}
+local CONFIG_KEYS={"espEnabled","showTracer","showHP","showName","showDist","showChams","deadCleanup","showHitbar","skeletonEnabled","c4Enabled","wallhackEnabled","xrayEnabled","timeSliderValue","timeLockerEnabled","skyEnabled","seasonState","fullbrightEnabled","noFogEnabled","graphicEnabled","fpsBoostEnabled","cameraMode","morphState","noRecoilEnabled","bunnyHopEnabled","speedEnabled","speedStep","headshotAssistEnabled","bigHeadEnabled","bigHeadTeamCheck","noclipEnabled","aimEnabled","aimFov","aimPart","aimWallCheck","aimTeamCheck","wallbangEnabled","launchEnabled","launchHeight","spinEnabled","spinSpeed","giantEnabled","giantScale","tallEnabled","tallScale","notificationsEnabled","hudEnabled","tinfoEnabled"}
+
+local function addConn(c) table.insert(S.connections,c) return c end
+
+local updateStatusCard=function() end
+local updateRankDisplay=function() end
+local updateFeedbackStatus=function() end
+
+local sg=Instance.new("ScreenGui")
+sg.Name="_bs_root" sg.ResetOnSpawn=false sg.DisplayOrder=2147483640 sg.IgnoreGuiInset=true sg.ZIndexBehavior=Enum.ZIndexBehavior.Global sg.Parent=parent
+local MAIN_W,MAIN_H=900,640
+local mainOk,main
+pcall(function() mainOk,main=true,Instance.new("CanvasGroup") end)
+if not main or not mainOk then main=Instance.new("Frame") main.GroupTransparency=0 end
+main.Size=UDim2.new(0,MAIN_W,0,MAIN_H) main.Position=UDim2.new(0.5,-MAIN_W/2,0.4,-MAIN_H/2)
+main.BackgroundColor3=UI.bg main.BorderSizePixel=0 main.Active=true main.Draggable=true main.Parent=sg main.ZIndex=1000
+addCorner(main,6) addStroke(main,UI.border,1)
+
+local topbar=Instance.new("Frame")
+topbar.Size=UDim2.new(1,0,0,44) topbar.BackgroundColor3=UI.topbar topbar.BorderSizePixel=0 topbar.Parent=main topbar.ZIndex=1001
+addCorner(topbar,6)
+local topSep=Instance.new("Frame")
+topSep.Size=UDim2.new(1,0,0,1) topSep.Position=UDim2.new(0,0,1,-1) topSep.BackgroundColor3=UI.border topSep.BorderSizePixel=0 topSep.Parent=topbar topSep.ZIndex=1002
+local accentLine=Instance.new("Frame")
+accentLine.Size=UDim2.new(0,80,0,2) accentLine.Position=UDim2.new(0,16,1,-2) accentLine.BackgroundColor3=UI.accent accentLine.BorderSizePixel=0 accentLine.Parent=topbar accentLine.ZIndex=1003
+local title=Instance.new("TextLabel")
+title.Size=UDim2.new(0,110,1,0) title.Position=UDim2.new(0,18,0,0) title.BackgroundTransparency=1 title.Text="WorkClient" title.TextColor3=UI.text title.TextSize=15 title.Font=Enum.Font.GothamBold title.TextXAlignment=Enum.TextXAlignment.Left title.Parent=topbar title.ZIndex=1002
+local versionLbl=Instance.new("TextLabel")
+versionLbl.Size=UDim2.new(0,56,1,0) versionLbl.Position=UDim2.new(0,124,0,0) versionLbl.BackgroundTransparency=1 versionLbl.Text="v30.3" versionLbl.TextColor3=UI.textDim versionLbl.TextSize=11 versionLbl.Font=Enum.Font.Code versionLbl.TextXAlignment=Enum.TextXAlignment.Left versionLbl.Parent=topbar versionLbl.ZIndex=1002
+local nickLabel=Instance.new("TextLabel")
+nickLabel.Size=UDim2.new(0,300,1,0) nickLabel.Position=UDim2.new(0,190,0,0)
+nickLabel.BackgroundTransparency=1 nickLabel.Text="— "..LocalPlayer.Name.." —"
+nickLabel.TextColor3=UI.accent nickLabel.TextSize=12 nickLabel.Font=Enum.Font.GothamMedium
+nickLabel.TextXAlignment=Enum.TextXAlignment.Left nickLabel.Parent=topbar nickLabel.ZIndex=1002
+local rankLabel=Instance.new("TextLabel")
+rankLabel.Size=UDim2.new(0,200,1,0) rankLabel.Position=UDim2.new(1,-290,0,0) rankLabel.BackgroundTransparency=1 rankLabel.Text=string.upper(currentRank) rankLabel.TextColor3=(RANKS[currentRank] or RANKS.player).color rankLabel.TextSize=12 rankLabel.Font=Enum.Font.GothamBold rankLabel.TextXAlignment=Enum.TextXAlignment.Right rankLabel.Parent=topbar rankLabel.ZIndex=1002
+local minimize=Instance.new("TextButton")
+minimize.Size=UDim2.new(0,30,0,30) minimize.Position=UDim2.new(1,-78,0,7) minimize.BackgroundColor3=UI.panel2 minimize.BorderSizePixel=0 minimize.Text="—" minimize.TextColor3=UI.text minimize.TextSize=16 minimize.Font=Enum.Font.GothamBold minimize.Parent=topbar minimize.ZIndex=1002
+addCorner(minimize,4) addStroke(minimize,UI.border,1)
+local closeBtn=Instance.new("TextButton")
+closeBtn.Size=UDim2.new(0,30,0,30) closeBtn.Position=UDim2.new(1,-42,0,7) closeBtn.BackgroundColor3=UI.panel2 closeBtn.BorderSizePixel=0 closeBtn.Text="X" closeBtn.TextColor3=UI.bad closeBtn.TextSize=13 closeBtn.Font=Enum.Font.GothamBold closeBtn.Parent=topbar closeBtn.ZIndex=1002
+addCorner(closeBtn,4) addStroke(closeBtn,UI.bad,1)
+
+updateRankDisplay=function()
+    rankLabel.Text=string.upper(currentRank)
+    rankLabel.TextColor3=(RANKS[currentRank] or RANKS.player).color
+end
+
+local sidebar=Instance.new("Frame")
+sidebar.Size=UDim2.new(0,200,1,-70) sidebar.Position=UDim2.new(0,12,0,54) sidebar.BackgroundColor3=UI.panel sidebar.BorderSizePixel=0 sidebar.Parent=main sidebar.ZIndex=1001
+addCorner(sidebar,4) addStroke(sidebar,UI.border,1)
+local content=Instance.new("Frame")
+content.Size=UDim2.new(1,-234,1,-70) content.Position=UDim2.new(0,222,0,54) content.BackgroundColor3=UI.panel content.BorderSizePixel=0 content.Parent=main content.ZIndex=1001 content.ClipsDescendants=true
+addCorner(content,4) addStroke(content,UI.border,1)
+
+local pages={}
+local tabButtons={}
+local tabCounter=0
+local switchingTab=false
+
+local function createPage(name)
+    local page=Instance.new("ScrollingFrame")
+    page.Size=UDim2.new(1,-10,1,-10) page.Position=UDim2.new(0,5,0,5) page.BackgroundTransparency=1 page.BorderSizePixel=0 page.ScrollBarThickness=4 page.ScrollBarImageColor3=UI.borderHi page.CanvasSize=UDim2.new(0,0,0,0) page.AutomaticCanvasSize=Enum.AutomaticSize.Y page.Visible=false page.Parent=content page.ZIndex=1002
+    pages[name]=page return page
+end
+local function switchTab(name)
+    if switchingTab then return end
+    local newPage=pages[name] if not newPage then return end
+    for n,b in pairs(tabButtons) do
+        if n==name then b.TextColor3=UI.accent local s=b:FindFirstChildOfClass("UIStroke") if s then s.Color=UI.accent s.Thickness=1.5 end
+        else b.TextColor3=UI.textDim local s=b:FindFirstChildOfClass("UIStroke") if s then s.Color=UI.border s.Thickness=1 end end
+    end
+    for n,p in pairs(pages) do if n~=name and p.Visible then p.Visible=false end end
+    switchingTab=true newPage.Visible=true newPage.Position=UDim2.new(0,25,0,5)
+    local t=TweenService:Create(newPage,TweenInfo.new(0.22,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Position=UDim2.new(0,5,0,5)})
+    t:Play() t.Completed:Connect(function() switchingTab=false end)
+end
+local function createTabButton(name,displayName,color)
+    local btn=Instance.new("TextButton")
+    btn.Size=UDim2.new(1,-16,0,38) btn.Position=UDim2.new(0,8,0,10+tabCounter*44) tabCounter=tabCounter+1
+    btn.BackgroundColor3=UI.panel2 btn.BorderSizePixel=0 btn.Text=displayName btn.TextColor3=UI.textDim btn.TextSize=13 btn.Font=Enum.Font.GothamBold btn.TextXAlignment=Enum.TextXAlignment.Left btn.Parent=sidebar btn.ZIndex=1002
+    addCorner(btn,4) addStroke(btn,UI.border,1)
+    local pad=Instance.new("UIPadding") pad.PaddingLeft=UDim.new(0,14) pad.Parent=btn
+    tabButtons[name]=btn btn.MouseButton1Click:Connect(function() switchTab(name) end)
+    return btn
+end
+local function makeSection(parent_,text,yPos)
+    local container=Instance.new("Frame") container.Size=UDim2.new(1,-20,0,26) container.Position=UDim2.new(0,10,0,yPos) container.BackgroundTransparency=1 container.Parent=parent_ container.ZIndex=1002
+    local bar=Instance.new("Frame") bar.Size=UDim2.new(0,2,0,14) bar.Position=UDim2.new(0,0,0.5,-7) bar.BackgroundColor3=UI.accent bar.BorderSizePixel=0 bar.Parent=container bar.ZIndex=1002
+    local lbl=Instance.new("TextLabel") lbl.Size=UDim2.new(1,-10,1,0) lbl.Position=UDim2.new(0,8,0,0) lbl.BackgroundTransparency=1 lbl.Text=string.upper(text) lbl.TextColor3=UI.textDim lbl.TextSize=11 lbl.Font=Enum.Font.GothamBold lbl.TextXAlignment=Enum.TextXAlignment.Left lbl.Parent=container lbl.ZIndex=1002
+    return container
+end
+local function makeButton(parent_,text,xPos,yPos,w,color,cb)
+    local b=Instance.new("TextButton")
+    b.Size=UDim2.new(w,0,0,30) b.Position=UDim2.new(xPos,0,0,yPos) b.BackgroundColor3=UI.panel2 b.BorderSizePixel=0 b.Text=text b.TextColor3=UI.text b.TextSize=12 b.Font=Enum.Font.GothamBold b.Parent=parent_ b.ZIndex=1002
+    addCorner(b,4) addStroke(b,UI.border,1)
+    if cb then b.MouseButton1Click:Connect(function() cb(b) end) end
+    return b
+end
+local function makeToggle(parent_,text,xPos,yPos,getState,setState)
+    local b=Instance.new("TextButton")
+    b.Size=UDim2.new(0.44,0,0,28) b.Position=UDim2.new(xPos,0,0,yPos) b.BackgroundColor3=UI.panel2 b.BorderSizePixel=0 b.Text=text b.TextColor3=UI.text b.TextSize=11 b.Font=Enum.Font.Gotham b.Parent=parent_ b.ZIndex=1002
+    addCorner(b,4) addStroke(b,UI.border,1)
+    setButtonState(b,getState())
+    b.MouseButton1Click:Connect(function()
+        setState(not getState())
+        setButtonState(b,getState())
+    end)
+    return b
+end
+local function makeInput(parent_,labelText,xPos,yPos,w,defaultVal,onChange)
+    local lbl=Instance.new("TextLabel") lbl.Size=UDim2.new(w,0,0,26) lbl.Position=UDim2.new(xPos,0,0,yPos) lbl.BackgroundTransparency=1 lbl.Text=labelText lbl.TextColor3=UI.textDim lbl.TextSize=11 lbl.Font=Enum.Font.Gotham lbl.TextXAlignment=Enum.TextXAlignment.Left lbl.Parent=parent_ lbl.ZIndex=1002
+    local box=Instance.new("TextBox") box.Size=UDim2.new(0.2,0,0,26) box.Position=UDim2.new(xPos+w,0,0,yPos) box.BackgroundColor3=UI.input box.BorderSizePixel=0 box.Text=tostring(defaultVal) box.TextColor3=UI.text box.TextSize=12 box.Font=Enum.Font.Code box.ClearTextOnFocus=false box.Parent=parent_ box.ZIndex=1002
+    addCorner(box,4) addStroke(box,UI.border,1)
+    box.FocusLost:Connect(function(e) if e then local v=tonumber(box.Text) if v then onChange(v) else box.Text=tostring(defaultVal) end end end)
+    return box
+end
+local function makeSlider(parent_,labelText,xPos,yPos,w,minVal,maxVal,defaultVal,onChange)
+    local container=Instance.new("Frame") container.Size=UDim2.new(w,0,0,44) container.Position=UDim2.new(xPos,0,0,yPos) container.BackgroundTransparency=1 container.Parent=parent_ container.ZIndex=1002
+    local label=Instance.new("TextLabel") label.Size=UDim2.new(1,0,0,14) label.BackgroundTransparency=1 label.Text=labelText label.TextColor3=UI.textDim label.TextSize=11 label.Font=Enum.Font.Gotham label.TextXAlignment=Enum.TextXAlignment.Left label.Parent=container label.ZIndex=1002
+    local valueLbl=Instance.new("TextLabel") valueLbl.Size=UDim2.new(0,60,0,14) valueLbl.Position=UDim2.new(1,-60,0,0) valueLbl.BackgroundTransparency=1 valueLbl.Text=string.format("%.1f",defaultVal) valueLbl.TextColor3=UI.accent valueLbl.TextSize=11 valueLbl.Font=Enum.Font.Code valueLbl.TextXAlignment=Enum.TextXAlignment.Right valueLbl.Parent=container valueLbl.ZIndex=1002
+    local bar=Instance.new("Frame") bar.Size=UDim2.new(1,0,0,8) bar.Position=UDim2.new(0,0,0,24) bar.BackgroundColor3=UI.input bar.BorderSizePixel=0 bar.Parent=container bar.ZIndex=1002
+    addCorner(bar,4) addStroke(bar,UI.border,1)
+    local fill=Instance.new("Frame") fill.Size=UDim2.new((defaultVal-minVal)/(maxVal-minVal),0,1,0) fill.BackgroundColor3=UI.accent fill.BorderSizePixel=0 fill.Parent=bar fill.ZIndex=1003
+    addCorner(fill,4)
+    local dragging=false local wasDraggable=false
+    local function update(xAbs)
+        local rel=math.clamp((xAbs-bar.AbsolutePosition.X)/bar.AbsoluteSize.X,0,1)
+        local newVal=minVal+(maxVal-minVal)*rel
+        fill.Size=UDim2.new(rel,0,1,0) valueLbl.Text=string.format("%.1f",newVal)
+        if onChange then onChange(newVal) end
+    end
+    bar.InputBegan:Connect(function(input)
+        if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+            dragging=true wasDraggable=main.Draggable main.Draggable=false update(input.Position.X)
+            local moveConn,endConn
+            moveConn=UserInputService.InputChanged:Connect(function(i) if dragging and (i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch) then update(i.Position.X) end end)
+            endConn=UserInputService.InputEnded:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then dragging=false main.Draggable=wasDraggable moveConn:Disconnect() endConn:Disconnect() end end)
+            addConn(moveConn) addConn(endConn)
+        end
+    end)
+    return {setValue=update}
+end
+
+-- LOGIC HELPERS
+local function getPlayerTeamId(plr)
+    if not plr then return nil end
+    local ok,attr=pcall(function() return plr:GetAttribute("Team") end)
+    if ok and attr~=nil and attr~="" then return "attr:"..tostring(attr) end
+    local char=plr.Character
+    if char then
+        local ok2,cname=pcall(function() return char:GetAttribute("CharacterName") end)
+        if ok2 and cname and cname~="" then return "cname:"..tostring(cname) end
+    end
+    return nil
+end
+local function getTeamColor(teamId)
+    if not teamId then return Color3.fromRGB(255,255,255) end
+    local s=tostring(teamId) local h=0
+    for i=1,#s do h=(h+string.byte(s,i)*(i*7+3))%1000000 end
+    return TEAM_COLORS[(h%#TEAM_COLORS)+1]
+end
+local myTeamId=nil
+local function refreshMyTeam() myTeamId=getPlayerTeamId(LocalPlayer) end
+refreshMyTeam()
+addConn(task.spawn(function() while not S.unloaded and task.wait(3) do refreshMyTeam() end end))
+local function isSameTeam(plr)
+    if not myTeamId then return false end
+    local t=getPlayerTeamId(plr) return t~=nil and t==myTeamId
+end
+local function getCharsFolder() return workspace:FindFirstChild("Characters") end
+local function isPlayerDead(plr,char)
+    if not plr or not char or not char.Parent then return true end
+    local folder=getCharsFolder()
+    if folder and not char:IsDescendantOf(folder) then return true end
+    if plr then local d=plr:GetAttribute("Dead") if d==true then return true end end
+    local h=char:FindFirstChildOfClass("Humanoid")
+    if h then if h.Health<=0 then return true end if h:GetState()==Enum.HumanoidStateType.Dead then return true end end
+    if char:GetAttribute("Dead")==true then return true end
+    return false
+end
+local function findBodyPart(char,names)
+    if not char then return nil end
+    for _,name in ipairs(names) do local p=char:FindFirstChild(name) if p and p:IsA("BasePart") then return p end end
+    for _,name in ipairs(names) do local lower=name:lower() for _,p in ipairs(char:GetDescendants()) do if p:IsA("BasePart") and p.Name:lower():find(lower) then return p end end end
+    return nil
+end
+local function getBombSite(bombPos)
+    local map=workspace:FindFirstChild("Map") if not map then return nil end
+    local zones=map:FindFirstChild("Zones") if not zones then return nil end
+    local sites=zones:FindFirstChild("Sites") if not sites then return nil end
+    local function checkFolder(folder,label)
+        if not folder then return nil end
+        for _,part in ipairs(folder:GetDescendants()) do
+            if part:IsA("BasePart") then
+                local localPos=part.CFrame:PointToObjectSpace(bombPos)
+                local half=part.Size/2
+                if math.abs(localPos.X)<=half.X and math.abs(localPos.Y)<=half.Y and math.abs(localPos.Z)<=half.Z then return label end
+            end
+        end
+        return nil
+    end
+    local a=checkFolder(sites:FindFirstChild("ZoneParts_A"),"A") if a then return a end
+    local b=checkFolder(sites:FindFirstChild("ZoneParts_B"),"B") if b then return b end
+    return nil
+end
+local function teleportPlantSite()
+    local map=workspace:FindFirstChild("Map") if not map then return false,0 end
+    local zones=map:FindFirstChild("Zones") if not zones then return false,0 end
+    local sites=zones:FindFirstChild("Sites") if not sites then return false,0 end
+    local char=LocalPlayer.Character if not char then return false,0 end
+    local pos=getCharPos(char) local count=0
+    for _,folderName in ipairs({"ZoneParts_A","ZoneParts_B"}) do
+        local folder=sites:FindFirstChild(folderName)
+        if folder then for _,part in ipairs(folder:GetDescendants()) do if part:IsA("BasePart") then pcall(function() part.CFrame=CFrame.new(pos) count=count+1 end) end end end
+    end
+    return count>0,count
+end
+local function getWeaponName(char)
+    if not char then return "—" end
+    local tool=char:FindFirstChildWhichIsA("Tool",true)
+    if tool then return tool.Name end
+    local w=char:FindFirstChild("Weapon")
+    if w then return w.Name end
+    return "—"
+end
+
+-- POLL LOOP
+local function setStatusState(state,details)
+    S.accountStatus=S.accountStatus or {}
+    S.accountStatus.checked=true
+    S.accountStatus.state=state
+    S.accountStatus.details=details or ""
+    S.accountStatus.lastPoll=os.date("%H:%M:%S")
+    pcall(updateStatusCard)
+end
+
+local function applyAccountStatus(data)
+    local newRank=data.rank or "player"
+    if newRank~=currentRank then
+        currentRank=newRank
+        localData.rank=currentRank
+        saveLocal(localData)
+        pcall(updateRankDisplay)
+    end
+    S.accountStatus=data
+    S.accountStatus.checked=true
+    S.accountStatus.lastPoll=os.date("%H:%M:%S")
+    if data.frozen then S.accountStatus.state="frozen"
+    elseif data.banned then S.accountStatus.state="banned"
+    elseif data.check_status then S.accountStatus.state="check"
+    else S.accountStatus.state="ok" end
+    if data.popups and type(data.popups)=="table" then
+        for _,p in ipairs(data.popups) do
+            enqueuePopup({id=p.id, title=p.title, body=p.body, color=p.color})
+        end
+    end
+    if data.kick_pending then
+        pcall(function() httpPost(API_URL.."/kick/ack",{secret=API_SECRET,hwid=currentHWID}) end)
+        task.wait(0.3)
+        pcall(function() LocalPlayer:Kick("You have been kicked by administrator.") end)
+    end
+    pcall(updateStatusCard)
+end
+
+local function startPollLoop()
+    task.spawn(function()
+        while not S.unloaded do
+            local res=httpPost(API_URL.."/poll",{secret=API_SECRET,hwid=currentHWID})
+            if not res then
+                setStatusState("error","Нет ответа от сервера")
+            else
+                local ok2,data=pcall(function() return HttpService:JSONDecode(res) end)
+                if not ok2 or type(data)~="table" then
+                    setStatusState("error","Некорректный ответ")
+                elseif data.status=="unknown" then
+                    setStatusState("unknown","Игрок не найден в БД")
+                elseif data.status=="ok" then
+                    applyAccountStatus(data)
+                else
+                    setStatusState("error","Сервер: "..tostring(data.status))
+                end
+            end
+            task.wait(POLL_INTERVAL)
+        end
+    end)
+end
+
+-- C4 WATCH
+local lastBombWeapon=nil
+local function findC4Bomb()
+    local debris=workspace:FindFirstChild("Debris") if not debris then return nil,nil end
+    local cf=debris:FindFirstChild("Character") if not cf then return nil,nil end
+    local w=cf:FindFirstChild("Weapon") if not w then return nil,nil end
+    if w:IsA("BasePart") then return w,w end
+    for _,o in ipairs(w:GetDescendants()) do if o:IsA("BasePart") then return w,o end end
+    return w,w:FindFirstChildWhichIsA("BasePart")
+end
+addConn(RunService.Heartbeat:Connect(function()
+    if S.unloaded then return end
+    local w,part=findC4Bomb()
+    if w and w~=lastBombWeapon then
+        lastBombWeapon=w
+        if part then
+            local site=getBombSite(part.Position)
+            if site then notify("Bomb planted on site "..site,UI.bad) else notify("Bomb planted (site unknown)",UI.warn) end
+        end
+    elseif not w then lastBombWeapon=nil end
+end))
+
+-- KILL FEED
+local charToPlayer={}
+local function indexChar(plr) if plr.Character then charToPlayer[plr.Character]=plr end end
+for _,plr in ipairs(Players:GetPlayers()) do if plr~=LocalPlayer then indexChar(plr) addConn(plr.CharacterAdded:Connect(function(c) charToPlayer[c]=plr end)) end end
+addConn(Players.PlayerAdded:Connect(function(plr) if plr~=LocalPlayer then indexChar(plr) addConn(plr.CharacterAdded:Connect(function(c) charToPlayer[c]=plr end)) end end))
+local function setupKillFeed(folder)
+    addConn(folder.ChildRemoved:Connect(function(char)
+        local plr=charToPlayer[char] charToPlayer[char]=nil
+        if not plr then return end
+        task.wait(0.15)
+        local killer=plr:GetAttribute("LastKiller") or char:GetAttribute("LastKiller") or "?"
+        local victim=plr.Name
+        if killer~="?" and killer~=victim then notify(killer.." eliminated "..victim,UI.text)
+        else notify(victim.." died",UI.textDim) end
+    end))
+end
+local cfFolder=getCharsFolder()
+if cfFolder then setupKillFeed(cfFolder)
+else addConn(workspace.ChildAdded:Connect(function(c) if c.Name=="Characters" then setupKillFeed(c) end end)) end
+
+-- WALLHACK
+local function hasHumanoidInside(obj)
+    if obj:IsA("Humanoid") then return true end
+    if obj:FindFirstChildOfClass("Humanoid") then return true end
+    for _,d in ipairs(obj:GetDescendants()) do if d:IsA("Humanoid") then return true end end
+    return false
+end
+local function isAnyCharRelated(obj)
+    for _,plr in ipairs(Players:GetPlayers()) do
+        local char=plr.Character
+        if char then
+            if obj==char then return true end
+            if obj:IsDescendantOf(char) then return true end
+            if char:IsDescendantOf(obj) then return true end
+        end
+    end
+    return false
+end
+local function deleteMapTemp()
+    local mapFolder=workspace:FindFirstChild("Map") if not mapFolder then return false end
+    S.savedMapChildren={}
+    for _,sub in ipairs(mapFolder:GetChildren()) do
+        if not KEEP_FOLDERS[sub.Name] and not isAnyCharRelated(sub) and not hasHumanoidInside(sub) then
+            table.insert(S.savedMapChildren,{obj=sub,parent=sub.Parent})
+            pcall(function() sub.Parent=nil end)
+        end
+    end
+    return true
+end
+local function restoreMap()
+    for _,entry in ipairs(S.savedMapChildren) do if entry.obj and entry.parent then pcall(function() entry.obj.Parent=entry.parent end) end end
+    S.savedMapChildren={}
+    for _,part in ipairs(S.mapSpawnedParts) do if part and part.Parent then part:Destroy() end end
+    S.mapSpawnedParts={}
+end
+local function getAliveEnemiesCount()
+    if not myTeamId then return -1 end
+    local count=0
+    for _,plr in ipairs(Players:GetPlayers()) do
+        if plr~=LocalPlayer then
+            local t=getPlayerTeamId(plr)
+            if t and t~=myTeamId then
+                local char=plr.Character
+                if char and not isPlayerDead(plr,char) then count=count+1 end
+            end
+        end
+    end
+    return count
+end
+local function getAliveTeamCount()
+    if not myTeamId then return -1 end
+    local count=0
+    local myChar=LocalPlayer.Character
+    if myChar and not isPlayerDead(LocalPlayer,myChar) then count=count+1 end
+    for _,plr in ipairs(Players:GetPlayers()) do
+        if plr~=LocalPlayer then
+            local t=getPlayerTeamId(plr)
+            if t and t==myTeamId then
+                local char=plr.Character
+                if char and not isPlayerDead(plr,char) then count=count+1 end
+            end
+        end
+    end
+    return count
+end
+local function wallhackStep()
+    if not S.wallhackEnabled or S.unloaded then return end
+    local enemies=getAliveEnemiesCount()
+    local myTeam=getAliveTeamCount()
+    local myTeamWiped=(myTeam==0)
+    local enemyWiped=(enemies==0)
+    local bothAlive=(enemies>0 and myTeam>0)
+    if S.wallhackState=="hidden" then
+        if enemyWiped or myTeamWiped then
+            restoreMap()
+            notify((enemyWiped and "Enemies" or "Your team").." wiped - map restored",UI.good)
+            S.wallhackState="waiting"
+        end
+    elseif S.wallhackState=="waiting" then
+        if bothAlive then S.wallhackCountdownStart=tick() S.wallhackState="countdown" notify("Both teams alive - 5s countdown",UI.textDim) end
+    elseif S.wallhackState=="countdown" then
+        if not bothAlive then S.wallhackState="waiting"
+        elseif tick()-S.wallhackCountdownStart>=5 then deleteMapTemp() notify("Wallhack: map hidden",UI.warn) S.wallhackState="hidden" end
+    end
+end
+
+-- XRAY
+local function enableXray()
+    local map=workspace:FindFirstChild("Map") if not map then return false end
+    S.xraySavedTransparency={}
+    for _,obj in ipairs(map:GetDescendants()) do
+        if obj:IsA("BasePart") and obj.Transparency<0.5 then
+            S.xraySavedTransparency[obj]=obj.Transparency
+            pcall(function() obj.Transparency=0.5 end)
+        end
+    end
+    return true
+end
+local function disableXray()
+    for part,t in pairs(S.xraySavedTransparency) do if part and part.Parent then pcall(function() part.Transparency=t end) end end
+    S.xraySavedTransparency={}
+end
+
+-- SKY
+local function enableSky()
+    S.skySaved={}
+    for _,s in ipairs(Lighting:GetChildren()) do if s:IsA("Sky") then table.insert(S.skySaved,s) s.Parent=nil end end
+    S.skyObject=Instance.new("Sky") S.skyObject.Name="_wc_sky"
+    S.skyObject.SkyboxBk="rbxassetid://159454299"
+    S.skyObject.SkyboxDn="rbxassetid://159454296"
+    S.skyObject.SkyboxFt="rbxassetid://159454293"
+    S.skyObject.SkyboxLf="rbxassetid://159454286"
+    S.skyObject.SkyboxRt="rbxassetid://159454300"
+    S.skyObject.SkyboxUp="rbxassetid://159454288"
+    S.skyObject.Parent=Lighting
+end
+local function disableSky()
+    if S.skyObject then S.skyObject:Destroy() S.skyObject=nil end
+    if S.skySaved then for _,s in ipairs(S.skySaved) do if s then pcall(function() s.Parent=Lighting end) end end S.skySaved=nil end
+end
+
+-- SEASONS
+local seasonSg=Instance.new("ScreenGui")
+seasonSg.Name="_bs_season" seasonSg.ResetOnSpawn=false seasonSg.DisplayOrder=0 seasonSg.IgnoreGuiInset=true seasonSg.Parent=parent
+local function makeNewYearHat(char)
+    if not char then return end
+    local head=findHeadPart(char)
+    if not head then return end
+    if S.winterHats[char] and S.winterHats[char].folder and S.winterHats[char].folder.Parent then return end
+    local folder=Instance.new("Folder") folder.Name="_wc_hat" folder.Parent=char
+    local cone=Instance.new("Part")
+    cone.Name="_wc_hat_cone" cone.Size=Vector3.new(1,1,1) cone.Color=Color3.fromRGB(215,30,30) cone.Material=Enum.Material.SmoothPlastic cone.CanCollide=false cone.Massless=true cone.TopSurface=Enum.SurfaceType.Smooth cone.BottomSurface=Enum.SurfaceType.Smooth cone.Transparency=0 cone.LocalTransparencyModifier=0
+    local mesh=Instance.new("SpecialMesh") mesh.MeshType=Enum.MeshType.Cone mesh.Scale=Vector3.new(0.85,1.4,0.85) mesh.Parent=cone
+    cone.Parent=folder
+    local w1=Instance.new("WeldConstraint") w1.Part0=cone w1.Part1=head w1.Parent=cone
+    cone.CFrame=head.CFrame*CFrame.new(0,head.Size.Y*0.5+0.75,0)
+    local band=Instance.new("Part") band.Name="_wc_hat_band" band.Shape=Enum.PartType.Cylinder band.Size=Vector3.new(0.18,0.88,0.88) band.Color=Color3.fromRGB(255,255,255) band.Material=Enum.Material.SmoothPlastic band.CanCollide=false band.Massless=true band.Transparency=0 band.LocalTransparencyModifier=0 band.Parent=folder
+    local w2=Instance.new("WeldConstraint") w2.Part0=band w2.Part1=head w2.Parent=band
+    band.CFrame=head.CFrame*CFrame.new(0,head.Size.Y*0.5+0.16,0)*CFrame.Angles(0,0,math.rad(90))
+    local pom=Instance.new("Part") pom.Name="_wc_hat_pom" pom.Shape=Enum.PartType.Ball pom.Size=Vector3.new(0.4,0.4,0.4) pom.Color=Color3.fromRGB(255,255,255) pom.Material=Enum.Material.SmoothPlastic pom.CanCollide=false pom.Massless=true pom.Transparency=0 pom.LocalTransparencyModifier=0 pom.Parent=folder
+    local w3=Instance.new("WeldConstraint") w3.Part0=pom w3.Part1=head w3.Parent=pom
+    pom.CFrame=head.CFrame*CFrame.new(0,head.Size.Y*0.5+1.45,0)
+    S.winterHats[char]={folder=folder,cone=cone,band=band,pom=pom}
+end
+local function removeAllHats()
+    for _,data in pairs(S.winterHats) do if data.folder and data.folder.Parent then data.folder:Destroy() end end
+    S.winterHats={}
+end
+local function createSnowPlates()
+    for _,p in ipairs(S.snowPlates) do if p and p.Parent then p:Destroy() end end
+    S.snowPlates={}
+    for _,plr in ipairs(Players:GetPlayers()) do
+        local char=plr.Character
+        if char then
+            local pos=getCharPos(char)
+            local plate=Instance.new("Part") plate.Name="_wc_snow" plate.Size=Vector3.new(60,0.2,60) plate.Position=pos-Vector3.new(0,3,0) plate.Anchored=true plate.CanCollide=false plate.Material=Enum.Material.Snow plate.Color=Color3.fromRGB(255,255,255) plate.Transparency=0.05 plate.Parent=workspace
+            table.insert(S.snowPlates,plate)
+        end
+    end
+end
+local function createSeasonEmitters()
+    if S.fallLeavesEmitter then S.fallLeavesEmitter:Destroy() S.fallLeavesEmitter=nil end
+    if S.rainEmitter then S.rainEmitter:Destroy() S.rainEmitter=nil end
+    if S.snowEmitter then S.snowEmitter:Destroy() S.snowEmitter=nil end
+    if S.rainSound then S.rainSound:Destroy() S.rainSound=nil end
+    local char=LocalPlayer.Character
+    local root=char and char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+    local function newEmitter(color,speed,lifeMin,lifeMax,sizeMin,sizeMax,rate)
+        local att=Instance.new("Attachment") att.Name="_wc_att" att.Parent=root
+        local pe=Instance.new("ParticleEmitter") pe.Texture="rbxasset://textures/particles/smoke_main.dds" pe.Color=color
+        pe.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,sizeMin),NumberSequenceKeypoint.new(1,sizeMax)})
+        pe.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,0.2),NumberSequenceKeypoint.new(1,0.7)})
+        pe.Lifetime=NumberRange.new(lifeMin,lifeMax) pe.Rate=rate pe.Speed=NumberRange.new(speed*0.3,speed) pe.SpreadAngle=Vector2.new(20,20) pe.Rotation=NumberRange.new(0,360) pe.RotSpeed=NumberRange.new(-90,90) pe.VelocityInheritance=0.2 pe.Acceleration=Vector3.new(0,-25,0) pe.LightEmission=0.15 pe.EmissionDirection=Enum.NormalId.Top pe.Parent=att
+        return pe
+    end
+    if S.seasonState==1 then
+        S.fallLeavesEmitter=newEmitter(ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(220,130,40)),ColorSequenceKeypoint.new(1,Color3.fromRGB(160,70,20))}),28,2.5,4.5,0.5,1.1,30)
+        S.rainEmitter=newEmitter(ColorSequence.new(Color3.fromRGB(160,200,240)),45,1.0,1.6,0.15,0.3,60)
+        S.rainSound=Instance.new("Sound") S.rainSound.SoundId=RAIN_SOUND_ID S.rainSound.Looped=true S.rainSound.Volume=0.35 S.rainSound.Parent=SoundService
+        pcall(function() S.rainSound:Play() end)
+    elseif S.seasonState==2 then
+        S.snowEmitter=newEmitter(ColorSequence.new(Color3.fromRGB(255,255,255)),18,2.5,5,0.35,0.75,45)
+        createSnowPlates()
+        for _,plr in ipairs(Players:GetPlayers()) do if plr.Character then makeNewYearHat(plr.Character) end end
+    elseif S.seasonState==3 then
+        S.fallLeavesEmitter=newEmitter(ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(120,220,90)),ColorSequenceKeypoint.new(1,Color3.fromRGB(60,170,60))}),25,3,5,0.5,1.0,28)
+    end
+end
+local function cleanupSeason()
+    if S.fallLeavesEmitter then S.fallLeavesEmitter:Destroy() S.fallLeavesEmitter=nil end
+    if S.rainEmitter then S.rainEmitter:Destroy() S.rainEmitter=nil end
+    if S.snowEmitter then S.snowEmitter:Destroy() S.snowEmitter=nil end
+    if S.rainSound then pcall(function() S.rainSound:Stop() end) S.rainSound:Destroy() S.rainSound=nil end
+    for _,p in ipairs(S.snowPlates) do if p and p.Parent then p:Destroy() end end
+    S.snowPlates={} removeAllHats()
+end
+local function setSeason(n) cleanupSeason() S.seasonState=n if n==0 then return end createSeasonEmitters() end
+
+-- LIGHTING
+local function enableFullbright()
+    S.fullbrightSaved={Brightness=Lighting.Brightness,Ambient=Lighting.Ambient,OutdoorAmbient=Lighting.OutdoorAmbient,GlobalShadows=Lighting.GlobalShadows}
+    Lighting.Brightness=2.2 Lighting.Ambient=Color3.fromRGB(150,150,150) Lighting.OutdoorAmbient=Color3.fromRGB(155,155,155) Lighting.GlobalShadows=false
+end
+local function disableFullbright()
+    if not S.fullbrightSaved then return end
+    Lighting.Brightness=S.fullbrightSaved.Brightness Lighting.Ambient=S.fullbrightSaved.Ambient Lighting.OutdoorAmbient=S.fullbrightSaved.OutdoorAmbient Lighting.GlobalShadows=S.fullbrightSaved.GlobalShadows
+    S.fullbrightSaved=nil
+end
+local function enableNoFog()
+    S.noFogSaved={FogEnd=Lighting.FogEnd,FogStart=Lighting.FogStart,FogColor=Lighting.FogColor}
+    Lighting.FogEnd=1e6 Lighting.FogStart=0 Lighting.FogColor=Color3.fromRGB(200,200,200)
+    S.noFogAtmSaved={}
+    for _,a in ipairs(Lighting:GetChildren()) do if a:IsA("Atmosphere") then S.noFogAtmSaved[a]={Density=a.Density,Haze=a.Haze,Glare=a.Glare} a.Density=0 a.Haze=0 a.Glare=0 end end
+end
+local function disableNoFog()
+    if S.noFogSaved then Lighting.FogEnd=S.noFogSaved.FogEnd Lighting.FogStart=S.noFogSaved.FogStart Lighting.FogColor=S.noFogSaved.FogColor S.noFogSaved=nil end
+    if S.noFogAtmSaved then for a,s in pairs(S.noFogAtmSaved) do if a and a.Parent then a.Density=s.Density a.Haze=s.Haze a.Glare=s.Glare end end S.noFogAtmSaved=nil end
+end
+local function enableGraphic()
+    local atm=Instance.new("Atmosphere") atm.Name="_wc_atm" atm.Density=0.35 atm.Offset=0.1 atm.Color=Color3.fromRGB(200,205,215) atm.Decay=Color3.fromRGB(120,125,140) atm.Glare=0.15 atm.Haze=1.2 atm.Parent=Lighting
+    table.insert(S.graphicObjects,atm)
+    local cc=Instance.new("ColorCorrectionEffect") cc.Name="_wc_cc" cc.Brightness=0.02 cc.Contrast=0.18 cc.Saturation=0.08 cc.TintColor=Color3.fromRGB(255,250,245) cc.Parent=Lighting
+    table.insert(S.graphicObjects,cc)
+    local fogSaved={FogEnd=Lighting.FogEnd,FogStart=Lighting.FogStart,FogColor=Lighting.FogColor}
+    table.insert(S.graphicObjects,{__fogSaved=fogSaved})
+    Lighting.FogColor=Color3.fromRGB(180,190,200) Lighting.FogStart=60 Lighting.FogEnd=900
+    local sr=Instance.new("SunRaysEffect") sr.Name="_wc_sr" sr.Intensity=0.06 sr.Spread=0.9 sr.Parent=Lighting
+    table.insert(S.graphicObjects,sr)
+    local bl=Instance.new("BloomEffect") bl.Name="_wc_bl" bl.Intensity=0.25 bl.Size=20 bl.Threshold=1.1 bl.Parent=Lighting
+    table.insert(S.graphicObjects,bl)
+end
+local function disableGraphic()
+    for _,o in ipairs(S.graphicObjects) do
+        if type(o)=="table" and o.__fogSaved then Lighting.FogEnd=o.__fogSaved.FogEnd Lighting.FogStart=o.__fogSaved.FogStart Lighting.FogColor=o.__fogSaved.FogColor
+        elseif o and o.Parent then o:Destroy() end
+    end
+    S.graphicObjects={}
+end
+
+-- FPS BOOST
+local function enableFpsBoost()
+    S.fpsBoostSaved={decals={},particles={},beams={},atmosphere=nil,shadows=nil}
+    local map=workspace:FindFirstChild("Map")
+    if map then
+        for _,d in ipairs(map:GetDescendants()) do
+            if d:IsA("Decal") or d:IsA("Texture") then
+                table.insert(S.fpsBoostSaved.decals,{obj=d,trans=d.Transparency}) d.Transparency=1
+            elseif d:IsA("ParticleEmitter") or d:IsA("Fire") or d:IsA("Smoke") or d:IsA("Sparkles") then
+                table.insert(S.fpsBoostSaved.particles,{obj=d,enabled=d.Enabled}) d.Enabled=false
+            elseif d:IsA("Beam") or d:IsA("Trail") then
+                table.insert(S.fpsBoostSaved.beams,{obj=d,enabled=d.Enabled}) d.Enabled=false
+            end
+        end
+    end
+    for _,a in ipairs(Lighting:GetChildren()) do
+        if a:IsA("Atmosphere") then S.fpsBoostSaved.atmosphere={obj=a,density=a.Density,haze=a.Haze,glare=a.Glare} a.Density=0 a.Haze=0 a.Glare=0 end
+    end
+    S.fpsBoostSaved.shadows=Lighting.GlobalShadows Lighting.GlobalShadows=false
+end
+local function disableFpsBoost()
+    for _,e in ipairs(S.fpsBoostSaved.decals) do if e.obj and e.obj.Parent then e.obj.Transparency=e.trans end end
+    for _,e in ipairs(S.fpsBoostSaved.particles) do if e.obj and e.obj.Parent then e.obj.Enabled=e.enabled end end
+    for _,e in ipairs(S.fpsBoostSaved.beams) do if e.obj and e.obj.Parent then e.obj.Enabled=e.enabled end end
+    if S.fpsBoostSaved.atmosphere then local a=S.fpsBoostSaved.atmosphere if a.obj and a.obj.Parent then a.obj.Density=a.density a.obj.Haze=a.haze a.obj.Glare=a.glare end end
+    if S.fpsBoostSaved.shadows~=nil then Lighting.GlobalShadows=S.fpsBoostSaved.shadows end
+    S.fpsBoostSaved={decals={},particles={},beams={},atmosphere=nil,shadows=nil}
+end
+
+-- CAMERA
+local function setCameraMode(mode)
+    S.cameraMode=mode
+    pcall(function()
+        if mode==1 then LocalPlayer.CameraMode=Enum.CameraMode.LockFirstPerson LocalPlayer.CameraMinZoomDistance=0.5 LocalPlayer.CameraMaxZoomDistance=0.5
+        else LocalPlayer.CameraMode=Enum.CameraMode.Classic LocalPlayer.CameraMinZoomDistance=8 LocalPlayer.CameraMaxZoomDistance=20 end
+    end)
+end
+local function installCameraHook()
+    if S.camMetaHookInstalled then return end
+    if not getrawmetatable or not setreadonly then return end
+    local ok,meta=pcall(getrawmetatable,game) if not ok or not meta or not meta.__newindex then return end
+    S.camOldNewIndex=meta.__newindex
+    local ok2=pcall(function()
+        setreadonly(meta,false)
+        meta.__newindex=newcclosure(function(self,key,value)
+            if S.cameraMode==1 and self==LocalPlayer then
+                if key=="CameraMode" then if value~=Enum.CameraMode.LockFirstPerson then return end
+                elseif key=="CameraMinZoomDistance" or key=="CameraMaxZoomDistance" then if tonumber(value)~=0.5 then return end end
+            end
+            return S.camOldNewIndex(self,key,value)
+        end)
+        setreadonly(meta,true)
+    end)
+    if ok2 then S.camMetaHookInstalled=true end
+end
+local function uninstallCameraHook()
+    if not S.camMetaHookInstalled then return end
+    pcall(function() local meta=getrawmetatable(game) setreadonly(meta,false) meta.__newindex=S.camOldNewIndex setreadonly(meta,true) end)
+    S.camMetaHookInstalled=false
+end
+installCameraHook()
+local function enforceCamera()
+    if S.unloaded or S.cameraMode~=1 then return end
+    pcall(function()
+        if LocalPlayer.CameraMode~=Enum.CameraMode.LockFirstPerson then LocalPlayer.CameraMode=Enum.CameraMode.LockFirstPerson end
+        if LocalPlayer.CameraMinZoomDistance~=0.5 then LocalPlayer.CameraMinZoomDistance=0.5 end
+        if LocalPlayer.CameraMaxZoomDistance~=0.5 then LocalPlayer.CameraMaxZoomDistance=0.5 end
+    end)
+end
+pcall(function() RunService:UnbindFromRenderStep("WC_Camera") end)
+pcall(function()
+    RunService:BindToRenderStep("WC_Camera",Enum.RenderPriority.Camera.Value+1,function()
+        if S.unloaded or S.cameraMode~=1 then return end
+        local cam=workspace.CurrentCamera if not cam then return end
+        local char=LocalPlayer.Character local hum=char and char:FindFirstChildOfClass("Humanoid")
+        if hum and cam.CameraSubject~=hum then cam.CameraSubject=hum end
+        cam.CameraType=Enum.CameraType.Custom
+    end)
+end)
+addConn(LocalPlayer:GetPropertyChangedSignal("CameraMode"):Connect(enforceCamera))
+addConn(LocalPlayer:GetPropertyChangedSignal("CameraMinZoomDistance"):Connect(enforceCamera))
+addConn(LocalPlayer:GetPropertyChangedSignal("CameraMaxZoomDistance"):Connect(enforceCamera))
+addConn(RunService.RenderStepped:Connect(enforceCamera))
+
+-- MORPH
+local function clearMorph(char)
+    if not char then return end
+    local old=char:FindFirstChild("_wc_morph") if old then old:Destroy() end
+    for _,p in ipairs(char:GetDescendants()) do
+        if p:IsA("BasePart") then local nv=p:FindFirstChild("_wc_orig_trans") if nv then p.Transparency=nv.Value nv:Destroy() end end
+    end
+end
+local function applyMorph(char)
+    if not char then return end
+    clearMorph(char)
+    if S.morphState==0 then return end
+    local entry=MORPHS[S.morphState+1]
+    if not entry or entry.id==0 then return end
+    local root=char:FindFirstChild("HumanoidRootPart") if not root then return end
+    if not game.GetObjects then return end
+    local ok,objects=pcall(function() return game:GetObjects("rbxassetid://"..tostring(entry.id)) end)
+    if not ok or not objects or #objects==0 then return end
+    local model=objects[1] if not model then return end
+    for _,p in ipairs(char:GetDescendants()) do
+        if p:IsA("BasePart") and not p.Name:find("_wc_") then
+            local nv=Instance.new("NumberValue") nv.Name="_wc_orig_trans" nv.Value=p.Transparency nv.Parent=p
+            p.Transparency=1 p.CanCollide=false
+        end
+    end
+    local primary
+    if model:IsA("BasePart") then primary=model
+    else for _,d in ipairs(model:GetDescendants()) do if d:IsA("BasePart") then primary=d break end end end
+    if not primary then return end
+    local parts={}
+    if model:IsA("BasePart") then table.insert(parts,model)
+    else for _,d in ipairs(model:GetDescendants()) do if d:IsA("BasePart") then table.insert(parts,d) end end end
+    if #parts==0 then return end
+    local baseInv=primary.CFrame:Inverse()
+    local origCF={}
+    for _,p in ipairs(parts) do origCF[p]=p.CFrame end
+    for _,p in ipairs(parts) do p.Anchored=false p.CanCollide=false p.Massless=true p.CFrame=root.CFrame*(baseInv*origCF[p]) end
+    local folder=Instance.new("Folder") folder.Name="_wc_morph" folder.Parent=char
+    for _,p in ipairs(parts) do p.Parent=folder end
+    for _,p in ipairs(parts) do local w=Instance.new("WeldConstraint") w.Part0=p w.Part1=root w.Parent=p end
+end
+local function setMorph(idx) S.morphState=idx local char=LocalPlayer.Character if char then applyMorph(char) end end
+
+-- BETA HELPERS
+addConn(RunService.RenderStepped:Connect(function()
+    if S.unloaded or not S.noRecoilEnabled then S.lastCamLook=nil return end
+    pcall(function()
+        local cam=workspace.CurrentCamera if not cam then return end
+        local cur=cam.CFrame.LookVector
+        if S.lastCamLook then
+            local angle=math.acos(math.clamp(cur:Dot(S.lastCamLook),-1,1))
+            if angle>math.rad(3.5) then
+                local md=UserInputService:GetMouseDelta()
+                if md.Magnitude<1.5 then
+                    local pos=cam.CFrame.Position cam.CFrame=CFrame.lookAt(pos,pos+S.lastCamLook) cur=S.lastCamLook
+                end
+            end
+        end
+        S.lastCamLook=cam.CFrame.LookVector
+    end)
+end))
+addConn(UserInputService.JumpRequest:Connect(function()
+    if S.unloaded or not S.bunnyHopEnabled then return end
+    local char=LocalPlayer.Character if not char then return end
+    local hum=char:FindFirstChildOfClass("Humanoid") if not hum then return end
+    local st=hum:GetState()
+    if st==Enum.HumanoidStateType.Landed or st==Enum.HumanoidStateType.Running or st==Enum.HumanoidStateType.RunningNoPhysics then
+        hum:ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+end))
+local function speedLoop()
+    while not S.unloaded and S.speedEnabled do
+        local char=LocalPlayer.Character
+        if char then
+            local hum=char:FindFirstChildOfClass("Humanoid")
+            local hrp=char:FindFirstChild("HumanoidRootPart") or getRoot(char)
+            if hrp and hrp:IsA("BasePart") then
+                local md=hum and hum.MoveDirection or Vector3.zero
+                if md.Magnitude>0.01 then local dir=md.Unit hrp.CFrame=hrp.CFrame+dir*S.speedStep*0.06 end
+            end
+        end
+        task.wait(0.03)
+    end
+end
+local function isHeadshotCandidate(part)
+    if not part then return nil end
+    local char=part:FindFirstAncestorOfClass("Model") if not char then return nil end
+    local plr=Players:GetPlayerFromCharacter(char)
+    if not plr or plr==LocalPlayer then return nil end
+    if isPlayerDead(plr,char) then return nil end
+    local head=char:FindFirstChild("Head") if not head or not head:IsA("BasePart") then return nil end
+    if part==head then return nil end
+    return head
+end
+
+-- HIGHLIGHT HELPERS
+local function highlightButtonSet(buttons, activeIdx)
+    for i, btn in ipairs(buttons) do
+        if btn and btn.Parent then
+            local active=(i==activeIdx)
+            local stroke=btn:FindFirstChildOfClass("UIStroke")
+            if active then
+                btn.BackgroundColor3=UI.accent
+                btn.TextColor3=UI.bg
+                if stroke then stroke.Color=UI.accent stroke.Thickness=1.5 end
+            else
+                btn.BackgroundColor3=UI.panel2
+                btn.TextColor3=UI.text
+                if stroke then stroke.Color=UI.border stroke.Thickness=1 end
+            end
+        end
+    end
+end
+
+-- PAGES
+local mainPage=createPage("main")
+makeSection(mainPage,"Big Head",10)
+makeButton(mainPage,"Big Head: OFF",0.02,42,0.46,nil,function(self)
+    S.bigHeadEnabled=not S.bigHeadEnabled
+    self.Text="Big Head: "..(S.bigHeadEnabled and "ON" or "OFF")
+    setButtonState(self,S.bigHeadEnabled)
+    if S.bigHeadEnabled then
+        for _,p in ipairs(Players:GetPlayers()) do if p~=LocalPlayer and p.Character and not isPlayerDead(p,p.Character) then applyBigHead(p.Character,p) end end
+    else
+        for _,p in ipairs(Players:GetPlayers()) do if p.Character then restoreHead(p.Character) end end
+    end
+end)
+makeButton(mainPage,"Team Check: OFF",0.52,42,0.46,nil,function(self)
+    S.bigHeadTeamCheck=not S.bigHeadTeamCheck
+    self.Text="Team Check: "..(S.bigHeadTeamCheck and "ON" or "OFF")
+    setButtonState(self,S.bigHeadTeamCheck)
+end)
+makeInput(mainPage,"Head size:",0.02,83,0.5,HEAD_SIZE,function(v)
+    if v>0 and v<60 then
+        HEAD_SIZE=v
+        if S.bigHeadEnabled then for _,p in ipairs(Players:GetPlayers()) do if p~=LocalPlayer and p.Character and not isPlayerDead(p,p.Character) then applyBigHead(p.Character,p) end end end
+    end
+end)
+findHeads=function(char)
+    local heads={}
+    if not char then return heads end
+    local head=char:FindFirstChild("Head") if head and head:IsA("BasePart") then table.insert(heads,head) end
+    for _,part in ipairs(char:GetDescendants()) do
+        if part:IsA("BasePart") then
+            local n=part.Name:lower()
+            if (n=="head" or n:find("head")) and not table.find(heads,part) then table.insert(heads,part) end
+        end
+    end
+    if #heads==0 then
+        local best,bestY=nil,-math.huge
+        for _,part in ipairs(char:GetDescendants()) do
+            if part:IsA("BasePart") and part.Position.Y>bestY and part.Size.Magnitude<10 then bestY=part.Position.Y best=part end
+        end
+        if best then table.insert(heads,best) end
+    end
+    return heads
+end
+applyBigHead=function(char,plr)
+    if not S.bigHeadEnabled or not char then return end
+    if S.bigHeadTeamCheck and plr and isSameTeam(plr) then return end
+    if isPlayerDead(plr,char) then return end
+    local size=Vector3.new(HEAD_SIZE,HEAD_SIZE,HEAD_SIZE)
+    local cs=S.originalSizes[char] or {} S.originalSizes[char]=cs
+    for _,head in ipairs(findHeads(char)) do if not cs[head] then cs[head]=head.Size end head.Size=size head.CanCollide=false head.Massless=true end
+end
+restoreHead=function(char)
+    if not char then return end
+    local cs=S.originalSizes[char] if not cs then return end
+    for part,sz in pairs(cs) do if part and part.Parent then part.Size=sz end end
+    S.originalSizes[char]=nil
+end
+
+makeSection(mainPage,"Camera",130)
+makeButton(mainPage,"Camera: First Person",0.02,162,0.96,nil,function(self)
+    if S.cameraMode==1 then setCameraMode(2) else setCameraMode(1) end
+    self.Text="Camera: "..(S.cameraMode==1 and "First Person" or "Third Person")
+    setButtonState(self,S.cameraMode==2)
+end)
+setCameraMode(1)
+
+makeSection(mainPage,"Aimbot",202)
+makeButton(mainPage,"Aimbot: OFF",0.02,234,0.46,nil,function(self)
+    S.aimEnabled=not S.aimEnabled
+    self.Text="Aimbot: "..(S.aimEnabled and "ON" or "OFF")
+    setButtonState(self,S.aimEnabled)
+end)
+makeToggle(mainPage,"Wall Check",0.52,234,function() return S.aimWallCheck end,function(v) S.aimWallCheck=v end)
+makeToggle(mainPage,"Team Check",0.02,272,function() return S.aimTeamCheck end,function(v) S.aimTeamCheck=v end)
+makeInput(mainPage,"FOV:",0.52,272,0.4,200,function(v) if v>0 then S.aimFov=v end end)
+makeButton(mainPage,"Target: Head",0.02,310,0.46,nil,function(self)
+    if S.aimPart=="Head" then S.aimPart="Torso"
+    elseif S.aimPart=="Torso" then S.aimPart="Nearest"
+    else S.aimPart="Head" end
+    self.Text="Target: "..S.aimPart
+end)
+
+makeSection(mainPage,"Wallhack",352)
+makeButton(mainPage,"Wallhack: OFF",0.02,384,0.96,nil,function(self)
+    S.wallhackEnabled=not S.wallhackEnabled
+    self.Text="Wallhack: "..(S.wallhackEnabled and "ON" or "OFF")
+    setButtonState(self,S.wallhackEnabled,UI.warn)
+    if S.wallhackEnabled then
+        if not myTeamId then notify("Team unknown - cannot track enemies",UI.bad) end
+        if deleteMapTemp() then notify("Wallhack: map hidden",UI.warn) S.wallhackState="hidden"
+        else notify("Map folder not found",UI.bad) S.wallhackEnabled=false self.Text="Wallhack: OFF" setButtonState(self,false,UI.warn) end
+    else restoreMap() S.wallhackState="idle" notify("Wallhack disabled - map restored",UI.textDim) end
+end)
+
+makeSection(mainPage,"Notifications",426)
+makeButton(mainPage,"Notifications: OFF",0.02,458,0.96,nil,function(self)
+    notificationsEnabled=not notificationsEnabled
+    self.Text="Notifications: "..(notificationsEnabled and "ON" or "OFF")
+    setButtonState(self,notificationsEnabled)
+    if notificationsEnabled then task.wait(0.3) notify("Notifications enabled",UI.good) end
+end)
+
+S.rawMeta=getrawmetatable and getrawmetatable(game) or nil
+if S.rawMeta then
+    pcall(function()
+        S.oldNamecall=S.rawMeta.__namecall
+        setreadonly(S.rawMeta,false)
+        S.rawMeta.__namecall=newcclosure(function(self,...)
+            if S.unloaded then return S.oldNamecall(self,...) end
+            local method=getnamecallmethod()
+            if S.wallbangEnabled and (method=="Raycast" or method=="FindPartOnRay" or method=="FindPartOnRayWithIgnoreList") and self==workspace then
+                local args={...} local chars={}
+                for _,p in ipairs(Players:GetPlayers()) do if p.Character then table.insert(chars,p.Character) end end
+                if method=="Raycast" then
+                    local np=RaycastParams.new() np.FilterType=Enum.RaycastFilterType.Include np.FilterDescendantsInstances=chars
+                    return S.oldNamecall(self,args[1],args[2],np)
+                else return S.oldNamecall(self,args[1],chars,true,false) end
+            end
+            if S.headshotAssistEnabled and method=="Raycast" and self==workspace then
+                local args={...}
+                local origin=args[1] local direction=args[2] local params=args[3]
+                local result=S.oldNamecall(self,origin,direction,params)
+                if result and result.Instance then
+                    local head=isHeadshotCandidate(result.Instance)
+                    if head then
+                        local newDir=head.Position-origin local mag=direction.Magnitude
+                        if newDir.Magnitude>0.01 then
+                            newDir=newDir.Unit*mag
+                            local newResult=S.oldNamecall(self,origin,newDir,params)
+                            if newResult and newResult.Instance then return newResult end
+                        end
+                    end
+                end
+                return result
+            end
+            return S.oldNamecall(self,...)
+        end)
+        setreadonly(S.rawMeta,true)
+    end)
+end
+
+-- VISUALS
+local visualsPage=createPage("visuals")
+makeSection(visualsPage,"ESP",10)
+makeButton(visualsPage,"ESP: OFF",0.02,42,0.46,nil,function(self)
+    S.espEnabled=not S.espEnabled
+    self.Text="ESP: "..(S.espEnabled and "ON" or "OFF")
+    setButtonState(self,S.espEnabled)
+end)
+makeButton(visualsPage,"C4 ESP: OFF",0.52,42,0.46,nil,function(self)
+    S.c4Enabled=not S.c4Enabled
+    self.Text="C4 ESP: "..(S.c4Enabled and "ON" or "OFF")
+    setButtonState(self,S.c4Enabled,UI.warn)
+end)
+makeButton(visualsPage,"Skeleton: OFF",0.02,82,0.46,nil,function(self)
+    S.skeletonEnabled=not S.skeletonEnabled
+    self.Text="Skeleton: "..(S.skeletonEnabled and "ON" or "OFF")
+    setButtonState(self,S.skeletonEnabled)
+end)
+makeToggle(visualsPage,"Tracer",0.52,82,function() return S.showTracer end,function(v) S.showTracer=v end)
+makeToggle(visualsPage,"HP Bar",0.02,120,function() return S.showHP end,function(v) S.showHP=v end)
+makeToggle(visualsPage,"Name",0.52,120,function() return S.showName end,function(v) S.showName=v end)
+makeToggle(visualsPage,"Distance",0.02,158,function() return S.showDist end,function(v) S.showDist=v end)
+makeToggle(visualsPage,"Chams",0.52,158,function() return S.showChams end,function(v) S.showChams=v end)
+makeToggle(visualsPage,"Hit Bar",0.02,196,function() return S.showHitbar end,function(v) S.showHitbar=v end)
+makeToggle(visualsPage,"Dead Cleanup",0.52,196,function() return S.deadCleanup end,function(v) S.deadCleanup=v end)
+makeSection(visualsPage,"HUD",238)
+makeButton(visualsPage,"HUD Overlay: OFF",0.02,270,0.46,nil,function(self)
+    setHudVisible(not hudEnabled)
+    self.Text="HUD Overlay: "..(hudEnabled and "ON" or "OFF")
+    setButtonState(self,hudEnabled)
+end)
+makeButton(visualsPage,"Target Info: OFF",0.52,270,0.46,nil,function(self)
+    S.tinfoEnabled=not S.tinfoEnabled
+    self.Text="Target Info: "..(S.tinfoEnabled and "ON" or "OFF")
+    setButtonState(self,S.tinfoEnabled)
+    if not S.tinfoEnabled then tinfoCard.Visible=false end
+end)
+makeSection(visualsPage,"X-Ray",312)
+makeButton(visualsPage,"X-Ray: OFF",0.02,344,0.96,nil,function(self)
+    S.xrayEnabled=not S.xrayEnabled
+    self.Text="X-Ray: "..(S.xrayEnabled and "ON" or "OFF")
+    setButtonState(self,S.xrayEnabled)
+    if S.xrayEnabled then
+        if not enableXray() then notify("Map folder not found",UI.bad) S.xrayEnabled=false self.Text="X-Ray: OFF" setButtonState(self,false) else notify("X-Ray enabled",UI.accent) end
+    else disableXray() notify("X-Ray disabled",UI.textDim) end
+end)
+makeSection(visualsPage,"Sky",386)
+makeButton(visualsPage,"Beautiful Sky: OFF",0.02,418,0.96,nil,function(self)
+    S.skyEnabled=not S.skyEnabled
+    self.Text="Beautiful Sky: "..(S.skyEnabled and "ON" or "OFF")
+    setButtonState(self,S.skyEnabled)
+    if S.skyEnabled then enableSky() notify("Sky enabled",UI.accent) else disableSky() notify("Sky disabled",UI.textDim) end
+end)
+makeSection(visualsPage,"Time Control",460)
+makeSlider(visualsPage,"Time of day (hours)",0.02,492,0.96,0,24,12,function(v) S.timeSliderValue=v pcall(function() Lighting.ClockTime=v end) end)
+makeToggle(visualsPage,"Time Locker",0.02,548,function() return S.timeLockerEnabled end,function(v) S.timeLockerEnabled=v end)
+makeSection(visualsPage,"Season",590)
+local seasonBtns={}
+local seasonNames={"Summer","Autumn","Winter","Spring"}
+local function refreshSeasonBtns() highlightButtonSet(seasonBtns, S.seasonState+1) end
+for i,name in ipairs(seasonNames) do
+    local col=(i-1)%2 local row=math.floor((i-1)/2)
+    local b=makeButton(visualsPage,name,0.02+col*0.5,622+row*38,0.46,nil,function()
+        setSeason(i-1); refreshSeasonBtns(); notify("Season: "..name,UI.accent)
+    end)
+    table.insert(seasonBtns,b)
+end
+refreshSeasonBtns()
+makeSection(visualsPage,"Lighting",710)
+makeButton(visualsPage,"Fullbright: OFF",0.02,742,0.46,nil,function(self)
+    S.fullbrightEnabled=not S.fullbrightEnabled
+    self.Text="Fullbright: "..(S.fullbrightEnabled and "ON" or "OFF")
+    setButtonState(self,S.fullbrightEnabled,UI.warn)
+    if S.fullbrightEnabled then enableFullbright() else disableFullbright() end
+end)
+makeButton(visualsPage,"No Fog: OFF",0.52,742,0.46,nil,function(self)
+    S.noFogEnabled=not S.noFogEnabled
+    self.Text="No Fog: "..(S.noFogEnabled and "ON" or "OFF")
+    setButtonState(self,S.noFogEnabled,UI.warn)
+    if S.noFogEnabled then enableNoFog() else disableNoFog() end
+end)
+makeButton(visualsPage,"Graphic: OFF",0.02,780,0.96,nil,function(self)
+    S.graphicEnabled=not S.graphicEnabled
+    self.Text="Graphic: "..(S.graphicEnabled and "ON" or "OFF")
+    setButtonState(self,S.graphicEnabled,UI.warn)
+    if S.graphicEnabled then enableGraphic() else disableGraphic() end
+end)
+makeSection(visualsPage,"Performance",820)
+makeButton(visualsPage,"FPS Boost: OFF",0.02,852,0.96,nil,function(self)
+    S.fpsBoostEnabled=not S.fpsBoostEnabled
+    self.Text="FPS Boost: "..(S.fpsBoostEnabled and "ON" or "OFF")
+    setButtonState(self,S.fpsBoostEnabled,UI.warn)
+    if S.fpsBoostEnabled then enableFpsBoost() else disableFpsBoost() end
+end)
+makeSection(visualsPage,"Character Model",898)
+local morphBtns={}
+local function refreshMorphBtns() highlightButtonSet(morphBtns, S.morphState+1) end
+for i,m in ipairs(MORPHS) do
+    local col=(i-1)%2 local row=math.floor((i-1)/2)
+    local b=makeButton(visualsPage,m.name,0.02+col*0.5,930+row*38,0.46,nil,function()
+        setMorph(i-1); refreshMorphBtns(); notify("Model: "..m.name,UI.accent)
+    end)
+    table.insert(morphBtns,b)
+end
+refreshMorphBtns()
+
+-- SKIN CHANGER
+local scPage=createPage("skinchanger")
+local soonLabel=Instance.new("TextLabel")
+soonLabel.Size=UDim2.new(1,-20,0,80) soonLabel.Position=UDim2.new(0,10,0.4,-40) soonLabel.BackgroundTransparency=1 soonLabel.Text="COMING SOON" soonLabel.TextColor3=UI.yellow soonLabel.TextScaled=true soonLabel.Font=Enum.Font.GothamBold soonLabel.Parent=scPage soonLabel.ZIndex=1002
+
+-- BETA
+local betaPage=createPage("beta")
+makeSection(betaPage,"Combat",10)
+makeButton(betaPage,"No Recoil: OFF",0.02,42,0.46,nil,function(self)
+    S.noRecoilEnabled=not S.noRecoilEnabled
+    self.Text="No Recoil: "..(S.noRecoilEnabled and "ON" or "OFF")
+    setButtonState(self,S.noRecoilEnabled,UI.warn)
+    S.lastCamLook=nil
+end)
+makeButton(betaPage,"Bunny Hop: OFF",0.52,42,0.46,nil,function(self)
+    S.bunnyHopEnabled=not S.bunnyHopEnabled
+    self.Text="Bunny Hop: "..(S.bunnyHopEnabled and "ON" or "OFF")
+    setButtonState(self,S.bunnyHopEnabled,UI.warn)
+end)
+makeSection(betaPage,"Headshot Assist",82)
+makeButton(betaPage,"Headshot Assist: OFF",0.02,114,0.96,nil,function(self)
+    S.headshotAssistEnabled=not S.headshotAssistEnabled
+    self.Text="Headshot Assist: "..(S.headshotAssistEnabled and "ON" or "OFF")
+    setButtonState(self,S.headshotAssistEnabled,UI.warn)
+end)
+makeSection(betaPage,"Speed Hack",154)
+makeButton(betaPage,"Speed: OFF",0.02,186,0.96,nil,function(self)
+    S.speedEnabled=not S.speedEnabled
+    self.Text="Speed: "..(S.speedEnabled and "ON" or "OFF")
+    setButtonState(self,S.speedEnabled)
+    if S.speedEnabled and not S.speedThread then S.speedThread=task.spawn(function() speedLoop() S.speedThread=nil end) end
+end)
+makeInput(betaPage,"Speed value:",0.02,226,0.55,3,function(v) if v>0 then S.speedStep=v end end)
+makeSection(betaPage,"Launch",266)
+makeButton(betaPage,"Launch: OFF",0.02,298,0.96,nil,function(self)
+    S.launchEnabled=not S.launchEnabled
+    self.Text="Launch: "..(S.launchEnabled and "ON" or "OFF")
+    setButtonState(self,S.launchEnabled)
+    if S.launchEnabled then local char=LocalPlayer.Character if char then unanchorChar(char) S.launchBasePos=getCharPos(char) end else S.launchBasePos=nil end
+end)
+addConn(RunService.Heartbeat:Connect(function()
+    if S.unloaded or not S.launchEnabled then return end
+    local char=LocalPlayer.Character if not char or not S.launchBasePos then return end
+    unanchorChar(char)
+    local targetPos=Vector3.new(S.launchBasePos.X,S.launchBasePos.Y+S.launchHeight,S.launchBasePos.Z)
+    local curPivot=char:GetPivot()
+    moveChar(char,CFrame.new(targetPos)*(curPivot-curPivot.Position))
+end))
+makeSection(betaPage,"Spin",338)
+makeButton(betaPage,"Spin: OFF",0.02,370,0.96,nil,function(self)
+    S.spinEnabled=not S.spinEnabled
+    self.Text="Spin: "..(S.spinEnabled and "ON" or "OFF")
+    setButtonState(self,S.spinEnabled)
+end)
+makeInput(betaPage,"Deg/sec:",0.02,412,0.55,720,function(v) if v>0 then S.spinSpeed=v end end)
+addConn(RunService.Heartbeat:Connect(function(dt)
+    if S.unloaded or not S.spinEnabled then return end
+    local char=LocalPlayer.Character if not char then return end
+    unanchorChar(char)
+    local cam=workspace.CurrentCamera
+    local sLook,sRight=nil,nil
+    if cam then sLook,sRight=cam.CFrame.LookVector,cam.CFrame.RightVector end
+    local curPivot=char:GetPivot()
+    moveChar(char,curPivot*CFrame.Angles(0,math.rad(S.spinSpeed*dt),0))
+    if cam and sLook and sRight then cam.CFrame=CFrame.fromMatrix(cam.CFrame.Position,sRight,Vector3.new(0,1,0),-sLook) end
+end))
+makeSection(betaPage,"Giant Character",452)
+local function applyGiant(char,scale)
+    if not char then return end
+    local sizes=S.giantOriginal[char]
+    if not sizes then sizes={} for _,part in ipairs(char:GetDescendants()) do if part:IsA("BasePart") then sizes[part]=part.Size end end S.giantOriginal[char]=sizes end
+    for part,origSize in pairs(sizes) do if part and part.Parent then part.Size=origSize*scale end end
+end
+local function restoreGiant(char)
+    local sizes=S.giantOriginal[char] if not sizes then return end
+    for part,origSize in pairs(sizes) do if part and part.Parent then part.Size=origSize end end
+    S.giantOriginal[char]=nil
+end
+makeButton(betaPage,"Giant: OFF",0.02,484,0.96,nil,function(self)
+    S.giantEnabled=not S.giantEnabled
+    self.Text="Giant: "..(S.giantEnabled and "ON" or "OFF")
+    setButtonState(self,S.giantEnabled)
+    local char=LocalPlayer.Character
+    if char then if S.giantEnabled then unanchorChar(char) applyGiant(char,S.giantScale) else restoreGiant(char) end end
+end)
+makeInput(betaPage,"Giant scale:",0.02,526,0.55,3,function(v) if v>1 and v<=20 then S.giantScale=v end end)
+addConn(task.spawn(function()
+    while not S.unloaded do
+        if S.giantEnabled then local char=LocalPlayer.Character if char then unanchorChar(char) applyGiant(char,S.giantScale) end end
+        task.wait(0.5)
+    end
+end))
+makeSection(betaPage,"Tall Character",568)
+local function applyTall(char,scaleY)
+    if not char then return end
+    local sizes=S.tallOriginal[char]
+    if not sizes then sizes={} for _,part in ipairs(char:GetDescendants()) do if part:IsA("BasePart") then sizes[part]=part.Size end end S.tallOriginal[char]=sizes end
+    for part,origSize in pairs(sizes) do if part and part.Parent then part.Size=Vector3.new(origSize.X,origSize.Y*scaleY,origSize.Z) end end
+end
+local function restoreTall(char)
+    local sizes=S.tallOriginal[char] if not sizes then return end
+    for part,origSize in pairs(sizes) do if part and part.Parent then part.Size=origSize end end
+    S.tallOriginal[char]=nil
+end
+makeButton(betaPage,"Tall: OFF",0.02,600,0.96,nil,function(self)
+    S.tallEnabled=not S.tallEnabled
+    self.Text="Tall: "..(S.tallEnabled and "ON" or "OFF")
+    setButtonState(self,S.tallEnabled)
+    local char=LocalPlayer.Character
+    if char then if S.tallEnabled then unanchorChar(char) applyTall(char,S.tallScale) else restoreTall(char) end end
+end)
+makeInput(betaPage,"Tall scale:",0.02,642,0.55,2,function(v) if v>1 and v<=10 then S.tallScale=v end end)
+addConn(task.spawn(function()
+    while not S.unloaded do
+        if S.tallEnabled then local char=LocalPlayer.Character if char then unanchorChar(char) applyTall(char,S.tallScale) end end
+        task.wait(0.5)
+    end
+end))
+makeSection(betaPage,"Teleport Plant Site",684)
+makeButton(betaPage,"Teleport plant to me",0.02,716,0.96,nil,function(self)
+    local ok,count=teleportPlantSite()
+    if ok then self.Text="Moved: "..tostring(count) notify("Plant teleported ("..tostring(count).." parts)",UI.warn) task.wait(1.5) self.Text="Teleport plant to me"
+    else self.Text="Not found" task.wait(1.5) self.Text="Teleport plant to me" end
+end)
+makeSection(betaPage,"Fly",758)
+makeToggle(betaPage,"Noclip",0.02,790,function() return S.betaNoclip end,function(v) S.betaNoclip=v end)
+makeToggle(betaPage,"Fly",0.52,790,function() return S.betaFly end,function(v) S.betaFly=v end)
+addConn(RunService.Stepped:Connect(function()
+    if S.unloaded or not S.betaNoclip then return end
+    local char=LocalPlayer.Character if not char then return end
+    for _,part in ipairs(char:GetDescendants()) do if part:IsA("BasePart") then part.CanCollide=false end end
+end))
+addConn(RunService.Heartbeat:Connect(function(dt)
+    if S.unloaded or not S.betaFly then return end
+    local char=LocalPlayer.Character if not char then return end
+    unanchorChar(char)
+    local cam=workspace.CurrentCamera if not cam then return end
+    local move=Vector3.zero
+    local humanoid=char:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        local md=humanoid.MoveDirection
+        if md.Magnitude>0.01 then local flat=Vector3.new(md.X,0,md.Z) if flat.Magnitude>0.01 then move=move+flat.Unit*S.betaSpeedVal end end
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.E) then move=move+Vector3.new(0,S.betaSpeedVal,0) end
+    if UserInputService:IsKeyDown(Enum.KeyCode.Q) then move=move-Vector3.new(0,S.betaSpeedVal,0) end
+    local curPivot=char:GetPivot()
+    local newPos=curPivot.Position+move*dt
+    moveChar(char,CFrame.new(newPos)*(curPivot-curPivot.Position))
+end))
+
+-- ADMIN
+local adminPage=createPage("admin")
+makeSection(adminPage,"Moderation",10)
+local targetPlayerBox=Instance.new("TextBox")
+targetPlayerBox.Size=UDim2.new(0.6,0,0,30) targetPlayerBox.Position=UDim2.new(0.02,0,0,42) targetPlayerBox.BackgroundColor3=UI.input targetPlayerBox.BorderSizePixel=0 targetPlayerBox.Text="" targetPlayerBox.PlaceholderText="Player name..." targetPlayerBox.TextColor3=UI.text targetPlayerBox.TextSize=12 targetPlayerBox.Font=Enum.Font.Code targetPlayerBox.Parent=adminPage targetPlayerBox.ZIndex=1002 targetPlayerBox.TextXAlignment=Enum.TextXAlignment.Left
+addCorner(targetPlayerBox,4) addStroke(targetPlayerBox,UI.border,1)
+local boxPad=Instance.new("UIPadding") boxPad.PaddingLeft=UDim.new(0,10) boxPad.Parent=targetPlayerBox
+targetPlayerBox.FocusLost:Connect(function() S.targetPlayerName=targetPlayerBox.Text end)
+makeButton(adminPage,"Teleport to player",0.02,82,0.46,nil,function()
+    for _,p in ipairs(Players:GetPlayers()) do
+        if p.Name:lower():find(S.targetPlayerName:lower()) and p~=LocalPlayer then
+            local char=p.Character if char then
+                local myChar=LocalPlayer.Character
+                if myChar then local tPos=getCharPos(char) local myPivot=myChar:GetPivot() moveChar(myChar,CFrame.new(tPos+Vector3.new(5,3,0))*(myPivot-myPivot.Position)) end
+            end
+            return
+        end
+    end
+end)
+makeButton(adminPage,"Spectate player",0.52,82,0.46,nil,function()
+    for _,p in ipairs(Players:GetPlayers()) do
+        if p.Name:lower():find(S.targetPlayerName:lower()) and p~=LocalPlayer then
+            local char=p.Character if char then local h=char:FindFirstChildOfClass("Humanoid") if h then workspace.CurrentCamera.CameraSubject=h end end
+            return
+        end
+    end
+end)
+makeButton(adminPage,"Restore camera",0.02,122,0.96,nil,function()
+    local h=LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if h then workspace.CurrentCamera.CameraSubject=h end
+end)
+
+-- ADMIN PANEL
+local adminPanelPage=createPage("adminpanel")
+makeSection(adminPanelPage,"Command Line",10)
+local cmdLog=Instance.new("ScrollingFrame")
+cmdLog.Size=UDim2.new(0.96,0,0,280) cmdLog.Position=UDim2.new(0.02,0,0,45) cmdLog.BackgroundColor3=UI.bg cmdLog.BorderSizePixel=0 cmdLog.ScrollBarThickness=5 cmdLog.ScrollBarImageColor3=UI.borderHi cmdLog.CanvasSize=UDim2.new(0,0,0,0) cmdLog.AutomaticCanvasSize=Enum.AutomaticSize.Y cmdLog.ScrollingDirection=Enum.ScrollingDirection.Y cmdLog.ClipsDescendants=true cmdLog.Parent=adminPanelPage cmdLog.ZIndex=1005
+addCorner(cmdLog,4) addStroke(cmdLog,UI.border,1)
+local logLayout=Instance.new("UIListLayout") logLayout.Padding=UDim.new(0,4) logLayout.SortOrder=Enum.SortOrder.LayoutOrder logLayout.Parent=cmdLog
+local logPadding=Instance.new("UIPadding") logPadding.PaddingTop=UDim.new(0,6) logPadding.PaddingLeft=UDim.new(0,8) logPadding.PaddingRight=UDim.new(0,8) logPadding.Parent=cmdLog
+local cmdInput=Instance.new("TextBox")
+cmdInput.Size=UDim2.new(0.96,0,0,34) cmdInput.Position=UDim2.new(0.02,0,0,340) cmdInput.BackgroundColor3=UI.input cmdInput.BorderSizePixel=0 cmdInput.Text="" cmdInput.PlaceholderText="Enter command" cmdInput.TextColor3=UI.text cmdInput.TextSize=12 cmdInput.Font=Enum.Font.Code cmdInput.Parent=adminPanelPage cmdInput.ZIndex=1005 cmdInput.TextXAlignment=Enum.TextXAlignment.Left
+addCorner(cmdInput,4) addStroke(cmdInput,UI.border,1)
+local ciPad=Instance.new("UIPadding") ciPad.PaddingLeft=UDim.new(0,10) ciPad.Parent=cmdInput
+local sendBtn=Instance.new("TextButton")
+sendBtn.Size=UDim2.new(0.96,0,0,34) sendBtn.Position=UDim2.new(0.02,0,0,386) sendBtn.BackgroundColor3=UI.panel2 sendBtn.BorderSizePixel=0 sendBtn.Text="Execute" sendBtn.TextColor3=UI.accent sendBtn.TextSize=12 sendBtn.Font=Enum.Font.GothamBold sendBtn.Parent=adminPanelPage sendBtn.ZIndex=1005
+addCorner(sendBtn,4) addStroke(sendBtn,UI.accent,1.5)
+local lineCounter=0
+local function logLine(text,color)
+    lineCounter=lineCounter+1
+    local lbl=Instance.new("TextLabel") lbl.Size=UDim2.new(1,0,0,20) lbl.BackgroundTransparency=1 lbl.Text=text lbl.TextColor3=color or UI.text lbl.TextSize=12 lbl.Font=Enum.Font.Code lbl.TextXAlignment=Enum.TextXAlignment.Left lbl.LayoutOrder=lineCounter lbl.ZIndex=1006 lbl.Parent=cmdLog
+end
+logLine("API connected. Type /help.",UI.textDim)
+local function apiAdmin(action,target,reason,extra)
+    local res=httpPost(API_URL.."/admin/action",{secret=API_SECRET,admin_hwid=currentHWID,action=action,target=target,reason=reason or "",extra=extra or ""})
+    if not res then return nil end
+    local ok,data=pcall(function() return HttpService:JSONDecode(res) end)
+    if ok then return data end
+    return nil
+end
+local function processCommand(cmdLine)
+    if not cmdLine or cmdLine=="" then return end
+    logLine("> "..cmdLine,UI.accent)
+    local args={} for word in cmdLine:gmatch("%S+") do table.insert(args,word) end
+    local cmd=args[1] if not cmd then return end
+    if cmd=="/help" then logLine("/help - list",UI.textDim) logLine("/resethwid /resetkey /resetrank",UI.textDim) logLine("/setrank /ban /unban /admlist",UI.textDim) logLine("/freeze /unfreeze /kick",UI.textDim) logLine("/setcheck /unsetcheck",UI.textDim)
+    elseif cmd=="/resethwid" then local r=apiAdmin("resethwid",args[2],args[3]) if r and r.status=="ok" then logLine("New HWID: "..(r.new_hwid or "?"),UI.good) else logLine(tostring((r and r.status) or "network error"),UI.bad) end
+    elseif cmd=="/resetkey" then local r=apiAdmin("resetkey",args[2],args[3]) if r and r.status=="ok" then logLine("Key reset",UI.good) else logLine(tostring((r and r.status) or "network error"),UI.bad) end
+    elseif cmd=="/resetrank" then local r=apiAdmin("resetrank",args[2],args[3]) if r and r.status=="ok" then logLine("Rank reset",UI.good) else logLine(tostring((r and r.status) or "network error"),UI.bad) end
+    elseif cmd=="/setrank" then local r=apiAdmin("setrank",args[2],args[4],args[3]) if r and r.status=="ok" then logLine("Rank set: "..(args[3] or "?"),UI.good) else logLine(tostring((r and r.status) or "network error"),UI.bad) end
+    elseif cmd=="/ban" then local r=apiAdmin("ban",args[2],args[3],args[4]) if r and r.status=="ok" then logLine("Banned",UI.bad) else logLine(tostring((r and r.status) or "network error"),UI.bad) end
+    elseif cmd=="/unban" then local r=apiAdmin("unban",args[2],args[3]) if r and r.status=="ok" then logLine("Unbanned",UI.good) else logLine(tostring((r and r.status) or "network error"),UI.bad) end
+    elseif cmd=="/freeze" then local r=apiAdmin("freeze",args[2],args[3],args[4]) if r and r.status=="ok" then logLine("Frozen",UI.freeze) else logLine(tostring((r and r.status) or "network error"),UI.bad) end
+    elseif cmd=="/unfreeze" then local r=apiAdmin("unfreeze",args[2],args[3]) if r and r.status=="ok" then logLine("Unfrozen",UI.good) else logLine(tostring((r and r.status) or "network error"),UI.bad) end
+    elseif cmd=="/kick" then local r=apiAdmin("kick",args[2],args[3]) if r and r.status=="ok" then logLine("Kick queued",UI.warn) else logLine(tostring((r and r.status) or "network error"),UI.bad) end
+    elseif cmd=="/setcheck" then local r=apiAdmin("setcheck",args[2],args[3]) if r and r.status=="ok" then logLine("Check status ON",UI.warn) else logLine(tostring((r and r.status) or "network error"),UI.bad) end
+    elseif cmd=="/unsetcheck" then local r=apiAdmin("unsetcheck",args[2],args[3]) if r and r.status=="ok" then logLine("Check status OFF",UI.good) else logLine(tostring((r and r.status) or "network error"),UI.bad) end
+    elseif cmd=="/admlist" then local r=apiAdmin("admlist","x","x") if r and r.status=="ok" and r.list then for _,row in ipairs(r.list) do logLine("- "..(row.nickname or "?").." | "..(row.hwid or "?").." | "..(row.rank or "?"),UI.textDim) end else logLine("Error",UI.bad) end
+    else logLine("Unknown command. /help",UI.bad) end
+end
+sendBtn.MouseButton1Click:Connect(function() processCommand(cmdInput.Text) cmdInput.Text="" end)
+cmdInput.FocusLost:Connect(function(e) if e then processCommand(cmdInput.Text) cmdInput.Text="" end end)
+
+-- SETTINGS
+local settingsPage=createPage("settings")
+makeSection(settingsPage,"Information (click to copy)",10)
+local function clickableInfoRow(parent_,label,value,yPos,valColor,copyValue)
+    local l=Instance.new("TextLabel") l.Size=UDim2.new(0.4,0,0,30) l.Position=UDim2.new(0.02,0,0,yPos) l.BackgroundTransparency=1 l.Text=label l.TextColor3=UI.textDim l.TextSize=12 l.Font=Enum.Font.GothamBold l.TextXAlignment=Enum.TextXAlignment.Left l.Parent=parent_ l.ZIndex=1002
+    local v=Instance.new("TextButton") v.Size=UDim2.new(0.5,0,0,30) v.Position=UDim2.new(0.44,0,0,yPos) v.BackgroundColor3=UI.input v.BorderSizePixel=0 v.Text=value v.TextColor3=valColor or UI.text v.TextSize=12 v.Font=Enum.Font.Code v.TextXAlignment=Enum.TextXAlignment.Left v.AutoButtonColor=true v.Parent=parent_ v.ZIndex=1002
+    addCorner(v,4) addStroke(v,UI.border,1)
+    local vp=Instance.new("UIPadding") vp.PaddingLeft=UDim.new(0,10) vp.Parent=v
+    local originalText=value
+    local originalColor=valColor or UI.text
+    v.MouseButton1Click:Connect(function()
+        local ok=copyToClipboard(tostring(copyValue or value))
+        if ok then
+            v.Text="Copied!"
+            v.TextColor3=UI.good
+            task.wait(0.8)
+            v.Text=originalText
+            v.TextColor3=originalColor
+        else
+            v.Text="Copy failed"
+            v.TextColor3=UI.bad
+            task.wait(0.8)
+            v.Text=originalText
+            v.TextColor3=originalColor
+        end
+    end)
+    return v
+end
+clickableInfoRow(settingsPage,"Nickname",LocalPlayer.Name,42,UI.text,LocalPlayer.Name)
+clickableInfoRow(settingsPage,"HWID",currentHWID,78,UI.accent,currentHWID)
+clickableInfoRow(settingsPage,"Rank",string.upper(currentRank),114,(RANKS[currentRank] or RANKS.player).color,currentRank)
+clickableInfoRow(settingsPage,"Key",currentKey or "not activated",150,UI.textDim,currentKey or "")
+
+-- ACCOUNT STATUS
+makeSection(settingsPage,"Account Status",195)
+local statusCard=Instance.new("Frame")
+statusCard.Size=UDim2.new(0.96,0,0,90) statusCard.Position=UDim2.new(0.02,0,0,228)
+statusCard.BackgroundColor3=UI.input
+statusCard.BorderSizePixel=0
+statusCard.Parent=settingsPage
+statusCard.ZIndex=1002
+addCorner(statusCard,6) addStroke(statusCard,UI.border,1)
+
+local statusIcon=Instance.new("TextLabel")
+statusIcon.Size=UDim2.new(0,50,1,0) statusIcon.Position=UDim2.new(0,6,0,0)
+statusIcon.BackgroundTransparency=1
+statusIcon.Text="🟢"
+statusIcon.TextSize=34
+statusIcon.Font=Enum.Font.GothamBold
+statusIcon.TextXAlignment=Enum.TextXAlignment.Center
+statusIcon.TextYAlignment=Enum.TextYAlignment.Center
+statusIcon.Parent=statusCard
+statusIcon.ZIndex=1003
+
+local statusTitle=Instance.new("TextLabel")
+statusTitle.Size=UDim2.new(1,-70,0,22) statusTitle.Position=UDim2.new(0,62,0,12)
+statusTitle.BackgroundTransparency=1
+statusTitle.Text="Всё в порядке"
+statusTitle.TextColor3=UI.good
+statusTitle.TextSize=14
+statusTitle.Font=Enum.Font.GothamBold
+statusTitle.TextXAlignment=Enum.TextXAlignment.Left
+statusTitle.Parent=statusCard
+statusTitle.ZIndex=1003
+
+local statusDetails=Instance.new("TextLabel")
+statusDetails.Size=UDim2.new(1,-70,0,46) statusDetails.Position=UDim2.new(0,62,0,36)
+statusDetails.BackgroundTransparency=1
+statusDetails.Text="Аккаунт в норме."
+statusDetails.TextColor3=UI.textDim
+statusDetails.TextSize=11
+statusDetails.Font=Enum.Font.Gotham
+statusDetails.TextXAlignment=Enum.TextXAlignment.Left
+statusDetails.TextYAlignment=Enum.TextYAlignment.Top
+statusDetails.TextWrapped=true
+statusDetails.Parent=statusCard
+statusDetails.ZIndex=1003
+
+updateStatusCard=function()
+    local st=S.accountStatus or {}
+    local lastPoll=st.lastPoll and ("Обновлено: "..st.lastPoll) or "Ещё не проверялось"
+    if not st.checked then
+        statusIcon.Text="⚪"
+        statusTitle.Text="Проверка..."
+        statusTitle.TextColor3=UI.textDim
+        statusDetails.Text="Ожидание ответа от сервера...\n"..lastPoll
+        return
+    end
+    local state=st.state
+    if state=="banned" or st.banned then
+        statusIcon.Text="🔴"
+        statusTitle.Text="Аккаунт заблокирован"
+        statusTitle.TextColor3=UI.bad
+        statusDetails.Text="Причина: "..(st.ban_reason or "—").."\nРазблокировка: "..(st.ban_expires_str or "навсегда")
+    elseif state=="frozen" or st.frozen then
+        statusIcon.Text="❄️"
+        statusTitle.Text="Аккаунт заморожен"
+        statusTitle.TextColor3=UI.freeze
+        local fzTxt=st.frozen_to_str or "не указано"
+        statusDetails.Text="Причина: "..(st.frozen_reason or "—").."\nРазморозка: "..fzTxt
+    elseif state=="check" or st.check_status then
+        statusIcon.Text="🟠"
+        statusTitle.Text="На проверке"
+        statusTitle.TextColor3=UI.warn
+        statusDetails.Text="Усиленное внимание администрации.\n"..lastPoll
+    elseif state=="unknown" then
+        statusIcon.Text="⚪"
+        statusTitle.Text="Не зарегистрирован"
+        statusTitle.TextColor3=UI.textDim
+        statusDetails.Text=tostring(st.details or "—").."\n"..lastPoll
+    elseif state=="error" then
+        statusIcon.Text="🔴"
+        statusTitle.Text="Ошибка проверки"
+        statusTitle.TextColor3=UI.bad
+        statusDetails.Text=tostring(st.details or "—").."\n"..lastPoll
+    else
+        statusIcon.Text="🟢"
+        statusTitle.Text="Всё в порядке"
+        statusTitle.TextColor3=UI.good
+        statusDetails.Text="Аккаунт в норме.\n"..lastPoll
+    end
+end
+updateStatusCard()
+
+makeButton(settingsPage,"Force check status",0.02,362,0.46,nil,function(self)
+    self.Text="Checking..."
+    task.spawn(function()
+        local res=httpPost(API_URL.."/poll",{secret=API_SECRET,hwid=currentHWID})
+        if not res then setStatusState("error","Нет ответа от сервера")
+        else
+            local ok2,data=pcall(function() return HttpService:JSONDecode(res) end)
+            if not ok2 or type(data)~="table" then setStatusState("error","Некорректный ответ")
+            elseif data.status=="unknown" then setStatusState("unknown","Игрок не найден в БД")
+            elseif data.status=="ok" then applyAccountStatus(data) updateStatusCard()
+            else setStatusState("error","Сервер: "..tostring(data.status)) end
+        end
+        self.Text="Force check status"
+    end)
+end)
+
+makeSection(settingsPage,"Server",410)
+makeButton(settingsPage,"Refresh from server",0.02,442,0.96,nil,function(self)
+    self.Text="Refreshing..."
+    registerOnServer()
+    localData.rank=currentRank saveLocal(localData)
+    updateRankDisplay()
+    for _,btn in pairs(tabButtons) do if btn and btn.Parent then btn:Destroy() end end
+    tabButtons={} tabCounter=0
+    createTabButton("main","Main",UI.text)
+    createTabButton("visuals","Visuals",UI.accent)
+    createTabButton("skinchanger","Skin Changer",UI.yellow)
+    if hasAccess("beta") then createTabButton("beta","Beta",Color3.fromRGB(200,140,255)) end
+    if hasAccess("admin") then createTabButton("admin","Admin",UI.warn) end
+    if hasAccess("adminpanel") then createTabButton("adminpanel","Admin Panel",UI.bad) end
+    createTabButton("configs","Configs",UI.good)
+    createTabButton("feedback","Feedback",UI.accent)
+    createTabButton("settings","Settings",UI.accent)
+    switchTab("main")
+    self.Text="Done" task.wait(1.2) self.Text="Refresh from server"
+end)
+
+-- FEEDBACK PAGE (✅ FIX #2 — защита от залипания кнопки + watchdog + pcall + fbSending-флаг)
+local feedbackPage=createPage("feedback")
+makeSection(feedbackPage,"Обратная связь / Feedback",10)
+local fbIntro=Instance.new("TextLabel")
+fbIntro.Size=UDim2.new(0.96,0,0,60) fbIntro.Position=UDim2.new(0.02,0,0,42)
+fbIntro.BackgroundTransparency=1
+fbIntro.Text="Здесь вы можете оставить обратную связь:\n• оспорить наказание\n• сообщить о баге\n• предложить идею\n\nВсе сообщения будут отправлены администрации."
+fbIntro.TextColor3=UI.textDim
+fbIntro.TextSize=12
+fbIntro.Font=Enum.Font.Gotham
+fbIntro.TextXAlignment=Enum.TextXAlignment.Left
+fbIntro.TextYAlignment=Enum.TextYAlignment.Top
+fbIntro.TextWrapped=true
+fbIntro.Parent=feedbackPage
+fbIntro.ZIndex=1002
+
+local fbInput=Instance.new("TextBox")
+fbInput.Size=UDim2.new(0.96,0,0,140) fbInput.Position=UDim2.new(0.02,0,0,110)
+fbInput.BackgroundColor3=UI.input
+fbInput.BorderSizePixel=0
+fbInput.Text=""
+fbInput.PlaceholderText="Напишите ваше сообщение здесь..."
+fbInput.TextColor3=UI.text
+fbInput.TextSize=12
+fbInput.Font=Enum.Font.Gotham
+fbInput.TextXAlignment=Enum.TextXAlignment.Left
+fbInput.TextYAlignment=Enum.TextYAlignment.Top
+fbInput.TextWrapped=true
+fbInput.ClearTextOnFocus=false
+fbInput.MultiLine=true
+fbInput.Parent=feedbackPage
+fbInput.ZIndex=1002
+addCorner(fbInput,6)
+addStroke(fbInput,UI.border,1)
+local fbPad=Instance.new("UIPadding")
+fbPad.PaddingLeft=UDim.new(0,10) fbPad.PaddingTop=UDim.new(0,8) fbPad.PaddingRight=UDim.new(0,10)
+fbPad.Parent=fbInput
+
+local fbSendBtn=Instance.new("TextButton")
+fbSendBtn.Size=UDim2.new(0,140,0,44) fbSendBtn.Position=UDim2.new(1,-150,0,262)
+fbSendBtn.BackgroundColor3=UI.good
+fbSendBtn.BorderSizePixel=0
+fbSendBtn.Text="✈ Send"
+fbSendBtn.TextColor3=Color3.fromRGB(255,255,255)
+fbSendBtn.TextSize=15
+fbSendBtn.Font=Enum.Font.GothamBold
+fbSendBtn.Parent=feedbackPage
+fbSendBtn.ZIndex=1002
+addCorner(fbSendBtn,6)
+addStroke(fbSendBtn,UI.good,1)
+
+local fbStatus=Instance.new("TextLabel")
+fbStatus.Size=UDim2.new(1,-170,0,44) fbStatus.Position=UDim2.new(0.02,0,0,262)
+fbStatus.BackgroundTransparency=1
+fbStatus.Text=""
+fbStatus.TextColor3=UI.textDim
+fbStatus.TextSize=12
+fbStatus.Font=Enum.Font.Gotham
+fbStatus.TextXAlignment=Enum.TextXAlignment.Left
+fbStatus.TextYAlignment=Enum.TextYAlignment.Center
+fbStatus.TextWrapped=true
+fbStatus.Parent=feedbackPage
+fbStatus.ZIndex=1002
+
+updateFeedbackStatus=function()
+    if not S.feedbackCooldown or S.feedbackCooldown <= 0 then
+        fbStatus.Text=""
+        return
+    end
+    local m=math.floor(S.feedbackCooldown/60)
+    local s=S.feedbackCooldown%60
+    fbStatus.Text=string.format("Cooldown: %d:%02d", m, s)
+    fbStatus.TextColor3=UI.warn
+end
+
+-- состояние отправки, защита от двойных кликов и зависаний
+local fbSending=false
+local fbWatchdogId=0
+
+local function fbResetButton()
+    fbSending=false
+    fbSendBtn.Text="✈ Send"
+    fbSendBtn.BackgroundColor3=UI.good
+end
+
+fbSendBtn.MouseButton1Click:Connect(function()
+    if fbSending then return end
+    local msg=fbInput.Text:gsub("^%s+",""):gsub("%s+$","")
+    if msg=="" then
+        fbStatus.Text="Напишите сообщение перед отправкой"
+        fbStatus.TextColor3=UI.bad
+        return
+    end
+
+    fbSending=true
+    fbWatchdogId=fbWatchdogId+1
+    local myWatchdog=fbWatchdogId
+
+    fbSendBtn.Text="..."
+    fbSendBtn.BackgroundColor3=UI.panel2
+    fbStatus.Text="Отправка..."
+    fbStatus.TextColor3=UI.warn
+
+    -- Watchdog: если через 25 секунд ответа нет — принудительно разблокируем кнопку
+    task.delay(25,function()
+        if myWatchdog==fbWatchdogId and fbSending then
+            fbStatus.Text="Превышено время ожидания. Попробуйте снова."
+            fbStatus.TextColor3=UI.bad
+            fbResetButton()
+        end
+    end)
+
+    task.spawn(function()
+        -- всё тело в pcall — если что-то упадёт, кнопка не залипнет
+        local okRun,errRun=pcall(function()
+            local res,errCode=httpPost(API_URL.."/feedback/submit",{
+                secret=API_SECRET,
+                hwid=currentHWID,
+                nickname=LocalPlayer.Name,
+                rank=currentRank,
+                message=msg
+            })
+
+            if not res then
+                fbStatus.Text="Network error ("..tostring(errCode or "no response")..")"
+                fbStatus.TextColor3=UI.bad
+                return
+            end
+
+            local okDec,data=pcall(function() return HttpService:JSONDecode(res) end)
+            if not okDec or type(data)~="table" then
+                fbStatus.Text="Response error (неверный формат)"
+                fbStatus.TextColor3=UI.bad
+                return
+            end
+
+            local status=tostring(data.status or "unknown")
+
+            if status=="ok" then
+                fbStatus.Text="Отправлено! Спасибо за фидбек."
+                fbStatus.TextColor3=UI.good
+                fbInput.Text=""
+                S.feedbackCooldown=3600
+                updateFeedbackStatus()
+            elseif status=="cooldown" then
+                S.feedbackCooldown=tonumber(data.wait) or 3600
+                updateFeedbackStatus()
+            elseif status=="muted" then
+                fbStatus.Text="Вам запрещено отправлять фидбек до "..tostring(data["until"] or "?")
+                fbStatus.TextColor3=UI.bad
+            elseif status=="unknown" then
+                fbStatus.Text="Игрок не найден"
+                fbStatus.TextColor3=UI.bad
+            else
+                fbStatus.Text="Сервер: "..status
+                fbStatus.TextColor3=UI.bad
+            end
+        end)
+
+        if not okRun then
+            fbStatus.Text="Ошибка: "..tostring(errRun)
+            fbStatus.TextColor3=UI.bad
+        end
+
+        if myWatchdog==fbWatchdogId and fbSending then
+            fbResetButton()
+        end
+    end)
+end)
+
+addConn(RunService.Heartbeat:Connect(function()
+    if S.feedbackCooldown and S.feedbackCooldown > 0 then
+        S.feedbackCooldown = math.max(0, S.feedbackCooldown - 1)
+        if S.feedbackCooldown % 5 == 0 or S.feedbackCooldown == 0 then
+            updateFeedbackStatus()
+        end
+    end
+end))
+
+-- CONFIGS
+local configsPage=createPage("configs")
+makeSection(configsPage,"Config Manager",10)
+local configNameBox=Instance.new("TextBox")
+configNameBox.Size=UDim2.new(0.96,0,0,32) configNameBox.Position=UDim2.new(0.02,0,0,42) configNameBox.BackgroundColor3=UI.input configNameBox.BorderSizePixel=0 configNameBox.Text="" configNameBox.PlaceholderText="Config name..." configNameBox.TextColor3=UI.text configNameBox.TextSize=12 configNameBox.Font=Enum.Font.Code configNameBox.Parent=configsPage configNameBox.ZIndex=1002 configNameBox.TextXAlignment=Enum.TextXAlignment.Left
+addCorner(configNameBox,4) addStroke(configNameBox,UI.border,1)
+local cnbPad=Instance.new("UIPadding") cnbPad.PaddingLeft=UDim.new(0,10) cnbPad.Parent=configNameBox
+makeButton(configsPage,"Create Config",0.02,84,0.46,nil,function(self)
+    local name=configNameBox.Text:gsub("^%s+",""):gsub("%s+$","")
+    if name=="" then self.Text="Enter name first!" setButtonState(self,false,UI.bad) task.wait(1.5) self.Text="Create Config" setButtonState(self,false) return end
+    if not writefile then self.Text="File API not available" setButtonState(self,false,UI.bad) task.wait(1.5) self.Text="Create Config" setButtonState(self,false) return end
+    local data={}
+    for _,k in ipairs(CONFIG_KEYS) do data[k]=S[k] end
+    local path=FOLDER_CONFIGS.."/"..name..".json"
+    local ok=pcall(function() writefile(path,HttpService:JSONEncode(data)) end)
+    if ok then self.Text="Created: "..name setButtonState(self,true,UI.good) notify("Config created: "..name,UI.good) task.wait(1.5) self.Text="Create Config" setButtonState(self,false)
+    if _G._wc_refresh_config_list then _G._wc_refresh_config_list() end
+    else self.Text="Write failed" setButtonState(self,false,UI.bad) task.wait(1.5) self.Text="Create Config" setButtonState(self,false) end
+end)
+makeButton(configsPage,"Load Config",0.52,84,0.46,nil,function(self)
+    local name=configNameBox.Text:gsub("^%s+",""):gsub("%s+$","")
+    if name=="" then self.Text="Enter name first!" setButtonState(self,false,UI.bad) task.wait(1.5) self.Text="Load Config" setButtonState(self,false) return end
+    if not readfile then self.Text="File API not available" setButtonState(self,false,UI.bad) task.wait(1.5) self.Text="Load Config" setButtonState(self,false) return end
+    local path=FOLDER_CONFIGS.."/"..name..".json"
+    local ok,raw=pcall(function() return readfile(path) end)
+    if not ok or not raw then self.Text="Not found" setButtonState(self,false,UI.bad) task.wait(1.5) self.Text="Load Config" setButtonState(self,false) return end
+    local ok2,data=pcall(function() return HttpService:JSONDecode(raw) end)
+    if not ok2 or type(data)~="table" then self.Text="Corrupted" setButtonState(self,false,UI.bad) task.wait(1.5) self.Text="Load Config" setButtonState(self,false) return end
+    for _,k in ipairs(CONFIG_KEYS) do if data[k]~=nil then S[k]=data[k] end end
+    if S.fullbrightEnabled then enableFullbright() else disableFullbright() end
+    if S.noFogEnabled then enableNoFog() else disableNoFog() end
+    if S.graphicEnabled then enableGraphic() else disableGraphic() end
+    if S.fpsBoostEnabled then enableFpsBoost() else disableFpsBoost() end
+    if S.skyEnabled then enableSky() else disableSky() end
+    if S.xrayEnabled then enableXray() else disableXray() end
+    setSeason(S.seasonState or 0) refreshSeasonBtns()
+    setCameraMode(S.cameraMode or 1)
+    setMorph(S.morphState or 0) refreshMorphBtns()
+    setHudVisible(S.hudEnabled and true or false)
+    if S.timeSliderValue then pcall(function() Lighting.ClockTime=S.timeSliderValue end) end
+    if not S.wallhackEnabled then restoreMap() end
+    notificationsEnabled=S.notificationsEnabled and true or false
+    self.Text="Loaded!" setButtonState(self,true,UI.good) notify("Config loaded: "..name,UI.good)
+    task.wait(1.5) self.Text="Load Config" setButtonState(self,false)
+end)
+makeButton(configsPage,"Delete Config",0.02,124,0.46,nil,function(self)
+    local name=configNameBox.Text:gsub("^%s+",""):gsub("%s+$","")
+    if name=="" then self.Text="Enter name first!" setButtonState(self,false,UI.bad) task.wait(1.5) self.Text="Delete Config" setButtonState(self,false) return end
+    if not delfile then self.Text="File API not available" setButtonState(self,false,UI.bad) task.wait(1.5) self.Text="Delete Config" setButtonState(self,false) return end
+    local path=FOLDER_CONFIGS.."/"..name..".json"
+    local ok=pcall(function() delfile(path) end)
+    if ok then self.Text="Deleted: "..name setButtonState(self,true,UI.bad) notify("Config deleted: "..name,UI.bad) task.wait(1.5) self.Text="Delete Config" setButtonState(self,false)
+    if _G._wc_refresh_config_list then _G._wc_refresh_config_list() end
+    else self.Text="Delete failed" setButtonState(self,false,UI.bad) task.wait(1.5) self.Text="Delete Config" setButtonState(self,false) end
+end)
+makeButton(configsPage,"Auto-load: OFF",0.52,124,0.46,nil,function(self)
+    if _G._wc_autoload then
+        _G._wc_autoload=false
+        pcall(function() if delfile and isfile and isfile(AUTOLOAD_FILE) then delfile(AUTOLOAD_FILE) end end)
+        self.Text="Auto-load: OFF" setButtonState(self,false) notify("Auto-load disabled",UI.textDim)
+    else
+        local name=configNameBox.Text:gsub("^%s+",""):gsub("%s+$","")
+        if name=="" then self.Text="Enter name first!" setButtonState(self,false,UI.bad) task.wait(1.5) self.Text="Auto-load: OFF" setButtonState(self,false) return end
+        if not writefile then self.Text="File API not available" setButtonState(self,false,UI.bad) task.wait(1.5) self.Text="Auto-load: OFF" setButtonState(self,false) return end
+        local ok=pcall(function() writefile(AUTOLOAD_FILE,name) end)
+        if ok then _G._wc_autoload=true self.Text="Auto-load: "..name setButtonState(self,true,UI.good) notify("Auto-load enabled: "..name,UI.good)
+        else self.Text="Write failed" setButtonState(self,false,UI.bad) task.wait(1.5) self.Text="Auto-load: OFF" setButtonState(self,false) end
+    end
+end)
+makeSection(configsPage,"Available Configs",170)
+local configListFrame=Instance.new("Frame")
+configListFrame.Size=UDim2.new(0.96,0,0,220) configListFrame.Position=UDim2.new(0.02,0,0,202) configListFrame.BackgroundColor3=UI.bg configListFrame.BorderSizePixel=0 configListFrame.Parent=configsPage configListFrame.ZIndex=1002
+addCorner(configListFrame,4) addStroke(configListFrame,UI.border,1)
+local clfScroll=Instance.new("ScrollingFrame")
+clfScroll.Size=UDim2.new(1,-8,1,-8) clfScroll.Position=UDim2.new(0,4,0,4) clfScroll.BackgroundTransparency=1 clfScroll.BorderSizePixel=0 clfScroll.ScrollBarThickness=4 clfScroll.ScrollBarImageColor3=UI.borderHi clfScroll.CanvasSize=UDim2.new(0,0,0,0) clfScroll.AutomaticCanvasSize=Enum.AutomaticSize.Y clfScroll.Parent=configListFrame clfScroll.ZIndex=1003
+local clfLayout=Instance.new("UIListLayout") clfLayout.Padding=UDim.new(0,4) clfLayout.SortOrder=Enum.SortOrder.LayoutOrder clfLayout.Parent=clfScroll
+local clfEmpty=Instance.new("TextLabel")
+clfEmpty.Size=UDim2.new(1,0,0,40) clfEmpty.BackgroundTransparency=1 clfEmpty.Text="No configs yet." clfEmpty.TextColor3=UI.textMute clfEmpty.TextSize=12 clfEmpty.Font=Enum.Font.Gotham clfEmpty.Parent=clfScroll clfEmpty.ZIndex=1004
+_G._wc_refresh_config_list=function()
+    for _,ch in ipairs(clfScroll:GetChildren()) do if ch:IsA("TextButton") then ch:Destroy() end end
+    if not listfiles then clfEmpty.Visible=true clfEmpty.Text="listfiles not available" return end
+    local ok,files=pcall(function() return listfiles(FOLDER_CONFIGS) end)
+    if not ok or not files then clfEmpty.Visible=true clfEmpty.Text="Cannot read configs folder" return end
+    local any=false
+    for _,fpath in ipairs(files) do
+        local fname=fpath:match("([^/\\]+)%.json$")
+        if fname and fname~="_autoload" then
+            any=true
+            local btn=Instance.new("TextButton")
+            btn.Size=UDim2.new(1,-8,0,28) btn.BackgroundColor3=UI.panel2 btn.BorderSizePixel=0 btn.Text=fname btn.TextColor3=UI.text btn.TextSize=12 btn.Font=Enum.Font.Code btn.TextXAlignment=Enum.TextXAlignment.Left btn.Parent=clfScroll btn.ZIndex=1004
+            addCorner(btn,4) addStroke(btn,UI.border,1)
+            local p=Instance.new("UIPadding") p.PaddingLeft=UDim.new(0,10) p.Parent=btn
+            btn.MouseButton1Click:Connect(function() configNameBox.Text=fname end)
+        end
+    end
+    clfEmpty.Visible=not any clfEmpty.Text="No configs yet."
+end
+task.spawn(function() task.wait(0.2) if _G._wc_refresh_config_list then _G._wc_refresh_config_list() end end)
+makeButton(configsPage,"Refresh List",0.02,440,0.96,nil,function(self)
+    if _G._wc_refresh_config_list then _G._wc_refresh_config_list() end
+    self.Text="Refreshed" task.wait(1) self.Text="Refresh List"
+end)
+
+-- LOOPS
+addConn(RunService.Stepped:Connect(function()
+    if S.unloaded or not S.noclipEnabled then return end
+    local char=LocalPlayer.Character
+    if char then for _,part in ipairs(char:GetDescendants()) do if part:IsA("BasePart") then part.CanCollide=false end end end
+end))
+addConn(UserInputService.InputBegan:Connect(function(input,gp)
+    if S.unloaded or gp then return end
+    if input.UserInputType==S.aimHoldKey then S.aimHolding=true end
+end))
+addConn(UserInputService.InputEnded:Connect(function(input,gp)
+    if S.unloaded or gp then return end
+    if input.UserInputType==S.aimHoldKey then S.aimHolding=false end
+end))
+local function getAimTarget()
+    local cam=workspace.CurrentCamera if not cam then return nil end
+    local best,bestDist=nil,math.huge
+    local camPos=cam.CFrame.Position
+    local mousePos=UserInputService:GetMouseLocation()
+    for _,plr in ipairs(Players:GetPlayers()) do
+        if plr~=LocalPlayer then
+            local char=plr.Character
+            if char and not isPlayerDead(plr,char) then
+                local humanoid=char:FindFirstChildOfClass("Humanoid")
+                if humanoid and humanoid.Health>0 then
+                    if not (S.aimTeamCheck and isSameTeam(plr)) then
+                        local targetPart
+                        if S.aimPart=="Head" then targetPart=findBodyPart(char,{"Head"})
+                        elseif S.aimPart=="Torso" then targetPart=findBodyPart(char,{"UpperTorso","Torso","Chest","Trunk"})
+                        else targetPart=findBodyPart(char,{"Head","UpperTorso","Torso"}) end
+                        if targetPart then
+                            local sp=cam:WorldToViewportPoint(targetPart.Position)
+                            if sp.Z>0 then
+                                local dx,dy=sp.X-mousePos.X,sp.Y-mousePos.Y
+                                local dist=math.sqrt(dx*dx+dy*dy)
+                                if dist<S.aimFov and dist<bestDist then
+                                    if S.aimWallCheck then
+                                        local rp=RaycastParams.new() rp.FilterDescendantsInstances={LocalPlayer.Character,targetPart.Parent} rp.FilterType=Enum.RaycastFilterType.Exclude
+                                        local r=workspace:Raycast(camPos,targetPart.Position-camPos,rp)
+                                        if not r then best=targetPart bestDist=dist end
+                                    else best=targetPart bestDist=dist end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return best
+end
+addConn(RunService.RenderStepped:Connect(function()
+    if S.unloaded or not S.aimEnabled or not S.aimHolding then return end
+    local t=getAimTarget()
+    if t then local cam=workspace.CurrentCamera if cam then cam.CFrame=CFrame.lookAt(cam.CFrame.Position,t.Position) end end
+end))
+addConn(RunService.RenderStepped:Connect(function()
+    if S.unloaded or not S.c4Enabled then return end
+    local cam=workspace.CurrentCamera if not cam then return end
+    local w,part=findC4Bomb()
+    if not w or not part then for _,d in pairs(S.c4Timers) do if d.box and d.box.Parent then d.box.Visible=false end if d.timer and d.timer.Parent then d.timer.Visible=false end end return end
+    local data=S.c4Timers[w]
+    if not data then
+        local hl=Instance.new("Highlight") hl.Adornee=part hl.FillColor=S.c4Color hl.OutlineColor=S.c4Color hl.FillTransparency=0.5 hl.OutlineTransparency=0 hl.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop hl.Parent=part
+        local box=Instance.new("Frame") box.BackgroundTransparency=1 box.Visible=false box.Parent=sg box.ZIndex=55
+        local bo=Instance.new("UIStroke") bo.Color=S.c4Color bo.Thickness=2 bo.Parent=box
+        local timer=Instance.new("TextLabel") timer.BackgroundTransparency=1 timer.TextColor3=UI.warn timer.TextScaled=true timer.Font=Enum.Font.Code timer.TextStrokeTransparency=0 timer.TextStrokeColor3=Color3.fromRGB(0,0,0) timer.Visible=false timer.Parent=sg timer.ZIndex=65
+        local siteLabel=Instance.new("TextLabel") siteLabel.BackgroundTransparency=1 siteLabel.TextColor3=UI.accent siteLabel.TextScaled=true siteLabel.Font=Enum.Font.GothamBold siteLabel.TextStrokeTransparency=0 siteLabel.TextStrokeColor3=Color3.fromRGB(0,0,0) siteLabel.Visible=false siteLabel.Parent=sg siteLabel.ZIndex=65
+        data={highlight=hl,box=box,boxOutline=bo,timer=timer,siteLabel=siteLabel,startTime=tick()}
+        S.c4Timers[w]=data
+    end
+    local bp,on=cam:WorldToViewportPoint(part.Position)
+    if not on or bp.Z<0 then data.box.Visible=false data.timer.Visible=false if data.siteLabel then data.siteLabel.Visible=false end if data.highlight and data.highlight.Parent then data.highlight.Enabled=false end return end
+    if data.highlight and data.highlight.Parent then data.highlight.Enabled=true end
+    local dist=(part.Position-cam.CFrame.Position).Magnitude
+    if dist>1500 then data.box.Visible=false data.timer.Visible=false if data.siteLabel then data.siteLabel.Visible=false end return end
+    local bH=math.clamp(5000/dist,30,200) local bW=bH*0.55
+    local bs=Vector2.new(bp.X,bp.Y)
+    local left=bs.X-bW/2 local top=bs.Y-bH/2
+    data.box.Visible=true data.box.Position=UDim2.new(0,left,0,top) data.box.Size=UDim2.new(0,bW,0,bH)
+    local site=getBombSite(part.Position)
+    if site and data.siteLabel then data.siteLabel.Visible=true data.siteLabel.Text="PLANT "..site data.siteLabel.Position=UDim2.new(0,left,0,top-38) data.siteLabel.Size=UDim2.new(0,bW,0,18)
+    elseif data.siteLabel then data.siteLabel.Visible=false end
+    local rem=math.max(0,40-(tick()-data.startTime))
+    local sec,ms=math.floor(rem),math.floor((rem-math.floor(rem))*100)
+    data.timer.Visible=true data.timer.Text=string.format("%d.%02d",sec,ms)
+    data.timer.TextColor3=(rem<10) and UI.bad or UI.warn
+    data.timer.Position=UDim2.new(0,left,0,top-18) data.timer.Size=UDim2.new(0,bW,0,16)
+end))
+addConn(RunService.RenderStepped:Connect(function()
+    if S.unloaded or not S.tinfoEnabled then if tinfoCard.Visible then tinfoCard.Visible=false end return end
+    local cam=workspace.CurrentCamera if not cam then tinfoCard.Visible=false return end
+    local origin=cam.CFrame.Position
+    local dir=cam.CFrame.LookVector*2000
+    local params=RaycastParams.new() params.FilterType=Enum.RaycastFilterType.Exclude
+    local filterList={}
+    if LocalPlayer.Character then table.insert(filterList,LocalPlayer.Character) end
+    for _,obj in ipairs(cam:GetChildren()) do table.insert(filterList,obj) end
+    params.FilterDescendantsInstances=filterList
+    local result=workspace:Raycast(origin,dir,params)
+    if not result or not result.Instance then tinfoCard.Visible=false return end
+    local char=result.Instance:FindFirstAncestorOfClass("Model")
+    local plr=char and Players:GetPlayerFromCharacter(char)
+    if not plr or plr==LocalPlayer then tinfoCard.Visible=false return end
+    local hum=char:FindFirstChildOfClass("Humanoid")
+    if not hum or hum.Health<=0 then tinfoCard.Visible=false return end
+    tinfoCard.Visible=true
+    tinfoName.Text=plr.Name tinfoName.TextColor3=getTeamColor(getPlayerTeamId(plr))
+    local hp=math.floor(hum.Health) local mx=math.max(math.floor(hum.MaxHealth),1)
+    local ratio=math.clamp(hp/mx,0,1)
+    tinfoHpFill.Size=UDim2.new(ratio,0,1,0)
+    if ratio>0.5 then tinfoHpFill.BackgroundColor3=HP_HIGH elseif ratio>0.25 then tinfoHpFill.BackgroundColor3=HP_MID else tinfoHpFill.BackgroundColor3=HP_LOW end
+    tinfoHpText.Text=hp.." / "..mx
+    tinfoWeapon.Text="Weapon: "..getWeaponName(char)
+    if S.tinfoLastUserId~=plr.UserId then
+        S.tinfoLastUserId=plr.UserId
+        task.spawn(function()
+            local ok,img=pcall(function() return Players:GetUserThumbnailAsync(plr.UserId,Enum.ThumbnailType.HeadShot,Enum.ThumbnailSize.Size100x100) end)
+            if ok and img and tinfoAvatar and tinfoAvatar.Parent then tinfoAvatar.Image=img end
+        end)
+    end
+end))
+createESP=function(plr)
+    if plr==LocalPlayer then return nil end
+    if S.espCache[plr] then return S.espCache[plr] end
+    local box=Instance.new("Frame") box.BackgroundTransparency=1 box.Visible=false box.Parent=sg box.ZIndex=50
+    local bo=Instance.new("UIStroke") bo.Color=Color3.fromRGB(255,255,255) bo.Thickness=1.5 bo.Parent=box
+    local tracer=Instance.new("Frame") tracer.BackgroundColor3=Color3.fromRGB(255,60,60) tracer.BorderSizePixel=0 tracer.AnchorPoint=Vector2.new(0.5,0) tracer.Visible=false tracer.Parent=sg tracer.ZIndex=40
+    local nameText=Instance.new("TextLabel") nameText.BackgroundTransparency=1 nameText.TextColor3=Color3.fromRGB(255,255,255) nameText.TextScaled=true nameText.Font=Enum.Font.GothamBold nameText.TextStrokeTransparency=0.3 nameText.Visible=false nameText.Parent=sg nameText.ZIndex=60
+    local hpBg=Instance.new("Frame") hpBg.BackgroundColor3=Color3.fromRGB(20,20,25) hpBg.BorderSizePixel=0 hpBg.Visible=false hpBg.Parent=sg hpBg.ZIndex=65
+    addCorner(hpBg,2) addStroke(hpBg,UI.border,1)
+    local hpFill=Instance.new("Frame") hpFill.BackgroundColor3=HP_HIGH hpFill.BorderSizePixel=0 hpFill.Size=UDim2.new(1,0,1,0) hpFill.Parent=hpBg hpFill.ZIndex=66
+    addCorner(hpFill,2)
+    local hpText=Instance.new("TextLabel") hpText.BackgroundTransparency=1 hpText.TextColor3=Color3.fromRGB(255,255,255) hpText.TextScaled=true hpText.Font=Enum.Font.GothamBold hpText.TextStrokeTransparency=0.3 hpText.Visible=false hpText.Parent=sg hpText.ZIndex=62
+    local distText=Instance.new("TextLabel") distText.BackgroundTransparency=1 distText.TextColor3=Color3.fromRGB(220,220,220) distText.TextScaled=true distText.Font=Enum.Font.Gotham distText.TextStrokeTransparency=0.3 distText.Visible=false distText.Parent=sg distText.ZIndex=60
+    local hitbarBg=Instance.new("Frame") hitbarBg.BackgroundColor3=Color3.fromRGB(20,20,25) hitbarBg.BorderSizePixel=0 hitbarBg.Visible=false hitbarBg.Parent=sg hitbarBg.ZIndex=65
+    addCorner(hitbarBg,2) addStroke(hitbarBg,UI.border,1)
+    local hitbarFill=Instance.new("Frame") hitbarFill.BackgroundColor3=HP_LOW hitbarFill.BorderSizePixel=0 hitbarFill.AnchorPoint=Vector2.new(0,1) hitbarFill.Position=UDim2.new(0,0,1,0) hitbarFill.Size=UDim2.new(1,0,1,0) hitbarFill.Parent=hitbarBg hitbarFill.ZIndex=66
+    addCorner(hitbarFill,2)
+    local bones={}
+    for i=1,11 do
+        local l=Instance.new("Frame") l.BackgroundColor3=Color3.fromRGB(255,255,255) l.BorderSizePixel=0 l.AnchorPoint=Vector2.new(0.5,0) l.Visible=false l.Parent=sg l.ZIndex=45
+        table.insert(bones,l)
+    end
+    local data={box=box,boxOutline=bo,tracer=tracer,nameText=nameText,hpBg=hpBg,hpFill=hpFill,hpText=hpText,distText=distText,highlight=nil,bones=bones,hitbarBg=hitbarBg,hitbarFill=hitbarFill}
+    S.espCache[plr]=data
+    return data
+end
+removeESP=function(plr)
+    local d=S.espCache[plr] if not d then return end
+    for _,o in pairs(d) do
+        if typeof(o)=="Instance" and o.Parent then o:Destroy()
+        elseif typeof(o)=="table" then for _,s in ipairs(o) do if s and s.Parent then s:Destroy() end end end
+    end
+    S.espCache[plr]=nil
+end
+hideAll=function(data)
+    if not data then return end
+    for k,o in pairs(data) do
+        if k=="bones" then for _,b in ipairs(o) do b.Visible=false end
+        elseif k=="highlight" then if o and o.Parent then o.Enabled=false end
+        elseif typeof(o)=="Instance" and o.Parent then if o:IsA("GuiObject") then o.Visible=false end end
+    end
+end
+local function updateBoneLine(line,a,b)
+    if not line or not a or not b then if line then line.Visible=false end return end
+    local dx,dy=b.X-a.X,b.Y-a.Y
+    local len=math.sqrt(dx*dx+dy*dy)
+    if len<1 then line.Visible=false return end
+    line.Position=UDim2.new(0,a.X,0,a.Y) line.Size=UDim2.new(0,1.5,0,len) line.Rotation=math.deg(math.atan2(dy,dx))-90 line.Visible=true
+end
+addConn(RunService.RenderStepped:Connect(function()
+    if S.unloaded then return end
+    pcall(function()
+        if not S.espEnabled and not S.skeletonEnabled then for _,d in pairs(S.espCache) do hideAll(d) end return end
+        local cam=workspace.CurrentCamera if not cam then return end
+        local vp=cam.ViewportSize
+        for _,plr in ipairs(Players:GetPlayers()) do
+            if plr~=LocalPlayer then
+                local char=plr.Character
+                if not char or not char.Parent or isPlayerDead(plr,char) then
+                    if S.espCache[plr] then hideAll(S.espCache[plr]) end
+                    if S.deadCleanup and char and char.Parent then
+                        restoreHead(char)
+                        for _,part in ipairs(char:GetDescendants()) do if part:IsA("BasePart") then part.LocalTransparencyModifier=1 part.CanCollide=false end end
+                    end
+                else
+                    local teamColor=getTeamColor(getPlayerTeamId(plr))
+                    local root=getRoot(char)
+                    local head=findBodyPart(char,{"Head"}) or root
+                    local hum=char:FindFirstChildOfClass("Humanoid")
+                    if root and head then
+                        local data=S.espCache[plr] or createESP(plr)
+                        if data then
+                            if S.espEnabled and S.showChams then
+                                if not data.highlight or not data.highlight.Parent then
+                                    local hl=Instance.new("Highlight") hl.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop hl.OutlineTransparency=0 hl.FillTransparency=0.75 hl.Parent=char
+                                    data.highlight=hl
+                                end
+                                data.highlight.FillColor=teamColor data.highlight.OutlineColor=teamColor data.highlight.Enabled=true
+                            else if data.highlight and data.highlight.Parent then data.highlight.Enabled=false end end
+                            if S.skeletonEnabled then
+                                local hPart=findBodyPart(char,{"Head"})
+                                local ut=findBodyPart(char,{"UpperTorso","Torso","Chest","Trunk"})
+                                local lt=findBodyPart(char,{"LowerTorso","Torso","Trunk"})
+                                local la=findBodyPart(char,{"LeftUpperArm","Left Arm","LeftArm"})
+                                local ra=findBodyPart(char,{"RightUpperArm","Right Arm","RightArm"})
+                                local lh=findBodyPart(char,{"LeftHand","Left Hand","LeftHand"})
+                                local rh=findBodyPart(char,{"RightHand","Right Hand","RightHand"})
+                                local ll=findBodyPart(char,{"LeftUpperLeg","Left Leg","LeftLeg"})
+                                local rl=findBodyPart(char,{"RightUpperLeg","Right Leg","RightLeg"})
+                                local lf=findBodyPart(char,{"LeftFoot","Left Foot","LeftFoot"})
+                                local rf=findBodyPart(char,{"RightFoot","Right Foot","RightFoot"})
+                                local function s(p) if not p then return nil end local v=cam:WorldToViewportPoint(p.Position) if v.Z<0 then return nil end return Vector2.new(v.X,v.Y) end
+                                local pieces={{s(hPart),s(ut)},{s(ut),s(lt)},{s(ut),s(la)},{s(la),s(lh)},{s(ut),s(ra)},{s(ra),s(rh)},{s(lt),s(ll)},{s(ll),s(lf)},{s(lt),s(rl)},{s(rl),s(rf)},{s(hPart),s(ut)}}
+                                for i,bone in ipairs(data.bones) do
+                                    local pc=pieces[i]
+                                    if pc and pc[1] and pc[2] then updateBoneLine(bone,pc[1],pc[2]) bone.BackgroundColor3=teamColor else bone.Visible=false end
+                                end
+                            else for _,b in ipairs(data.bones) do b.Visible=false end end
+                            if S.espEnabled then
+                                local hp3=cam:WorldToViewportPoint(head.Position)
+                                local rp3=cam:WorldToViewportPoint(root.Position)
+                                local vis=(hp3.Z>0) and (math.abs(hp3.X)<vp.X*2) and (math.abs(hp3.Y)<vp.Y*2)
+                                if vis then
+                                    local dist=(root.Position-cam.CFrame.Position).Magnitude
+                                    if dist<1500 then
+                                        local bh=math.clamp(5000/dist,25,300) local bw=bh*0.55
+                                        local hs=Vector2.new(hp3.X,hp3.Y) local rs=Vector2.new(rp3.X,rp3.Y)
+                                        local top=hs.Y-bh*0.6 local bot=rs.Y+bh*0.3
+                                        local left=hs.X-bw/2 local right=hs.X+bw/2
+                                        data.box.Visible=true data.box.Position=UDim2.new(0,left,0,top) data.box.Size=UDim2.new(0,right-left,0,bot-top)
+                                        data.boxOutline.Color=teamColor
+                                        if S.showTracer then
+                                            data.tracer.Visible=true data.tracer.BackgroundColor3=teamColor
+                                            local ox,oy=vp.X/2,vp.Y
+                                            local dx,dy=hs.X-ox,bot-oy
+                                            local len=math.sqrt(dx*dx+dy*dy)
+                                            data.tracer.Position=UDim2.new(0,ox,0,oy) data.tracer.Size=UDim2.new(0,1.5,0,len) data.tracer.Rotation=math.deg(math.atan2(dy,dx))-90
+                                        else data.tracer.Visible=false end
+                                        if S.showName then
+                                            data.nameText.Visible=true data.nameText.Text=plr.Name data.nameText.TextColor3=teamColor
+                                            data.nameText.Position=UDim2.new(0,left,0,top-15) data.nameText.Size=UDim2.new(0,right-left,0,13)
+                                        else data.nameText.Visible=false end
+                                        if S.showHP and hum then
+                                            local hp=hum.Health local mx=math.max(hum.MaxHealth,1)
+                                            local p=math.clamp(hp/mx,0,1)
+                                            data.hpBg.Visible=true data.hpBg.Position=UDim2.new(0,left,0,bot+2) data.hpBg.Size=UDim2.new(0,right-left,0,6)
+                                            data.hpFill.Size=UDim2.new(p,0,1,0)
+                                            if p>0.5 then data.hpFill.BackgroundColor3=HP_HIGH elseif p>0.25 then data.hpFill.BackgroundColor3=HP_MID else data.hpFill.BackgroundColor3=HP_LOW end
+                                            data.hpText.Visible=true data.hpText.Text=math.floor(hp).." / "..math.floor(mx)
+                                            data.hpText.Position=UDim2.new(0,left,0,bot+10) data.hpText.Size=UDim2.new(0,right-left,0,11)
+                                        else data.hpBg.Visible=false data.hpText.Visible=false end
+                                        if S.showDist then
+                                            data.distText.Visible=true data.distText.Text=math.floor(dist).."m"
+                                            data.distText.Position=UDim2.new(0,left,0,bot+22) data.distText.Size=UDim2.new(0,right-left,0,11)
+                                        else data.distText.Visible=false end
+                                        if S.showHitbar and hum then
+                                            local hp=hum.Health local mx=math.max(hum.MaxHealth,1)
+                                            local p=math.clamp(hp/mx,0,1)
+                                            data.hitbarBg.Visible=true data.hitbarBg.Position=UDim2.new(0,right+4,0,top) data.hitbarBg.Size=UDim2.new(0,5,0,bot-top)
+                                            data.hitbarFill.Size=UDim2.new(1,0,p,0)
+                                            if p>0.5 then data.hitbarFill.BackgroundColor3=HP_HIGH elseif p>0.25 then data.hitbarFill.BackgroundColor3=HP_MID else data.hitbarFill.BackgroundColor3=HP_LOW end
+                                        else data.hitbarBg.Visible=false end
+                                    else hideAll(data) end
+                                else hideAll(data) end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end))
+addConn(RunService.Heartbeat:Connect(function()
+    if S.unloaded then return end
+    if S.wallhackEnabled then wallhackStep() end
+    if S.wallhackEnabled and #S.savedMapChildren>0 then
+        local char=LocalPlayer.Character if not char then return end
+        local pos=getCharPos(char)
+        local params=RaycastParams.new() params.FilterDescendantsInstances={char} params.FilterType=Enum.RaycastFilterType.Exclude
+        local result=workspace:Raycast(pos,Vector3.new(0,-10,0),params)
+        if not result or result.Distance>5 then
+            local plat=Instance.new("Part") plat.Size=Vector3.new(15,1,15) plat.Position=pos-Vector3.new(0,4,0) plat.Anchored=true plat.Transparency=0.5 plat.BrickColor=BrickColor.new("Dark stone grey") plat.Parent=workspace
+            table.insert(S.mapSpawnedParts,plat)
+        end
+    end
+end))
+addConn(RunService.Heartbeat:Connect(function()
+    if S.unloaded or not S.timeLockerEnabled then return end
+    pcall(function() Lighting.ClockTime=S.timeSliderValue end)
+end))
+addConn(RunService.Heartbeat:Connect(function()
+    if S.unloaded or S.seasonState~=2 then return end
+    local char=LocalPlayer.Character
+    if char then
+        local pos=getCharPos(char)
+        if S.snowPlates[1] and S.snowPlates[1].Parent then S.snowPlates[1].Position=pos-Vector3.new(0,3.2,0) end
+    end
+    for _,plr in ipairs(Players:GetPlayers()) do
+        local c=plr.Character
+        if c and findHeadPart(c) then
+            if not S.winterHats[c] or not S.winterHats[c].folder or not S.winterHats[c].folder.Parent then makeNewYearHat(c) end
+        end
+    end
+end))
+for _,plr in ipairs(Players:GetPlayers()) do
+    if plr~=LocalPlayer then
+        addConn(plr.CharacterAdded:Connect(function(c)
+            task.wait(0.5)
+            if S.bigHeadEnabled and not isPlayerDead(plr,c) then applyBigHead(c,plr) end
+            if S.seasonState==2 then makeNewYearHat(c) end
+        end))
+        addConn(plr.CharacterRemoving:Connect(function() if S.espCache[plr] then hideAll(S.espCache[plr]) end end))
+        if plr.Character then task.spawn(function() task.wait(0.5) if S.bigHeadEnabled then applyBigHead(plr.Character,plr) end end) end
+    end
+end
+addConn(Players.PlayerAdded:Connect(function(plr)
+    if plr~=LocalPlayer then
+        addConn(plr.CharacterAdded:Connect(function(c)
+            task.wait(0.5)
+            if S.bigHeadEnabled then applyBigHead(c,plr) end
+            if S.seasonState==2 then makeNewYearHat(c) end
+        end))
+        addConn(plr.CharacterRemoving:Connect(function() if S.espCache[plr] then hideAll(S.espCache[plr]) end end))
+    end
+end))
+addConn(Players.PlayerRemoving:Connect(function(plr) removeESP(plr) end))
+addConn(LocalPlayer.CharacterAdded:Connect(function(c)
+    task.wait(0.7)
+    if S.morphState~=0 then applyMorph(c) end
+    if S.seasonState~=0 then createSeasonEmitters() end
+    enforceCamera()
+end))
+
+task.spawn(function()
+    task.wait(1)
+    if readfile and isfile and isfile(AUTOLOAD_FILE) then
+        local ok,name=pcall(function() return readfile(AUTOLOAD_FILE) end)
+        if ok and name and name~="" then
+            local path=FOLDER_CONFIGS.."/"..name..".json"
+            if isfile(path) then
+                local ok2,raw=pcall(function() return readfile(path) end)
+                if ok2 and raw then
+                    local ok3,data=pcall(function() return HttpService:JSONDecode(raw) end)
+                    if ok3 and type(data)=="table" then
+                        for _,k in ipairs(CONFIG_KEYS) do if data[k]~=nil then S[k]=data[k] end end
+                        if S.fullbrightEnabled then enableFullbright() end
+                        if S.noFogEnabled then enableNoFog() end
+                        if S.graphicEnabled then enableGraphic() end
+                        if S.fpsBoostEnabled then enableFpsBoost() end
+                        if S.skyEnabled then enableSky() end
+                        if S.xrayEnabled then enableXray() end
+                        setSeason(S.seasonState or 0) refreshSeasonBtns()
+                        setCameraMode(S.cameraMode or 1)
+                        setMorph(S.morphState or 0) refreshMorphBtns()
+                        setHudVisible(S.hudEnabled and true or false)
+                        if S.timeSliderValue then pcall(function() Lighting.ClockTime=S.timeSliderValue end) end
+                        notificationsEnabled=S.notificationsEnabled and true or false
+                        _G._wc_autoload=true
+                        notify("Auto-loaded: "..name,UI.good)
+                        if configNameBox and configNameBox.Parent then configNameBox.Text=name end
+                    end
+                end
+            end
+        end
+    end
+end)
+
+startPollLoop()
+
+-- MINI BTN
+local miniBtn=Instance.new("TextButton")
+miniBtn.Size=UDim2.new(0,50,0,50) miniBtn.Position=UDim2.new(0,20,0.5,-25) miniBtn.BackgroundColor3=UI.panel2 miniBtn.BorderSizePixel=0 miniBtn.Text="WC" miniBtn.TextColor3=UI.accent miniBtn.TextSize=14 miniBtn.Font=Enum.Font.GothamBold miniBtn.Visible=false miniBtn.Parent=sg miniBtn.ZIndex=2000 miniBtn.Active=true
+addCorner(miniBtn,25) addStroke(miniBtn,UI.accent,1.5)
+local miniDragging=false local miniDragStart=nil local miniStartPos=nil local miniMoved=false
+miniBtn.InputBegan:Connect(function(input)
+    if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+        miniDragging=true miniMoved=false miniDragStart=input.Position miniStartPos=miniBtn.Position
+        input.Changed:Connect(function() if input.UserInputState==Enum.UserInputState.End then miniDragging=false end end)
+    end
+end)
+miniBtn.InputChanged:Connect(function(input)
+    if not miniDragging then return end
+    if input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch then
+        local delta=input.Position-miniDragStart
+        if math.abs(delta.X)>3 or math.abs(delta.Y)>3 then miniMoved=true end
+        miniBtn.Position=UDim2.new(miniStartPos.X.Scale,miniStartPos.X.Offset+delta.X,miniStartPos.Y.Scale,miniStartPos.Y.Offset+delta.Y)
+    end
+end)
+miniBtn.MouseButton1Click:Connect(function()
+    if miniMoved then return end
+    main.Visible=true
+    if main.GroupTransparency~=nil then main.GroupTransparency=1 TweenService:Create(main,TweenInfo.new(0.2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=0}):Play() end
+    miniBtn.Visible=false
+end)
+minimize.MouseButton1Click:Connect(function()
+    if main.GroupTransparency~=nil then
+        local t=TweenService:Create(main,TweenInfo.new(0.18,Enum.EasingStyle.Quad,Enum.EasingDirection.In),{GroupTransparency=1})
+        t:Play() t.Completed:Connect(function() main.Visible=false miniBtn.Visible=true end)
+    else main.Visible=false miniBtn.Visible=true end
+end)
+if main.GroupTransparency~=nil then
+    main.GroupTransparency=1
+    main.Position=UDim2.new(0.5,-MAIN_W/2,0.4,-MAIN_H/2+24)
+    task.spawn(function()
+        TweenService:Create(main,TweenInfo.new(0.28,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{GroupTransparency=0,Position=UDim2.new(0.5,-MAIN_W/2,0.4,-MAIN_H/2)}):Play()
+    end)
+end
+
+closeBtn.MouseButton1Click:Connect(function()
+    if main.GroupTransparency~=nil and main.Visible then
+        local t=TweenService:Create(main,TweenInfo.new(0.2,Enum.EasingStyle.Quad,Enum.EasingDirection.In),{GroupTransparency=1})
+        t:Play() t.Completed:Wait()
+    end
+    S.unloaded=true
+    for _,c in ipairs(S.connections) do pcall(function() c:Disconnect() end) end
+    S.connections={}
+    pcall(function() RunService:UnbindFromRenderStep("WC_Camera") end)
+    uninstallCameraHook()
+    if S.rawMeta and S.oldNamecall then pcall(function() setreadonly(S.rawMeta,false) S.rawMeta.__namecall=S.oldNamecall setreadonly(S.rawMeta,true) end) end
+    pcall(function() for _,p in ipairs(Players:GetPlayers()) do if p.Character then restoreHead(p.Character) end end end)
+    pcall(function() local char=LocalPlayer.Character if char then restoreGiant(char) restoreTall(char) clearMorph(char) end end)
+    pcall(function() restoreMap() end)
+    pcall(function() disableXray() end)
+    pcall(function() cleanupSeason() end)
+    pcall(function() disableFullbright() end)
+    pcall(function() disableNoFog() end)
+    pcall(function() disableGraphic() end)
+    pcall(function() disableFpsBoost() end)
+    pcall(function() disableSky() end)
+    pcall(function() LocalPlayer.CameraMode=Enum.CameraMode.Classic LocalPlayer.CameraMinZoomDistance=0.5 LocalPlayer.CameraMaxZoomDistance=128 end)
+    S.wallhackEnabled=false S.xrayEnabled=false S.timeLockerEnabled=false
+    S.speedEnabled=false S.noRecoilEnabled=false S.bunnyHopEnabled=false S.headshotAssistEnabled=false
+    pcall(function() sg:Destroy() end)
+    pcall(function() notifSg:Destroy() end)
+    pcall(function() hudSg:Destroy() end)
+    pcall(function() seasonSg:Destroy() end)
+    pcall(function() tinfoSg:Destroy() end)
+    pcall(function() popupSg:Destroy() end)
+end)
+
+createTabButton("main","Main",UI.text)
+createTabButton("visuals","Visuals",UI.accent)
+createTabButton("skinchanger","Skin Changer",UI.yellow)
+if hasAccess("beta") then createTabButton("beta","Beta",Color3.fromRGB(200,140,255)) end
+if hasAccess("admin") then createTabButton("admin","Admin",UI.warn) end
+if hasAccess("adminpanel") then createTabButton("adminpanel","Admin Panel",UI.bad) end
+createTabButton("configs","Configs",UI.good)
+createTabButton("feedback","Feedback",UI.accent)
+createTabButton("settings","Settings",UI.accent)
+switchTab("main")
+end
+
+local function clearServerNotice()
+    pcall(function() httpPost(API_URL.."/clear_notice",{secret=API_SECRET,hwid=currentHWID}) end)
+end
+local function startFlow()
+    if localData.key and localData.key~="" then
+        local res=httpPost(API_URL.."/register",{secret=API_SECRET,hwid=currentHWID,nickname=LocalPlayer.Name,roblox_id=LocalPlayer.UserId})
+        if res then
+            local ok,data=pcall(function() return HttpService:JSONDecode(res) end)
+            if ok and data then
+                if data.reset_notice and data.reset_notice~="" then
+                    showResetDialog(data.reset_notice,function() clearServerNotice() localData.key=nil localData.rank=nil localData.activated=nil saveLocal(localData) showKeyMenu() end)
+                    return
+                end
+                if data.activated_key==nil or data.activated_key=="" then localData.key=nil localData.rank=nil saveLocal(localData) showKeyMenu() return end
+                currentRank=data.rank or localData.rank or "player"
+                currentKey=localData.key
+                localData.rank=currentRank saveLocal(localData)
+                keyPassed=true runMainGUI() return
+            end
+        end
+        keyPassed=true currentKey=localData.key currentRank=localData.rank or "player" runMainGUI()
+    else showKeyMenu() end
+end
+startFlow()
