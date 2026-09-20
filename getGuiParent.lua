@@ -36,7 +36,6 @@ local function ensureFolders()
 end
 ensureFolders()
 
--- ✅ FIX #1: httpPost защищён от падения JSONEncode и от нестандартного ответа экзекутора
 local function httpPost(url,body)
     local okEnc,json=pcall(function() return HttpService:JSONEncode(body) end)
     if not okEnc or not json then return nil,"encode_failed" end
@@ -662,6 +661,7 @@ local function applyAccountStatus(data)
     pcall(updateStatusCard)
 end
 
+-- ✅ ОБНОВЛЕНО: обработка reconnect_pending
 local function startPollLoop()
     task.spawn(function()
         while not S.unloaded do
@@ -676,6 +676,15 @@ local function startPollLoop()
                     setStatusState("unknown","Игрок не найден в БД")
                 elseif data.status=="ok" then
                     applyAccountStatus(data)
+                    -- ⚡ Обработка команды "Переподключить" от админа
+                    if data.reconnect_pending then
+                        pcall(function()
+                            httpPost(API_URL.."/reconnect/ack",{secret=API_SECRET,hwid=currentHWID})
+                        end)
+                        pcall(registerOnServer)
+                        pcall(updateRankDisplay)
+                        notify("Переподключение к серверу выполнено", UI.accent)
+                    end
                 else
                     setStatusState("error","Сервер: "..tostring(data.status))
                 end
@@ -1806,7 +1815,7 @@ makeButton(settingsPage,"Refresh from server",0.02,442,0.96,nil,function(self)
     self.Text="Done" task.wait(1.2) self.Text="Refresh from server"
 end)
 
--- FEEDBACK PAGE (✅ FIX #2 — защита от залипания кнопки + watchdog + pcall + fbSending-флаг)
+-- FEEDBACK PAGE
 local feedbackPage=createPage("feedback")
 makeSection(feedbackPage,"Обратная связь / Feedback",10)
 local fbIntro=Instance.new("TextLabel")
@@ -1870,20 +1879,31 @@ fbStatus.TextWrapped=true
 fbStatus.Parent=feedbackPage
 fbStatus.ZIndex=1002
 
-updateFeedbackStatus=function()
-    if not S.feedbackCooldown or S.feedbackCooldown <= 0 then
-        fbStatus.Text=""
-        return
-    end
-    local m=math.floor(S.feedbackCooldown/60)
-    local s=S.feedbackCooldown%60
-    fbStatus.Text=string.format("Cooldown: %d:%02d", m, s)
-    fbStatus.TextColor3=UI.warn
-end
-
--- состояние отправки, защита от двойных кликов и зависаний
 local fbSending=false
 local fbWatchdogId=0
+local fbSentNoticeUntil=0
+
+local function formatCooldown(sec)
+    sec=math.max(0,math.floor(sec))
+    local h=math.floor(sec/3600)
+    local m=math.floor((sec%3600)/60)
+    local s=sec%60
+    if h>0 then
+        return string.format("%d:%02d:%02d", h, m, s)
+    else
+        return string.format("%d:%02d", m, s)
+    end
+end
+
+updateFeedbackStatus=function()
+    if tick()<fbSentNoticeUntil then return end
+    if not S.feedbackCooldown or S.feedbackCooldown <= 0 then
+        if fbStatus.Text~="" then fbStatus.Text="" end
+        return
+    end
+    fbStatus.Text="Cooldown: "..formatCooldown(S.feedbackCooldown)
+    fbStatus.TextColor3=UI.warn
+end
 
 local function fbResetButton()
     fbSending=false
@@ -1893,6 +1913,11 @@ end
 
 fbSendBtn.MouseButton1Click:Connect(function()
     if fbSending then return end
+    if S.feedbackCooldown and S.feedbackCooldown>0 then
+        fbSentNoticeUntil=0
+        updateFeedbackStatus()
+        return
+    end
     local msg=fbInput.Text:gsub("^%s+",""):gsub("%s+$","")
     if msg=="" then
         fbStatus.Text="Напишите сообщение перед отправкой"
@@ -1909,7 +1934,6 @@ fbSendBtn.MouseButton1Click:Connect(function()
     fbStatus.Text="Отправка..."
     fbStatus.TextColor3=UI.warn
 
-    -- Watchdog: если через 25 секунд ответа нет — принудительно разблокируем кнопку
     task.delay(25,function()
         if myWatchdog==fbWatchdogId and fbSending then
             fbStatus.Text="Превышено время ожидания. Попробуйте снова."
@@ -1919,7 +1943,6 @@ fbSendBtn.MouseButton1Click:Connect(function()
     end)
 
     task.spawn(function()
-        -- всё тело в pcall — если что-то упадёт, кнопка не залипнет
         local okRun,errRun=pcall(function()
             local res,errCode=httpPost(API_URL.."/feedback/submit",{
                 secret=API_SECRET,
@@ -1945,13 +1968,15 @@ fbSendBtn.MouseButton1Click:Connect(function()
             local status=tostring(data.status or "unknown")
 
             if status=="ok" then
-                fbStatus.Text="Отправлено! Спасибо за фидбек."
+                fbStatus.Text="✓ Отправлено! Спасибо за фидбек."
                 fbStatus.TextColor3=UI.good
                 fbInput.Text=""
                 S.feedbackCooldown=3600
-                updateFeedbackStatus()
+                fbSentNoticeUntil=tick()+3
             elseif status=="cooldown" then
-                S.feedbackCooldown=tonumber(data.wait) or 3600
+                local w=tonumber(data.wait) or 3600
+                S.feedbackCooldown=math.min(w,3600)
+                fbSentNoticeUntil=0
                 updateFeedbackStatus()
             elseif status=="muted" then
                 fbStatus.Text="Вам запрещено отправлять фидбек до "..tostring(data["until"] or "?")
@@ -1976,14 +2001,15 @@ fbSendBtn.MouseButton1Click:Connect(function()
     end)
 end)
 
-addConn(RunService.Heartbeat:Connect(function()
-    if S.feedbackCooldown and S.feedbackCooldown > 0 then
-        S.feedbackCooldown = math.max(0, S.feedbackCooldown - 1)
-        if S.feedbackCooldown % 5 == 0 or S.feedbackCooldown == 0 then
+task.spawn(function()
+    while not S.unloaded do
+        task.wait(1)
+        if S.feedbackCooldown and S.feedbackCooldown > 0 then
+            S.feedbackCooldown = math.max(0, S.feedbackCooldown - 1)
             updateFeedbackStatus()
         end
     end
-end))
+end)
 
 -- CONFIGS
 local configsPage=createPage("configs")
@@ -2542,27 +2568,46 @@ createTabButton("settings","Settings",UI.accent)
 switchTab("main")
 end
 
+-- ✅ ОБНОВЛЕНО: обработка ADMIN_SKIP (пропуск ключа админом)
 local function clearServerNotice()
     pcall(function() httpPost(API_URL.."/clear_notice",{secret=API_SECRET,hwid=currentHWID}) end)
 end
 local function startFlow()
-    if localData.key and localData.key~="" then
-        local res=httpPost(API_URL.."/register",{secret=API_SECRET,hwid=currentHWID,nickname=LocalPlayer.Name,roblox_id=LocalPlayer.UserId})
-        if res then
-            local ok,data=pcall(function() return HttpService:JSONDecode(res) end)
-            if ok and data then
-                if data.reset_notice and data.reset_notice~="" then
-                    showResetDialog(data.reset_notice,function() clearServerNotice() localData.key=nil localData.rank=nil localData.activated=nil saveLocal(localData) showKeyMenu() end)
-                    return
-                end
-                if data.activated_key==nil or data.activated_key=="" then localData.key=nil localData.rank=nil saveLocal(localData) showKeyMenu() return end
-                currentRank=data.rank or localData.rank or "player"
-                currentKey=localData.key
-                localData.rank=currentRank saveLocal(localData)
-                keyPassed=true runMainGUI() return
+    -- ВСЕГДА сначала спрашиваем сервер — может быть ADMIN_SKIP или уже активированный ключ
+    local res=httpPost(API_URL.."/register",{secret=API_SECRET,hwid=currentHWID,nickname=LocalPlayer.Name,roblox_id=LocalPlayer.UserId})
+    if res then
+        local ok,data=pcall(function() return HttpService:JSONDecode(res) end)
+        if ok and data then
+            if data.reset_notice and data.reset_notice~="" then
+                showResetDialog(data.reset_notice,function()
+                    clearServerNotice()
+                    localData.key=nil localData.rank=nil localData.activated=nil
+                    saveLocal(localData)
+                    showKeyMenu()
+                end)
+                return
+            end
+            -- Сервер говорит, что у нас есть ключ (в т.ч. ADMIN_SKIP)
+            if data.activated_key and data.activated_key~="" then
+                localData.key=data.activated_key
+                localData.rank=data.rank or "player"
+                saveLocal(localData)
+                currentKey=data.activated_key
+                currentRank=localData.rank
+                keyPassed=true
+                runMainGUI()
+                return
             end
         end
-        keyPassed=true currentKey=localData.key currentRank=localData.rank or "player" runMainGUI()
-    else showKeyMenu() end
+    end
+    -- Fallback: если на сервере ключа нет, проверяем локально
+    if localData.key and localData.key~="" then
+        keyPassed=true
+        currentKey=localData.key
+        currentRank=localData.rank or "player"
+        runMainGUI()
+    else
+        showKeyMenu()
+    end
 end
 startFlow()
