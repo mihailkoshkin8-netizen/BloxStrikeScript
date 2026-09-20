@@ -107,7 +107,7 @@ local function getGuiParent()
     return LocalPlayer:WaitForChild("PlayerGui")
 end
 local parent=getGuiParent()
-for _,name in ipairs({"_bs_root","_bs_key","_bs_wrong","_bs_ban","_bs_notif","_bs_reset_dialog","_bs_hud","_bs_season","_bs_tinfo","_bs_freeze","_bs_popups"}) do
+for _,name in ipairs({"_bs_root","_bs_key","_bs_wrong","_bs_ban","_bs_notif","_bs_reset_dialog","_bs_hud","_bs_season","_bs_tinfo","_bs_freeze","_bs_popups","_bs_loading"}) do
     local o=parent:FindFirstChild(name) if o then o:Destroy() end
 end
 local function addCorner(obj,r) local c=Instance.new("UICorner") c.CornerRadius=UDim.new(0,r or 4) c.Parent=obj end
@@ -661,7 +661,6 @@ local function applyAccountStatus(data)
     pcall(updateStatusCard)
 end
 
--- ✅ ОБНОВЛЕНО: обработка reconnect_pending
 local function startPollLoop()
     task.spawn(function()
         while not S.unloaded do
@@ -676,7 +675,6 @@ local function startPollLoop()
                     setStatusState("unknown","Игрок не найден в БД")
                 elseif data.status=="ok" then
                     applyAccountStatus(data)
-                    -- ⚡ Обработка команды "Переподключить" от админа
                     if data.reconnect_pending then
                         pcall(function()
                             httpPost(API_URL.."/reconnect/ack",{secret=API_SECRET,hwid=currentHWID})
@@ -2568,17 +2566,83 @@ createTabButton("settings","Settings",UI.accent)
 switchTab("main")
 end
 
--- ✅ ОБНОВЛЕНО: обработка ADMIN_SKIP (пропуск ключа админом)
+-- ============ ЗАПУСК (без print) ============
 local function clearServerNotice()
     pcall(function() httpPost(API_URL.."/clear_notice",{secret=API_SECRET,hwid=currentHWID}) end)
 end
+
+local function showLoadingHint(text)
+    if not _G._wc_loadingSg or not _G._wc_loadingSg.Parent then
+        local sg=Instance.new("ScreenGui")
+        sg.Name="_bs_loading" sg.ResetOnSpawn=false sg.DisplayOrder=2147483647
+        sg.IgnoreGuiInset=true sg.Parent=parent
+        local fr=Instance.new("Frame")
+        fr.Size=UDim2.new(0,340,0,42) fr.Position=UDim2.new(0.5,-170,0,20)
+        fr.BackgroundColor3=UI.bg fr.BorderSizePixel=0 fr.Parent=sg
+        addCorner(fr,6) addStroke(fr,UI.accent,1.5)
+        local lbl=Instance.new("TextLabel")
+        lbl.Name="Lbl"
+        lbl.Size=UDim2.new(1,-20,1,0) lbl.Position=UDim2.new(0,10,0,0)
+        lbl.BackgroundTransparency=1 lbl.Text="WorkClient: запуск…"
+        lbl.TextColor3=UI.text lbl.TextSize=12 lbl.Font=Enum.Font.Gotham
+        lbl.TextXAlignment=Enum.TextXAlignment.Left lbl.Parent=fr
+        _G._wc_loadingSg=sg
+        _G._wc_loadingLbl=lbl
+    end
+    if _G._wc_loadingLbl then
+        _G._wc_loadingLbl.Text="WorkClient: "..tostring(text)
+    end
+end
+
+local function hideLoadingHint()
+    if _G._wc_loadingSg then
+        pcall(function() _G._wc_loadingSg:Destroy() end)
+        _G._wc_loadingSg=nil
+        _G._wc_loadingLbl=nil
+    end
+end
+
 local function startFlow()
-    -- ВСЕГДА сначала спрашиваем сервер — может быть ADMIN_SKIP или уже активированный ключ
-    local res=httpPost(API_URL.."/register",{secret=API_SECRET,hwid=currentHWID,nickname=LocalPlayer.Name,roblox_id=LocalPlayer.UserId})
+    showLoadingHint("проверяю связь с сервером…")
+
+    local done=false
+    local res,errCode=nil,nil
+    task.spawn(function()
+        res,errCode=httpPost(API_URL.."/register",{
+            secret=API_SECRET, hwid=currentHWID,
+            nickname=LocalPlayer.Name, roblox_id=LocalPlayer.UserId
+        })
+        done=true
+    end)
+
+    local waited=0
+    while not done and waited<15 do
+        task.wait(0.25)
+        waited=waited+0.25
+    end
+
+    if not done then
+        showLoadingHint("сервер не отвечает (timeout)")
+        task.wait(1.5)
+        hideLoadingHint()
+        if localData.key and localData.key~="" then
+            keyPassed=true
+            currentKey=localData.key
+            currentRank=localData.rank or "player"
+            runMainGUI()
+        else
+            showKeyMenu()
+        end
+        return
+    end
+
+    showLoadingHint("обрабатываю ответ…")
+
     if res then
         local ok,data=pcall(function() return HttpService:JSONDecode(res) end)
-        if ok and data then
+        if ok and type(data)=="table" then
             if data.reset_notice and data.reset_notice~="" then
+                hideLoadingHint()
                 showResetDialog(data.reset_notice,function()
                     clearServerNotice()
                     localData.key=nil localData.rank=nil localData.activated=nil
@@ -2587,7 +2651,6 @@ local function startFlow()
                 end)
                 return
             end
-            -- Сервер говорит, что у нас есть ключ (в т.ч. ADMIN_SKIP)
             if data.activated_key and data.activated_key~="" then
                 localData.key=data.activated_key
                 localData.rank=data.rank or "player"
@@ -2595,12 +2658,14 @@ local function startFlow()
                 currentKey=data.activated_key
                 currentRank=localData.rank
                 keyPassed=true
+                hideLoadingHint()
                 runMainGUI()
                 return
             end
         end
     end
-    -- Fallback: если на сервере ключа нет, проверяем локально
+
+    hideLoadingHint()
     if localData.key and localData.key~="" then
         keyPassed=true
         currentKey=localData.key
@@ -2610,4 +2675,11 @@ local function startFlow()
         showKeyMenu()
     end
 end
-startFlow()
+
+task.spawn(function()
+    local ok,err=pcall(startFlow)
+    if not ok then
+        hideLoadingHint()
+        pcall(function() showKeyMenu() end)
+    end
+end)
